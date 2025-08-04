@@ -35,6 +35,7 @@ class KegiatanController extends Controller
      */
     public function store(Request $request)
     {
+        // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         $request->merge([
             'honor_nias' => $request->honor_nias ? str_replace('.', '', $request->honor_nias) : null,
             'honor_nias_barat' => $request->honor_nias_barat ? str_replace('.', '', $request->honor_nias_barat) : null,
@@ -69,7 +70,11 @@ class KegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan)
     {
-        //
+        $tim_kerja = TimKerja::all();
+        return view('kegiatan.edit', [
+            'kegiatan'      => $kegiatan,
+            'tim_kerja'     => $tim_kerja,
+        ]);
     }
 
     /**
@@ -77,7 +82,26 @@ class KegiatanController extends Controller
      */
     public function update(Request $request, Kegiatan $kegiatan)
     {
-        //
+        // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
+        $request->merge([
+            'honor_nias' => $request->honor_nias ? str_replace('.', '', $request->honor_nias) : null,
+            'honor_nias_barat' => $request->honor_nias_barat ? str_replace('.', '', $request->honor_nias_barat) : null,
+        ]);
+
+        $validatedData = $request->validate([
+            'nama_kegiatan'     => 'required|string|max:255',
+            'tanggal_mulai'     => 'required|date',
+            'tanggal_selesai'   => 'required|date',
+            'beban_anggaran'    => 'required|string|max:255',
+            'tim_kerja_id'      => 'required',
+            'honor_nias'        => 'nullable|integer',
+            'honor_nias_barat'  => 'nullable|integer',
+        ]);
+
+        Kegiatan::where('id', $kegiatan->id)
+            ->update($validatedData);
+
+        return redirect('/kegiatan')->with('success', 'Kegiatan berhasil diedit!');
     }
 
     /**
@@ -85,6 +109,8 @@ class KegiatanController extends Controller
      */
     public function destroy(Kegiatan $kegiatan)
     {
-        //
+        $kegiatan->delete();
+
+        return redirect()->back()->with('success', 'Kegiatan berhasil dihapus!');
     }
 }

@@ -6,6 +6,7 @@
                     icon: "success",
                     title: "Berhasil!",
                     text: "{{ session('success') }}",
+                    confirmButtonColor: '#696cff',
                 });
             </script>
         @endif
@@ -14,11 +15,11 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal Menambahkan Kegiatan',
-                    html: `{!! implode('<br>', $errors->all()) !!}`
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    confirmButtonColor: '#696cff',
                 });
             </script>
         @endif
-
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0">List Kegiatan</h5>
@@ -31,7 +32,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="kegiatanModalLabel">
-                                    Tambah Kegiatan</h5>
+                                    Tambah Kegiatan Baru</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -82,10 +83,31 @@
                                             <i class="bx bx-dots-vertical-rounded"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="javascript:void(0);"><i
-                                                    class="bx bx-edit-alt me-1"></i> Edit</a>
-                                            <a class="dropdown-item" href="javascript:void(0);"><i
-                                                    class="bx bx-trash me-1"></i> Delete</a>
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('kegiatan.edit', $k->slug) }}"><i
+                                                        class='bx bxs-edit'></i>Edit</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:void(0);"><i
+                                                        class='bx bxs-download'></i>BAST</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('kegiatan.destroy', $k->slug) }}" method="POST"
+                                                    class="delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="dropdown-item btn-delete-kegiatan">
+                                                        <i class='bx bxs-trash'></i> Hapus
+                                                    </button>
+                                                </form>
+                                            </li>
                                         </div>
                                     </div>
                                 </td>

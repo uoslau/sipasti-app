@@ -6,12 +6,13 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kegiatan extends Model
 {
-    use HasSlug, HasFactory;
+    use HasSlug, HasFactory, SoftDeletes;
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'slug'];
 
     public function getSlugOptions(): SlugOptions
     {
