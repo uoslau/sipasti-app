@@ -87,12 +87,12 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Tambah</button>
+            <button type="submit" class="btn btn-primary">+ Kegiatan</button>
         </div>
     </form>
 </div>
 
-{{-- Mengubah format rupiah --}}
+{{-- mengubah tampilan (format) rupiah dalam ribuan, juta, dst --}}
 <script>
     function formatRupiah(input) {
         let value = input.value.replace(/\./g, '');
