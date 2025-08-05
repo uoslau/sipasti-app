@@ -6,6 +6,7 @@ use App\Models\Kegiatan;
 use App\Models\TimKerja;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\PetugasKegiatan;
 use Illuminate\Auth\Events\Validated;
 use App\Http\Requests\StoreKegiatanRequest;
 
@@ -62,7 +63,19 @@ class KegiatanController extends Controller
      */
     public function show(Kegiatan $kegiatan)
     {
-        //
+        $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+            ->orderBy('mitras.nama_mitra', 'desc')
+            ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
+            ->paginate(12);
+
+        $slug = $kegiatan->slug;
+
+        return view('kegiatan.show', [
+            'nama_kegiatan'     => $kegiatan->nama_kegiatan,
+            'slug'              => $slug,
+            'petugas_kegiatan'  => $petugas_kegiatan,
+        ]);
     }
 
     /**

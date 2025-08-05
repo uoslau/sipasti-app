@@ -30,4 +30,9 @@ class Kegiatan extends Model
     {
         return $this->belongsTo(TimKerja::class, 'tim_kerja_id');
     }
+
+    public function PetugasKegiatan()
+    {
+        return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id');
+    }
 }

@@ -59,7 +59,8 @@
                             <tr>
                                 <td
                                     style="max-width: 60ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    {{ $k->nama_kegiatan }}</td>
+                                    <a href="{{ route('kegiatan.show', $k->slug) }}">{{ $k->nama_kegiatan }}</a>
+                                </td>
                                 <td></td>
                                 {{-- <td>{{ formatNominal($kegiatan->honor_nias) }}</td> --}}
                                 <td class="text-center">
