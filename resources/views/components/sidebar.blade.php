@@ -56,9 +56,9 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        <li class="menu-item active">
-            <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
+        <li class="menu-item {{ request()->is('kegiatan*') ? 'active' : '' }}">
+            <a href="/kegiatan" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-task"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Kegiatan</div>
             </a>
         </li>
