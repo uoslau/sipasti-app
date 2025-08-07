@@ -24,21 +24,20 @@
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0 me-2">{{ $nama_kegiatan }}</h5>
-                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal"
-                    style="margin-right: 20px;">
+                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
                     + Petugas
                 </a>
-                <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+                <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel3">Tambah
+                                <h5 class="modal-title" id="addPetugasModalLabel">Tambah
                                     Petugas</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                {{-- @include('petugas.create', ['slug' => $slug]) --}}
+                                @include('petugas.create', ['slug' => $slug])
                             </div>
                         </div>
                     </div>
@@ -67,7 +66,7 @@
                                     <td class="text-center">
                                         <span class="badge rounded-pill bg-label-danger">
                                             {{ $p->bertugas_sebagai }} / {{ $p->beban_kerja }}
-                                            {{ $p->satuan }}
+                                            {{ $p->satuan_beban_kerja }}
                                         </span>
                                     </td>
                                     <td class="text-center">

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mitra;
+use App\Models\Kegiatan;
+use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
 use App\Http\Requests\StorePetugasKegiatanRequest;
 use App\Http\Requests\UpdatePetugasKegiatanRequest;
@@ -16,6 +19,14 @@ class PetugasKegiatanController extends Controller
         //
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('q');
+        $mitra  = Mitra::where('nama_mitra', 'LIKE', '%' . $search . '%')->take(5)->get(['nik', 'nama_mitra']);
+
+        return response()->json($mitra);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -27,9 +38,12 @@ class PetugasKegiatanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePetugasKegiatanRequest $request)
+    public function store(StorePetugasKegiatanRequest $request, $slug)
     {
-        //
+        $nik = $request['nik'];
+        $mitra = Mitra::where('nik', $nik)->first();
+        $kegiatan = Kegiatan::where('slug', $slug)->first();
+        $validated = $request->validated();
     }
 
     /**

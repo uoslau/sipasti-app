@@ -11,6 +11,8 @@ class PetugasKegiatan extends Model
     /** @use HasFactory<\Database\Factories\PetugasKegiatanFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $guarded = ['id'];
+
     public function Kegiatan()
     {
         return $this->belongsTo(Kegiatan::class);

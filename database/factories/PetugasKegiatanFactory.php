@@ -17,8 +17,8 @@ class PetugasKegiatanFactory extends Factory
     public function definition(): array
     {
         return [
-            'nik' => $this->faker->unique()->numberBetween(1, 100),
-            'kegiatan_id' => $this->faker->numberBetween(1, 19),
+            'nik' => $this->faker->numberBetween(1, 100),
+            'kegiatan_id' => $this->faker->numberBetween(1, 15),
             'bertugas_sebagai' => $this->faker->jobTitle(),
             'wilayah_tugas' => $this->faker->city(),
             'beban_kerja' => $this->faker->numberBetween(1, 100),

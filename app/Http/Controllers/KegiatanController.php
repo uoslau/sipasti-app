@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kegiatan;
 use App\Models\TimKerja;
 use Illuminate\Support\Str;
+use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
 use Illuminate\Auth\Events\Validated;
@@ -63,6 +64,7 @@ class KegiatanController extends Controller
      */
     public function show(Kegiatan $kegiatan)
     {
+        // menghubungkan petugas kegiatan dengan mitra berdasarkan nik
         $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'desc')
@@ -71,10 +73,13 @@ class KegiatanController extends Controller
 
         $slug = $kegiatan->slug;
 
+        $wilayah_tugas = WilayahTugas::all();
+
         return view('kegiatan.show', [
             'nama_kegiatan'     => $kegiatan->nama_kegiatan,
             'slug'              => $slug,
             'petugas_kegiatan'  => $petugas_kegiatan,
+            'wilayah_tugas'     => $wilayah_tugas,
         ]);
     }
 
@@ -84,6 +89,7 @@ class KegiatanController extends Controller
     public function edit(Kegiatan $kegiatan)
     {
         $tim_kerja = TimKerja::all();
+
         return view('kegiatan.edit', [
             'kegiatan'      => $kegiatan,
             'tim_kerja'     => $tim_kerja,

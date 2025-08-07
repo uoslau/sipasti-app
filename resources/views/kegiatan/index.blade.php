@@ -23,15 +23,14 @@
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0">List Kegiatan</h5>
-                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addKegiatanModal"
-                    style="margin-right: 20px;">
+                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
                     + Kegiatan
                 </a>
                 <div class="modal fade" id="addKegiatanModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="kegiatanModalLabel">
+                                <h5 class="modal-title" id="addKegiatanModalLabel">
                                     Tambah Kegiatan Baru</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>

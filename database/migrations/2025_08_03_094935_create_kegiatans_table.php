@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->string('beban_anggaran');
-            $table->integer('tim_kerja_id');
+            $table->foreignId('tim_kerja_id')->constrained('tim_kerjas')->onDelete('cascade');
             $table->integer('honor_nias')->nullable();
             $table->integer('honor_nias_barat')->nullable();
             $table->softDeletes();
