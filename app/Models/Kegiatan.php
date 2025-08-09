@@ -26,14 +26,14 @@ class Kegiatan extends Model
         return 'slug';
     }
 
-    public function TimKerja()
+    public function timKerja()
     {
         return $this->belongsTo(TimKerja::class, 'tim_kerja_id');
     }
 
-    public function PetugasKegiatan()
+    public function petugasKegiatan()
     {
-        return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id');
+        return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id', 'id');
     }
 
     protected static function booted()

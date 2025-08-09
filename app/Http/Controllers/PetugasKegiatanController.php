@@ -59,7 +59,7 @@ class PetugasKegiatanController extends Controller
         );
 
         if ($validator->fails()) {
-            return redirect('/kegiatan/' . $kegiatan->slug . '/edit-kegiatan')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->withErrors($validator)
                 ->withInput()
                 ->with('error', 'Petugas gagal ditambahkan! Periksa input data Anda.');
@@ -73,7 +73,7 @@ class PetugasKegiatanController extends Controller
             ->exists();
 
         if ($cek_mitra) {
-            return redirect('/kegiatan/' . $kegiatan->slug . '/edit-kegiatan')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan ini!');
         }
 
@@ -94,7 +94,8 @@ class PetugasKegiatanController extends Controller
             'honor'                => $honor_kegiatan,
         ]);
 
-        return redirect('/kegiatan/' . $kegiatan->slug . '/edit-kegiatan')->with('success', 'Petugas berhasil ditambahkan!');
+        return to_route('kegiatan.edit', $kegiatan->slug)
+            ->with('success', 'Petugas berhasil ditambahkan!');
     }
 
     /**
@@ -110,11 +111,10 @@ class PetugasKegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan, PetugasKegiatan $petugasKegiatan)
     {
-        $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
-            ->where('petugas_kegiatans.nik', $petugasKegiatan->nik)
-            ->orderBy('mitras.nama_mitra', 'desc')
-            ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
+        // mengambil petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
+        $petugas_kegiatan = $kegiatan->petugasKegiatan()
+            ->where('nik', $petugasKegiatan->nik)
+            ->with('mitra')
             ->first();
 
         $wilayah_tugas = WilayahTugas::all();
@@ -142,7 +142,7 @@ class PetugasKegiatanController extends Controller
         );
 
         if ($validator->fails()) {
-            return redirect('/kegiatan/' . $kegiatan->slug . '/edit-kegiatan')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->withErrors($validator)
                 ->withInput()
                 ->with('error', 'Petugas gagal diedit! Periksa input data Anda.');
@@ -166,7 +166,8 @@ class PetugasKegiatanController extends Controller
                 'honor'                 => $validatedData['beban_kerja'] * $honor_kegiatan,
             ]);
 
-        return redirect('/kegiatan/' . $kegiatan->slug . '/edit-kegiatan')->with('success', 'Petugas berhasil diedit!');
+        return to_route('kegiatan.edit', $kegiatan->slug)
+            ->with('success', 'Petugas berhasil diedit!');
     }
 
     /**
@@ -174,19 +175,8 @@ class PetugasKegiatanController extends Controller
      */
     public function destroy(Kegiatan $kegiatan, PetugasKegiatan $petugasKegiatan)
     {
-        // Ambil petugas_kegiatan berdasarkan nik dan kegiatan_id
-        $petugas_kegiatan = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-            ->where('nik', $petugasKegiatan->nik)
-            ->first();
-
-        // Jika petugas_kegiatan ditemukan, hapus
-        if ($petugas_kegiatan) {
-            $petugas_kegiatan->delete();
-            return redirect()->back()->with('success', ucwords(strtolower($petugas_kegiatan->mitra->nama_mitra)) . ' berhasil dihapus!');
-        }
-
-        $slug = $kegiatan->slug;
-
-        return redirect('/kegiatan/' . $slug . '/edit-kegiatan')->with('error', 'Petugas tidak ditemukan.');
+        $petugasKegiatan->delete();
+        return to_route('kegiatan.edit', $kegiatan->slug)
+            ->with('success', ucwords(strtolower($petugasKegiatan->mitra->nama_mitra)) . ' berhasil dihapus!');
     }
 }

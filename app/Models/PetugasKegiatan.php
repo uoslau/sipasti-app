@@ -13,12 +13,12 @@ class PetugasKegiatan extends Model
 
     protected $guarded = ['id'];
 
-    public function Kegiatan()
+    public function kegiatan()
     {
         return $this->belongsTo(Kegiatan::class);
     }
 
-    public function Mitra()
+    public function mitra()
     {
         return $this->belongsTo(Mitra::class, 'nik', 'nik');
     }

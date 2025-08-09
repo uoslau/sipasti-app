@@ -20,7 +20,8 @@
                                         <input type="text"
                                             class="form-control @error('nama_mitra') is-invalid @enderror"
                                             id="nama_mitra" name="nama_mitra" placeholder="Ketik Untuk Mencari" required
-                                            autofocus value="{{ old('nama_mitra', $petugas_kegiatan->nama_mitra) }}"
+                                            autofocus
+                                            value="{{ old('nama_mitra', $petugas_kegiatan->mitra->nama_mitra) }}"
                                             disabled readonly />
                                         @error('nama_mitra')
                                             <div class="invalid-feedback">{{ $message }}</div>

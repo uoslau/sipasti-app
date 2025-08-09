@@ -20,9 +20,9 @@ class KegiatanController extends Controller
     public function index()
     {
         // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
-        $kegiatan = Kegiatan::with(['PetugasKegiatan', 'TimKerja'])
+        $kegiatan = Kegiatan::with(['petugasKegiatan', 'timKerja'])
             ->select('nama_kegiatan', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
-            ->withSum('PetugasKegiatan', 'honor')
+            ->withSum('petugasKegiatan', 'honor')
             ->orderBy('id', 'desc')
             ->paginate(12);
 
@@ -65,7 +65,8 @@ class KegiatanController extends Controller
 
         Kegiatan::create($validatedData);
 
-        return redirect('/kegiatan')->with('success', 'Kegiatan berhasil ditambahkan!');
+        return to_route('kegiatan.index')
+            ->with('success', 'Kegiatan berhasil ditambahkan!');
     }
 
 
@@ -90,8 +91,6 @@ class KegiatanController extends Controller
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
             ->paginate(12);
-
-        $slug = $kegiatan->slug;
 
         $wilayah_tugas = WilayahTugas::all();
 
@@ -145,7 +144,8 @@ class KegiatanController extends Controller
 
         $slug = $kegiatan->slug;
 
-        return redirect('/kegiatan/' . $slug . '/edit-kegiatan')->with('success', 'Kegiatan berhasil diedit!');
+        return to_route('kegiatan.edit', $slug)
+            ->with('success', 'Kegiatan berhasil diedit!');
     }
 
     /**
@@ -155,6 +155,7 @@ class KegiatanController extends Controller
     {
         $kegiatan->delete();
 
-        return redirect()->back()->with('success', 'Kegiatan berhasil dihapus!');
+        return to_route('kegiatan.index')
+            ->with('success', 'Kegiatan berhasil dihapus!');
     }
 }
