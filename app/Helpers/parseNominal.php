@@ -8,7 +8,7 @@ if (!function_exists('parseNominal')) {
 }
 
 if (!function_exists('formatNominal')) {
-    function formatNominal($value, $withRp = false)
+    function formatNominal($value, $withRp = true)
     {
         if (!is_numeric($value)) {
             return $withRp ? 'Rp 0' : '0';
