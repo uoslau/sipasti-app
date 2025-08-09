@@ -58,10 +58,13 @@
                             <tr>
                                 <td
                                     style="max-width: 60ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    <a href="{{ route('kegiatan.show', $k->slug) }}">{{ $k->nama_kegiatan }}</a>
+                                    <a href="{{ route('kegiatan.edit', $k->slug) }}">{{ $k->nama_kegiatan }}</a>
                                 </td>
-                                <td></td>
-                                {{-- <td>{{ formatNominal($kegiatan->honor_nias) }}</td> --}}
+                                <td class="text-center">
+                                    <span class="badge bg-label-success">
+                                        {{ formatNominal($k->petugas_kegiatan_sum_honor) }}
+                                    </span>
+                                </td>
                                 <td class="text-center">
                                     <span class="badge bg-label-primary">
                                         {{ $k->timkerja->alias_tim_kerja }}
@@ -85,26 +88,20 @@
                                         <div class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item"
-                                                    href="{{ route('kegiatan.edit', $k->slug) }}"><i
-                                                        class='bx bxs-edit'></i>Edit</a>
+                                                    href="{{ route('kegiatan.edit', $k->slug) }}">Edit</a>
                                             </li>
+                                            <hr class="dropdown-divider" />
                                             <li>
-                                                <hr class="dropdown-divider" />
+                                                <a class="dropdown-item" href="javascript:void(0);">Unduh</a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
-                                                        class='bx bxs-download'></i>BAST</a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider" />
-                                            </li>
+                                            <hr class="dropdown-divider" />
                                             <li>
                                                 <form action="{{ route('kegiatan.destroy', $k->slug) }}" method="POST"
                                                     class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="dropdown-item btn-delete-kegiatan">
-                                                        <i class='bx bxs-trash'></i> Hapus
+                                                    <button type="button"
+                                                        class="dropdown-item btn-delete-kegiatan">Hapus
                                                     </button>
                                                 </form>
                                             </li>

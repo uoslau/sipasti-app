@@ -35,4 +35,11 @@ class Kegiatan extends Model
     {
         return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id');
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($kegiatan) {
+            $kegiatan->PetugasKegiatan()->delete();
+        });
+    }
 }

@@ -22,4 +22,9 @@ class PetugasKegiatan extends Model
     {
         return $this->belongsTo(Mitra::class, 'nik', 'nik');
     }
+
+    public function getRouteKeyName()
+    {
+        return 'nik';
+    }
 }

@@ -53,11 +53,11 @@
                                 <select class="form-select" id="wilayah_tugas" name="wilayah_tugas">
                                     <option selected disabled>Pilih Wilayah Tugas</option>
                                     @foreach ($wilayah_tugas as $w)
-                                        @if (old('wilayah_tugas') == $w->id)
-                                            <option value="{{ $w->id }}" selected>{{ $w->nama_wilayah }}
+                                        @if (old('wilayah_tugas') == $w->kode_wilayah)
+                                            <option value="{{ $w->kode_wilayah }}" selected>{{ $w->nama_wilayah }}
                                             </option>
                                         @else
-                                            <option value="{{ $w->id }}">{{ $w->nama_wilayah }}</option>
+                                            <option value="{{ $w->kode_wilayah }}">{{ $w->nama_wilayah }}</option>
                                         @endif
                                     @endforeach
                                 </select>

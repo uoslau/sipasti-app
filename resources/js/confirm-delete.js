@@ -23,3 +23,29 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// script ini untuk menampilkan sweetalert2 ketika user menakan tombol hapus di menu edit kegiatan
+document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".btn-delete-petugas");
+
+    deleteButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const form = this.closest("form");
+
+            Swal.fire({
+                title: "Hapus petugas?",
+                text: "Data petugas akan dihapus dari kegiatan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#696cff",
+                confirmButtonText: "Ya, hapus!",
+                cancelButtonText: "Batal",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});

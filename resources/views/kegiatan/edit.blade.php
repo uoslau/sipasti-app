@@ -1,10 +1,41 @@
+{{-- @dd($petugas_kegiatan) --}}
 <x-layout>
+    @if (session()->has('success'))
+        <script>
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#696cff',
+            });
+        </script>
+    @endif
+    @if (session()->has('error'))
+        <script>
+            Swal.fire({
+                icon: "error",
+                title: "Gagal!",
+                text: "{{ session('error') }}",
+                confirmButtonColor: '#696cff',
+            });
+        </script>
+    @endif
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menambahkan Petugas',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#696cff',
+            });
+        </script>
+    @endif
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-xl">
-                <div class="card mb-6">
+                <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Edit Kegiatan</h5>
+                        <h5 class="mb-0">Edit Kegiatan - [Terakhir Diupdate : {{ $updated_at }}]</h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('kegiatan.update', [$kegiatan->slug]) }}">
@@ -26,9 +57,9 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- tanggal mulai selesai --}}
+                            {{-- tanggal mulai selesai, beban anggaran --}}
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label for="tangal_mulai" class="form-label">Tanggal Mulai</label>
                                         <input class="form-control" type="date"
@@ -36,7 +67,7 @@
                                             id="tanggal_mulai" name="tanggal_mulai" />
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
                                         <input class="form-control" type="date"
@@ -44,10 +75,7 @@
                                             id="tanggal_selesai" name="tanggal_selesai" />
                                     </div>
                                 </div>
-                            </div>
-                            {{-- mata anggaran, tim kerja --}}
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label class="form-label" for="beban_anggaran">Beban Anggaran</label>
                                         <input type="text"
@@ -60,7 +88,10 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                            </div>
+                            {{-- tim kerjam, honor nias nias barat --}}
+                            <div class="row">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label for="tim_kerja_id" class="form-label">Tim Kerja</label>
                                         <select class="form-select" id="tim_kerja_id" name="tim_kerja_id">
@@ -81,10 +112,7 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            {{-- honor nias, nias barat --}}
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label for="honor_nias" class="form-label">Honor Nias</label>
                                         <input class="form-control" type="text"
@@ -93,7 +121,7 @@
                                             oninput="formatRupiah(this)" />
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-6">
                                         <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
                                         <input class="form-control" type="text"
@@ -103,12 +131,113 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-primary ms-auto">Edit Kegiatan</button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    {{-- tabel detail petugas --}}
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="mb-0 me-2">Detail Petugas</h5>
+                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal"
+                    data-bs-target="#addPetugasModal">
+                    + Petugas
+                </a>
+                <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addPetugasModalLabel">Tambah
+                                    Petugas</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @include('petugas.create', ['slug' => $kegiatan->slug])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if ($petugas_kegiatan->isEmpty())
+                <h5 class="card-header border-top text-center">Belum ada petugas untuk kegiatan ini.</h5>
+            @else
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nama Mitra</th>
+                                <th class="text-center">Tugas / Beban</th>
+                                <th class="text-center">Wilayah Tugas</th>
+                                <th class="text-center">Honor</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom">
+                            @foreach ($petugas_kegiatan as $p)
+                                <tr>
+                                    <td
+                                        style="max-width: 500px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{ ucwords(strtolower($p->nama_mitra)) }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-label-danger">
+                                            {{ $p->bertugas_sebagai }} / {{ $p->beban_kerja }}
+                                            {{ $p->satuan_beban_kerja }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-label-primary">
+                                            {{ $p->wilayah_tugas == '1201' ? 'Nias' : 'Nias Barat' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-label-success">
+                                            {{ formatNominal($p->honor) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                                data-bs-toggle="dropdown">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('petugas.edit', [$kegiatan->slug, $p->nik]) }}">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider" />
+                                                </li>
+                                                <li>
+                                                    <form
+                                                        action="{{ route('petugas.destroy', [$kegiatan->slug, $p->nik]) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button"
+                                                            class="dropdown-item btn-delete-petugas">Hapus</button>
+                                                    </form>
+                                                </li>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-sm justify-content-end pt-3">
+                        {{ $petugas_kegiatan->links() }}
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-layout>

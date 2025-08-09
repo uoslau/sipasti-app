@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Events\Validated;
 use App\Http\Requests\StoreKegiatanRequest;
 
@@ -18,9 +19,18 @@ class KegiatanController extends Controller
      */
     public function index()
     {
+        // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
+        $kegiatan = Kegiatan::with(['PetugasKegiatan', 'TimKerja'])
+            ->select('nama_kegiatan', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
+            ->withSum('PetugasKegiatan', 'honor')
+            ->orderBy('id', 'desc')
+            ->paginate(12);
+
+        $tim_kerja = TimKerja::all();
+
         return view('kegiatan.index', [
-            'kegiatan' => Kegiatan::all(),
-            'tim_kerja' => TimKerja::all(),
+            'kegiatan'  => $kegiatan,
+            'tim_kerja' => $tim_kerja,
         ]);
     }
 
@@ -64,23 +74,7 @@ class KegiatanController extends Controller
      */
     public function show(Kegiatan $kegiatan)
     {
-        // menghubungkan petugas kegiatan dengan mitra berdasarkan nik
-        $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
-            ->orderBy('mitras.nama_mitra', 'desc')
-            ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
-            ->paginate(12);
-
-        $slug = $kegiatan->slug;
-
-        $wilayah_tugas = WilayahTugas::all();
-
-        return view('kegiatan.show', [
-            'nama_kegiatan'     => $kegiatan->nama_kegiatan,
-            'slug'              => $slug,
-            'petugas_kegiatan'  => $petugas_kegiatan,
-            'wilayah_tugas'     => $wilayah_tugas,
-        ]);
+        //
     }
 
     /**
@@ -90,9 +84,25 @@ class KegiatanController extends Controller
     {
         $tim_kerja = TimKerja::all();
 
+        // mengambil nama petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
+        $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+            ->orderBy('mitras.nama_mitra', 'asc')
+            ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
+            ->paginate(12);
+
+        $slug = $kegiatan->slug;
+
+        $wilayah_tugas = WilayahTugas::all();
+
+        $updated_at = $kegiatan->updated_at ? $kegiatan->updated_at->format('d M Y H:i') : 'Belum ada update';
+
         return view('kegiatan.edit', [
-            'kegiatan'      => $kegiatan,
-            'tim_kerja'     => $tim_kerja,
+            'kegiatan'          => $kegiatan,
+            'petugas_kegiatan'  => $petugas_kegiatan,
+            'wilayah_tugas'     => $wilayah_tugas,
+            'tim_kerja'         => $tim_kerja,
+            'updated_at'        => $updated_at,
         ]);
     }
 
@@ -120,7 +130,22 @@ class KegiatanController extends Controller
         Kegiatan::where('id', $kegiatan->id)
             ->update($validatedData);
 
-        return redirect('/kegiatan')->with('success', 'Kegiatan berhasil diedit!');
+        // Update honor berdasarkan wilayah tugas
+        PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+            ->where('wilayah_tugas', '1201')
+            ->update([
+                'honor' => DB::raw('beban_kerja * ' . ($validatedData['honor_nias'] ?? 0))
+            ]);
+
+        PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+            ->where('wilayah_tugas', '1225')
+            ->update([
+                'honor' => DB::raw('beban_kerja * ' . ($validatedData['honor_nias_barat'] ?? 0))
+            ]);
+
+        $slug = $kegiatan->slug;
+
+        return redirect('/kegiatan/' . $slug . '/edit-kegiatan')->with('success', 'Kegiatan berhasil diedit!');
     }
 
     /**

@@ -20,7 +20,7 @@ class PetugasKegiatanFactory extends Factory
             'nik' => $this->faker->numberBetween(1, 100),
             'kegiatan_id' => $this->faker->numberBetween(1, 15),
             'bertugas_sebagai' => $this->faker->jobTitle(),
-            'wilayah_tugas' => $this->faker->city(),
+            'wilayah_tugas' => $this->faker->randomElement(['1201', '1225']),
             'beban_kerja' => $this->faker->numberBetween(1, 100),
             'satuan_beban_kerja' => $this->faker->word(),
             'honor' => $this->faker->numberBetween(100000, 1000000),
