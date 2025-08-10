@@ -17,7 +17,7 @@ class MitraFactory extends Factory
     public function definition(): array
     {
         return [
-            'nik' => $this->faker->unique()->numberBetween(1, 100),
+            'nik' => $this->faker->unique()->numberBetween(1, 250),
             'nama_mitra' => $this->faker->name(),
             'posisi' => $this->faker->jobTitle(),
             'email' => $this->faker->unique()->safeEmail(),

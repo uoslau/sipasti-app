@@ -24,9 +24,10 @@ class KegiatanController extends Controller
             ->select('nama_kegiatan', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
             ->withSum('petugasKegiatan', 'honor')
             ->orderBy('id', 'desc')
-            ->paginate(12);
+            ->paginate(15);
 
-        $tim_kerja = TimKerja::all();
+        // mengambil data tim kerja untuk create kegiatan
+        $tim_kerja = TimKerja::select('id', 'nama_tim_kerja', 'alias_tim_kerja')->get();
 
         return view('kegiatan.index', [
             'kegiatan'  => $kegiatan,
@@ -83,14 +84,15 @@ class KegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan)
     {
-        $tim_kerja = TimKerja::all();
+        // mengambil data tim kerja untuk create kegiatan
+        $tim_kerja = TimKerja::select('id', 'nama_tim_kerja', 'alias_tim_kerja')->get();
 
         // mengambil nama petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
         $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
-            ->paginate(12);
+            ->paginate(15);
 
         $wilayah_tugas = WilayahTugas::all();
 

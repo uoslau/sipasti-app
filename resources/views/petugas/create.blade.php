@@ -16,8 +16,9 @@
             </li>
         </ul>
         <div class="tab-content border-top">
+            {{-- manual input --}}
             <div class="tab-pane fade show active" id="navs-pills-top-manual" role="tabpanel">
-                <form method="POST" action="{{ route('petugas.store', $slug) }}">
+                <form method="POST" action="{{ route('petugas.store', $kegiatan->slug) }}">
                     @csrf
                     {{-- nama mitra --}}
                     <div class="row">
@@ -92,14 +93,15 @@
                     </div>
                 </form>
             </div>
+            {{-- import excel --}}
             <div class="tab-pane fade" id="navs-pills-top-import" role="tabpanel">
                 <div class="col-12">
                     <h5 class="card-header text-center">Import File Excel Petugas Kegiatan</h5>
                     <div class="card-body demo-vertical-spacing demo-only-element">
-                        <form action="{{ route('petugas.import', $slug) }}" method="POST"
+                        <form action="{{ route('petugas.import', $kegiatan->slug) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
-                            <input type="hidden" name="slug" value="{{ $slug }}">
+                            <input type="hidden" name="slug" value="{{ $kegiatan->slug }}">
                             <div class="input-group">
                                 <input type="file" required class="form-control" id="file"
                                     name="excel_file" />
@@ -134,7 +136,7 @@
     }
 
     #mitra-list .active {
-        background-color: #007bff;
+        background-color: #696cff;
         color: white;
     }
 </style>

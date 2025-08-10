@@ -9,4 +9,9 @@ class Mitra extends Model
 {
     /** @use HasFactory<\Database\Factories\MitraFactory> */
     use HasFactory;
+
+    public function petugasKegiatan()
+    {
+        return $this->hasMany(PetugasKegiatan::class, 'nik', 'nik');
+    }
 }

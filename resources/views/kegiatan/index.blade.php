@@ -112,6 +112,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination pagination-sm justify-content-end pt-3">
+                    {{ $kegiatan->onEachSide(0)->links() }}
+                </div>
             </div>
         </div>
     </div>

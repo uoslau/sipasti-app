@@ -1,4 +1,3 @@
-{{-- @dd($petugas_kegiatan) --}}
 <x-layout>
     @if (session()->has('success'))
         <script>
@@ -160,7 +159,7 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                @include('petugas.create', ['slug' => $kegiatan->slug])
+                                @include('petugas.create')
                             </div>
                         </div>
                     </div>
@@ -234,7 +233,7 @@
                         </tbody>
                     </table>
                     <div class="pagination pagination-sm justify-content-end pt-3">
-                        {{ $petugas_kegiatan->links() }}
+                        {{ $petugas_kegiatan->onEachSide(0)->links() }}
                     </div>
                 </div>
             @endif

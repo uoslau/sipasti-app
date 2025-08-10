@@ -13,6 +13,6 @@ class PetugasKegiatanSeeder extends Seeder
      */
     public function run(): void
     {
-        PetugasKegiatan::factory()->count(100)->create();
+        PetugasKegiatan::factory()->count(500)->create();
     }
 }

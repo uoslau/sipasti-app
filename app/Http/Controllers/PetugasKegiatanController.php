@@ -6,7 +6,9 @@ use App\Models\Mitra;
 use App\Models\Kegiatan;
 use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
+use App\Imports\PetugasImport;
 use App\Models\PetugasKegiatan;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StorePetugasKegiatanRequest;
 use App\Http\Requests\UpdatePetugasKegiatanRequest;
@@ -35,6 +37,20 @@ class PetugasKegiatanController extends Controller
     public function create()
     {
         //
+    }
+
+    public function import(Request $request)
+    {
+        $slug           = $request->input('slug');
+
+        $validatedData  = $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        $kegiatan_id    = Kegiatan::where('slug', $slug)->value('id');
+        Excel::import(new PetugasImport($kegiatan_id), $validatedData['excel_file']);
+
+        return redirect()->back();
     }
 
     /**
