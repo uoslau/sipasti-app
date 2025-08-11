@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-class PetugasImport implements ToCollection
+class PetugasImportUpdate implements ToCollection
 {
     /**
      * @param Collection $collection
@@ -29,7 +29,7 @@ class PetugasImport implements ToCollection
         $kegiatan       = Kegiatan::findOrFail($this->kegiatan_id);
         $processed_nik  = [];
         $errors         = [];
-        $imported_count = 0;
+        $updated_count  = 0;
 
         DB::beginTransaction();
 
@@ -42,6 +42,7 @@ class PetugasImport implements ToCollection
                 $wilayah_tugas      = trim(Arr::get($row, 4, ''));
                 $beban_kerja        = (int) Arr::get($row, 5, 0);
                 $satuan_beban       = trim(Arr::get($row, 6, ''));
+
                 $validator = Validator::make(
                     [
                         'nik'              => $nik,
@@ -64,42 +65,41 @@ class PetugasImport implements ToCollection
                 );
 
                 if ($validator->fails()) {
-                    $errors[] = "Baris ke-" . ($index + 1) . ": " . implode(', ', $validator->errors()->all());
+                    $errors[] = "Baris " . ($index + 1) . ": " . implode(', ', $validator->errors()->all());
                     continue;
                 }
 
                 if (in_array($nik, $processed_nik)) {
-                    $errors[] = "Baris ke-" . ($index + 1) . ": NIK {$nik} duplikat di file Excel.";
+                    $errors[] = "Baris " . ($index + 1) . ": NIK {$nik} duplikat di file Excel.";
                     continue;
                 }
 
                 $processed_nik[] = $nik;
 
-                $nama_mitra = Mitra::where('nik', $nik)->get('nama_mitra')->first();
-
-                $cek_mitra = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-                    ->where('nik', $nik)
-                    ->exists();
-                if ($cek_mitra) {
-                    $errors[] = "Baris ke-" . ($index + 1) . ": {$nama_mitra} sudah terdaftar di kegiatan ini.";
-                    continue;
-                }
+                $nama_mitra = Mitra::where('nik', $nik)->value('nama_mitra');
 
                 $honor = $wilayah_tugas == "1201"
                     ? $kegiatan->honor_nias * $beban_kerja
                     : $kegiatan->honor_nias_barat * $beban_kerja;
 
-                PetugasKegiatan::create([
-                    'nik'                => $nik,
-                    'nama_mitra'         => $nama_mitra,
-                    'kegiatan_id'        => $kegiatan->id,
-                    'bertugas_sebagai'   => $bertugas_sebagai,
-                    'wilayah_tugas'      => $wilayah_tugas,
-                    'beban_kerja'        => $beban_kerja,
-                    'satuan_beban_kerja' => $satuan_beban,
-                    'honor'              => $honor,
-                ]);
-                $imported_count++;
+                $petugas = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+                    ->where('nik', $nik)
+                    ->first();
+
+                if ($petugas) {
+                    $petugas->update([
+                        'nama_mitra'         => $nama_mitra,
+                        'bertugas_sebagai'   => $bertugas_sebagai,
+                        'wilayah_tugas'      => $wilayah_tugas,
+                        'beban_kerja'        => $beban_kerja,
+                        'satuan_beban_kerja' => $satuan_beban,
+                        'honor'              => $honor,
+                    ]);
+                    $updated_count++;
+                } else {
+                    $errors[] = "Baris " . ($index + 1) . ": {$nama_mitra} (NIK: {$nik}) tidak terdaftar di kegiatan ini.";
+                    continue;
+                }
             }
 
             if (!empty($errors)) {
@@ -110,11 +110,11 @@ class PetugasImport implements ToCollection
 
             DB::commit();
             return to_route('kegiatan.edit', $kegiatan->slug)
-                ->with('success', "{$imported_count} petugas berhasil diimport!");
+                ->with('success', "{$updated_count} data berhasil diperbarui.");
         } catch (\Throwable $th) {
             DB::rollBack();
             return to_route('kegiatan.edit', $kegiatan->slug)
-                ->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
+                ->with('error', 'Error: ' . $th->getMessage());
         }
     }
 }
