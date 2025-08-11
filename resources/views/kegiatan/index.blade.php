@@ -1,25 +1,5 @@
 <x-layout>
     <div class="container-xxl flex-grow-1 container-p-y">
-        @if (session()->has('success'))
-            <script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Berhasil!",
-                    text: "{{ session('success') }}",
-                    confirmButtonColor: '#696cff',
-                });
-            </script>
-        @endif
-        @if ($errors->any())
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Menambahkan Kegiatan',
-                    html: `{!! implode('<br>', $errors->all()) !!}`,
-                    confirmButtonColor: '#696cff',
-                });
-            </script>
-        @endif
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0">List Kegiatan</h5>

@@ -1,34 +1,4 @@
 <x-layout>
-    @if (session()->has('success'))
-        <script>
-            Swal.fire({
-                icon: "success",
-                title: "Berhasil!",
-                text: "{{ session('success') }}",
-                confirmButtonColor: '#696cff',
-            });
-        </script>
-    @endif
-    @if (session()->has('error'))
-        <script>
-            Swal.fire({
-                icon: "error",
-                title: "Gagal!",
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#696cff',
-            });
-        </script>
-    @endif
-    @if ($errors->any())
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Menambahkan Petugas',
-                html: `{!! implode('<br>', $errors->all()) !!}`,
-                confirmButtonColor: '#696cff',
-            });
-        </script>
-    @endif
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-xl">

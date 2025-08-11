@@ -65,6 +65,37 @@
                 <div class="content-wrapper">
                     <!-- Content -->
                     {{ $slot }}
+
+                    @if (session()->has('success'))
+                        <script>
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: "{{ session('success') }}",
+                                confirmButtonColor: '#696cff',
+                            });
+                        </script>
+                    @endif
+                    @if (session()->has('error'))
+                        <script>
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal!",
+                                html: `{!! session('error') !!}`,
+                                confirmButtonColor: '#696cff',
+                            });
+                        </script>
+                    @endif
+                    @if ($errors->any())
+                        <script>
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                html: `{!! implode('<br>', $errors->all()) !!}`,
+                                confirmButtonColor: '#696cff',
+                            });
+                        </script>
+                    @endif
                     <!-- / Content -->
 
                     <!-- Footer -->
