@@ -4,8 +4,11 @@ namespace App\Imports;
 
 use App\Models\Mitra;
 use App\Models\Kegiatan;
+use Illuminate\Support\Arr;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class PetugasImport implements ToCollection
@@ -23,73 +26,87 @@ class PetugasImport implements ToCollection
 
     public function collection(Collection $collection)
     {
-        $kegiatan = Kegiatan::find($this->kegiatan_id);
-
-        $index = 1;
+        $kegiatan = Kegiatan::findOrFail($this->kegiatan_id);
         $processedNik = [];
+        $errors = [];
 
-        foreach ($collection as $row) {
-            if ($index > 1) {
-                if (empty($row[1]) && empty($row[2])) {
-                    $index++;
-                    continue;
-                }
+        DB::beginTransaction();
 
-                $nik = !empty($row[1]) ? $row[1] : '';
-                if (empty($nik)) {
-                    $index++;
+        try {
+            foreach ($collection as $index => $row) {
+                if ($index === 0) continue;
+
+                $nik                = trim(Arr::get($row, 1, ''));
+                $bertugas_sebagai   = trim(Arr::get($row, 3, ''));
+                $wilayah_tugas      = trim(Arr::get($row, 4, ''));
+                $beban_kerja        = (int) Arr::get($row, 5, 0);
+                $satuan_beban       = trim(Arr::get($row, 6, ''));
+
+                $validator = Validator::make([
+                    'nik'              => $nik,
+                    'bertugas_sebagai' => $bertugas_sebagai,
+                    'wilayah_tugas'    => $wilayah_tugas,
+                    'beban_kerja'      => $beban_kerja,
+                    'satuan_beban'     => $satuan_beban,
+                ], [
+                    'nik'              => 'required|exists:mitras,nik',
+                    'bertugas_sebagai' => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
+                    'wilayah_tugas'    => 'required|in:1201,1225',
+                    'beban_kerja'      => 'required|integer|min:1',
+                    'satuan_beban'     => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
+                ]);
+
+                if ($validator->fails()) {
+                    $errors[] = "Baris ke-" . ($index + 1) . ": " . implode(', ', $validator->errors()->all());
                     continue;
                 }
 
                 if (in_array($nik, $processedNik)) {
-                    return to_route('kegiatan.edit', $kegiatan->slug)
-                        ->with('error', 'Terdapat NIK yang sama di file excel pada baris ke-' . $index);
+                    $errors[] = "Baris ke-" . ($index + 1) . ": NIK {$nik} duplikat di file Excel.";
+                    continue;
                 }
 
                 $processedNik[] = $nik;
 
+                $nama_mitra = Mitra::where('nik', $nik)->get('nama_mitra')->first();
+
                 $cek_mitra = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
                     ->where('nik', $nik)
                     ->exists();
-
-                $mitra = Mitra::where('nik', $nik)->first();
-
-                if (!$mitra) {
-                    return to_route('kegiatan.edit', $kegiatan->slug)
-                        ->with('error', 'NIK ' . $nik . ' pada baris ke-' . $index . ' tidak ditemukan di database Mitra!');
-                }
-
                 if ($cek_mitra) {
-                    return to_route('kegiatan.edit', $kegiatan->slug)
-                        ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan ini! Silahkan cek File Excel yang diimport!');
+                    $errors[] = "Baris ke-" . ($index + 1) . ": {$nama_mitra} sudah terdaftar di kegiatan ini.";
+                    continue;
                 }
 
-                $bertugas_sebagai   = !empty($row[3]) ? $row[3] : '';
+                $honor = $wilayah_tugas == "1201"
+                    ? $kegiatan->honor_nias * $beban_kerja
+                    : $kegiatan->honor_nias_barat * $beban_kerja;
 
-                if (!($row[4] == '1201' || $row[4] == '1225')) {
-                    return to_route('kegiatan.edit', $kegiatan->slug)
-                        ->with('error', 'Terdapat kesalahan, pastikan wilayah_tugas di file excel bernilai 1201 atau 1225');
-                }
-
-                $wilayah_tugas          = !empty($row[4]) ? $row[4] : '';
-                $beban_kerja            = !empty($row[5]) ? $row[5] : '';
-                $satuan_beban_kerja     = !empty($row[6]) ? $row[6] : '';
-                $honor                  = ($wilayah_tugas == "1201") ? ($kegiatan->honor_nias * (int)$beban_kerja) : ($wilayah_tugas == "1225" ? ($kegiatan->honor_nias_barat * (int)$beban_kerja) : 0);
-
-                $data = [
-                    'nik'                   => $nik,
-                    'nama_mitra'            => $mitra->nama_mitra,
-                    'kegiatan_id'           => $kegiatan->id,
-                    'bertugas_sebagai'      => $bertugas_sebagai,
-                    'wilayah_tugas'         => $wilayah_tugas,
-                    'beban_kerja'           => (int)$beban_kerja,
-                    'satuan_beban_kerja'    => $satuan_beban_kerja,
-                    'honor'                 => $honor,
-                ];
-                PetugasKegiatan::create($data);
+                PetugasKegiatan::create([
+                    'nik'                => $nik,
+                    'nama_mitra'         => $nama_mitra,
+                    'kegiatan_id'        => $kegiatan->id,
+                    'bertugas_sebagai'   => $bertugas_sebagai,
+                    'wilayah_tugas'      => $wilayah_tugas,
+                    'beban_kerja'        => $beban_kerja,
+                    'satuan_beban_kerja' => $satuan_beban,
+                    'honor'              => $honor,
+                ]);
             }
-            $index++;
+
+            if (!empty($errors)) {
+                DB::rollBack();
+                return to_route('kegiatan.edit', $kegiatan->slug)
+                    ->with('error', implode('<br>', $errors));
+            }
+
+            DB::commit();
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('success', 'Petugas berhasil diimport!');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
         }
-        return to_route('kegiatan.edit', $kegiatan->slug)->with('success', 'Petugas berhasil diimport!');
     }
 }
