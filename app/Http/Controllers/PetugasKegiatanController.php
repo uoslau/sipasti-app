@@ -79,8 +79,8 @@ class PetugasKegiatanController extends Controller
             $request->all(),
             [
                 'bertugas_sebagai'      => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
-                'wilayah_tugas'         => 'required',
-                'beban_kerja'           => 'required|integer',
+                'wilayah_tugas'         => 'required|in:1201,1225',
+                'beban_kerja'           => 'required|integer|min:1',
                 'satuan_beban_kerja'    => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
             ],
             [
@@ -166,8 +166,8 @@ class PetugasKegiatanController extends Controller
             $request->all(),
             [
                 'bertugas_sebagai'      => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
-                'wilayah_tugas'         => 'required',
-                'beban_kerja'           => 'required|integer',
+                'wilayah_tugas'         => 'required|in:1201,1225',
+                'beban_kerja'           => 'required|integer|min:1',
                 'satuan_beban_kerja'    => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
             ]
         );
