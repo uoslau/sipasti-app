@@ -11,8 +11,6 @@ use App\Models\PetugasKegiatan;
 use App\Imports\PetugasImportUpdate;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StorePetugasKegiatanRequest;
-use App\Http\Requests\UpdatePetugasKegiatanRequest;
 
 class PetugasKegiatanController extends Controller
 {
@@ -27,6 +25,7 @@ class PetugasKegiatanController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('q');
+
         $mitra  = Mitra::where('nama_mitra', 'LIKE', '%' . $search . '%')->take(5)->get(['nik', 'nama_mitra']);
 
         return response()->json($mitra);
@@ -49,6 +48,7 @@ class PetugasKegiatanController extends Controller
         ]);
 
         $kegiatan_id    = Kegiatan::where('slug', $slug)->value('id');
+
         Excel::import(new PetugasImport($kegiatan_id), $validated_data['excel_file']);
 
         return redirect()->back();
@@ -63,6 +63,7 @@ class PetugasKegiatanController extends Controller
         ]);
 
         $kegiatan_id    = Kegiatan::where('slug', $slug)->value('id');
+
         Excel::import(new PetugasImportUpdate($kegiatan_id), $validated_data['excel_file']);
 
         return redirect()->back();
@@ -74,7 +75,9 @@ class PetugasKegiatanController extends Controller
     public function store(Request $request, Kegiatan $kegiatan)
     {
         $nik        = $request['nik'];
-        $mitra      = Mitra::where('nik', $nik)->first();
+
+        $mitra      = Mitra::where('nik', $nik)->firstOrFail();
+
         $validator  = Validator::make(
             $request->all(),
             [
@@ -102,27 +105,24 @@ class PetugasKegiatanController extends Controller
         $cek_mitra = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $nik)
             ->exists();
-
         if ($cek_mitra) {
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan ini!');
         }
 
         // Hitung honor berdasarkan wilayah tugas
-        if ($validated_data['wilayah_tugas'] == "1201") {
-            $honor_kegiatan = $kegiatan['honor_nias'] * $validated_data['beban_kerja'];
-        } else {
-            $honor_kegiatan = $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
-        }
+        $honor = $validated_data['wilayah_tugas'] == "1201"
+            ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
+            : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
 
         PetugasKegiatan::create([
-            'nik'                  => $nik,
+            'nik'                  => $mitra->nik,
             'kegiatan_id'          => $kegiatan->id,
             'bertugas_sebagai'     => $validated_data['bertugas_sebagai'],
             'wilayah_tugas'        => $validated_data['wilayah_tugas'],
             'beban_kerja'          => $validated_data['beban_kerja'],
             'satuan_beban_kerja'   => $validated_data['satuan_beban_kerja'],
-            'honor'                => $honor_kegiatan,
+            'honor'                => $honor,
         ]);
 
         return to_route('kegiatan.edit', $kegiatan->slug)
@@ -146,7 +146,7 @@ class PetugasKegiatanController extends Controller
         $petugas_kegiatan = $kegiatan->petugasKegiatan()
             ->where('nik', $petugasKegiatan->nik)
             ->with('mitra')
-            ->first();
+            ->firstOrFail();
 
         $wilayah_tugas = WilayahTugas::all();
 
@@ -181,11 +181,10 @@ class PetugasKegiatanController extends Controller
 
         $validated_data = $validator->validated();
 
-        if ($validated_data['wilayah_tugas'] == "1201") {
-            $honor_kegiatan = $kegiatan['honor_nias'];
-        } else {
-            $honor_kegiatan = $kegiatan['honor_nias_barat'];
-        }
+        // Hitung honor berdasarkan wilayah tugas
+        $honor = $validated_data['wilayah_tugas'] == "1201"
+            ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
+            : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
 
         PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $petugasKegiatan->nik)
@@ -194,7 +193,7 @@ class PetugasKegiatanController extends Controller
                 'wilayah_tugas'         => $validated_data['wilayah_tugas'],
                 'beban_kerja'           => $validated_data['beban_kerja'],
                 'satuan_beban_kerja'    => $validated_data['satuan_beban_kerja'],
-                'honor'                 => $validated_data['beban_kerja'] * $honor_kegiatan,
+                'honor'                 => $honor,
             ]);
 
         return to_route('kegiatan.edit', $kegiatan->slug)

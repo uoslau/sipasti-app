@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
 use App\Models\TimKerja;
-use Illuminate\Support\Str;
 use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Events\Validated;
-use App\Http\Requests\StoreKegiatanRequest;
 
 class KegiatanController extends Controller
 {
@@ -50,8 +47,8 @@ class KegiatanController extends Controller
     {
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         $request->merge([
-            'honor_nias' => $request->honor_nias ? str_replace('.', '', $request->honor_nias) : null,
-            'honor_nias_barat' => $request->honor_nias_barat ? str_replace('.', '', $request->honor_nias_barat) : null,
+            'honor_nias' => parseNominal($request->honor_nias),
+            'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
         $validatedData = $request->validate([
@@ -127,8 +124,8 @@ class KegiatanController extends Controller
     {
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         $request->merge([
-            'honor_nias' => $request->honor_nias ? str_replace('.', '', $request->honor_nias) : null,
-            'honor_nias_barat' => $request->honor_nias_barat ? str_replace('.', '', $request->honor_nias_barat) : null,
+            'honor_nias' => parseNominal($request->honor_nias),
+            'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
         $validatedData = $request->validate([
@@ -157,9 +154,7 @@ class KegiatanController extends Controller
                 'honor' => DB::raw('beban_kerja * ' . ($validatedData['honor_nias_barat'] ?? 0))
             ]);
 
-        $slug = $kegiatan->slug;
-
-        return to_route('kegiatan.edit', $slug)
+        return to_route('kegiatan.edit', $kegiatan->slug)
             ->with('success', 'Kegiatan berhasil diedit!');
     }
 
