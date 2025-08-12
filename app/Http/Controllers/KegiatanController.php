@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Kegiatan;
 use App\Models\TimKerja;
 use App\Models\WilayahTugas;
@@ -54,7 +55,19 @@ class KegiatanController extends Controller
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'tanggal_mulai'     => 'required|date',
-            'tanggal_selesai'   => 'required|date',
+            'tanggal_selesai'   => [
+                'required',
+                'date',
+                'after_or_equal:tanggal_mulai',
+                function ($attribute, $value, $fail) use ($request) {
+                    $tanggal_mulai      = Carbon::parse($request->tanggal_mulai);
+                    $tanggal_selesai    = Carbon::parse($value);
+
+                    if ($tanggal_mulai->month !== $tanggal_selesai->month || $tanggal_mulai->year !== $tanggal_selesai->year) {
+                        $fail('Tanggal mulai dan tanggal selesai harus dalam bulan yang sama.');
+                    }
+                },
+            ],
             'beban_anggaran'    => 'required|string|max:255',
             'tim_kerja_id'      => 'required',
             'honor_nias'        => 'nullable|integer',
@@ -131,7 +144,19 @@ class KegiatanController extends Controller
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'tanggal_mulai'     => 'required|date',
-            'tanggal_selesai'   => 'required|date',
+            'tanggal_selesai'   => [
+                'required',
+                'date',
+                'after_or_equal:tanggal_mulai',
+                function ($attribute, $value, $fail) use ($request) {
+                    $tanggal_mulai      = Carbon::parse($request->tanggal_mulai);
+                    $tanggal_selesai    = Carbon::parse($value);
+
+                    if ($tanggal_mulai->month !== $tanggal_selesai->month || $tanggal_mulai->year !== $tanggal_selesai->year) {
+                        $fail('Tanggal mulai dan tanggal selesai harus dalam bulan yang sama.');
+                    }
+                },
+            ],
             'beban_anggaran'    => 'required|string|max:255',
             'tim_kerja_id'      => 'required',
             'honor_nias'        => 'nullable|integer',

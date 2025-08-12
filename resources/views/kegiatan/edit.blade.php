@@ -171,7 +171,7 @@
                                             {{ formatNominal($p->honor) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <div class="dropdown">
                                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
                                                 data-bs-toggle="dropdown">
@@ -220,4 +220,19 @@
             input.value = value.slice(0, -1);
         }
     }
+</script>
+
+<script>
+    document.getElementById('tanggal_mulai').addEventListener('change', function() {
+        let mulai = new Date(this.value);
+        let year = mulai.getFullYear();
+        let month = String(mulai.getMonth() + 1).padStart(2, '0');
+
+        let minDate = this.value;
+        let maxDate = `${year}-${month}-${new Date(year, mulai.getMonth() + 1, 0).getDate()}`;
+
+        let selesai = document.getElementById('tanggal_selesai');
+        selesai.setAttribute('min', minDate);
+        selesai.setAttribute('max', maxDate);
+    });
 </script>
