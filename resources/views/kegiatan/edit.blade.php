@@ -4,7 +4,7 @@
             <div class="col-xl">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Edit Kegiatan - [Terakhir Diupdate : {{ $updated_at }}]</h5>
+                        <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('kegiatan.update', [$kegiatan->slug]) }}">
@@ -114,7 +114,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
             <div class="card-header d-flex align-items-center">
-                <h5 class="mb-0 me-2">Detail Petugas</h5>
+                <h5 class="mb-0 me-2">Detail Petugas {{ $petugas_kegiatan_updated_at }}</h5>
                 <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal"
                     data-bs-target="#addPetugasModal">
                     + Petugas

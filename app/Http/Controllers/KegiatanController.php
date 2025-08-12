@@ -96,14 +96,27 @@ class KegiatanController extends Controller
 
         $wilayah_tugas = WilayahTugas::all();
 
-        $updated_at = $kegiatan->updated_at ? $kegiatan->updated_at->format('d M Y H:i') : 'Belum ada update';
+        $kegiatan_updated_at = $kegiatan->created_at != $kegiatan->updated_at
+            ? '- [Terakhir Diupdate: ' . $kegiatan->updated_at->format('d M Y H:i') . ']'
+            : '';
+
+        $petugas_created_at = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+            ->orderBy('created_at', 'desc')
+            ->value('created_at');
+        $petugas_updated_at = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+            ->orderBy('updated_at', 'desc')
+            ->value('updated_at');
+        $petugas_kegiatan_updated_at = $petugas_created_at != $petugas_updated_at
+            ? '- [Terakhir Diupdate: ' . $petugas_updated_at->format('d M Y H:i') . ']'
+            : '';
 
         return view('kegiatan.edit', [
-            'kegiatan'          => $kegiatan,
-            'petugas_kegiatan'  => $petugas_kegiatan,
-            'wilayah_tugas'     => $wilayah_tugas,
-            'tim_kerja'         => $tim_kerja,
-            'updated_at'        => $updated_at,
+            'kegiatan'                      => $kegiatan,
+            'petugas_kegiatan'              => $petugas_kegiatan,
+            'wilayah_tugas'                 => $wilayah_tugas,
+            'tim_kerja'                     => $tim_kerja,
+            'kegiatan_updated_at'           => $kegiatan_updated_at,
+            'petugas_kegiatan_updated_at'   => $petugas_kegiatan_updated_at,
         ]);
     }
 
