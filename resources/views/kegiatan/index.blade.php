@@ -99,3 +99,5 @@
         </div>
     </div>
 </x-layout>
+
+<script src="{{ asset('js/confirm-delete.js') }}"></script>
