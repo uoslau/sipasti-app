@@ -62,5 +62,11 @@
                 <div class="text-truncate" data-i18n="Dashboards">Kegiatan</div>
             </a>
         </li>
+        <li class="menu-item {{ request()->is('kontrak*') ? 'active' : '' }}">
+            <a href="/kontrak" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div class="text-truncate" data-i18n="Dashboards">Kontrak Kerja (SPK)</div>
+            </a>
+        </li>
     </ul>
 </aside>

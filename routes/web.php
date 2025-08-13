@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\KontrakController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\PetugasKegiatanController;
 
@@ -39,3 +40,7 @@ Route::get('/download/{nama_file}', function ($nama_file) {
     }
     return Response::download($file_path, $nama_file);
 })->name('file.download');
+
+
+Route::get('/kontrak', [KontrakController::class, 'index'])
+    ->name('kontrak.index');
