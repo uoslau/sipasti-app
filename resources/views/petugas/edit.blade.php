@@ -87,7 +87,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-primary ms-auto">Edit Petugas</button>
+                            </div>
                         </form>
                     </div>
                 </div>

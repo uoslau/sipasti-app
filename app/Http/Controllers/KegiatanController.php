@@ -25,7 +25,7 @@ class KegiatanController extends Controller
             ->paginate(15);
 
         // mengambil data tim kerja untuk create kegiatan
-        $tim_kerja = TimKerja::select('id', 'nama_tim_kerja', 'alias_tim_kerja')->get();
+        $tim_kerja = TimKerja::all();
 
         return view('kegiatan.index', [
             'kegiatan'  => $kegiatan,
@@ -52,6 +52,7 @@ class KegiatanController extends Controller
             'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
+        // validasi inputan form
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'tanggal_mulai'     => 'required|date',
@@ -69,7 +70,7 @@ class KegiatanController extends Controller
                 },
             ],
             'beban_anggaran'    => 'required|string|max:255',
-            'tim_kerja_id'      => 'required',
+            'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
             'honor_nias_barat'  => 'nullable|integer',
         ]);
@@ -106,6 +107,7 @@ class KegiatanController extends Controller
 
         $wilayah_tugas = WilayahTugas::all();
 
+        // menambahkan keterangan waktu update kegiatan dan petugas_kegiatan
         $kegiatan_updated_at = $kegiatan->created_at != $kegiatan->updated_at
             ? '- [Terakhir Diupdate: ' . $kegiatan->updated_at->format('d M Y H:i') . ']'
             : '';
@@ -141,6 +143,7 @@ class KegiatanController extends Controller
             'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
+        // validasi inputan form
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'tanggal_mulai'     => 'required|date',
@@ -158,7 +161,7 @@ class KegiatanController extends Controller
                 },
             ],
             'beban_anggaran'    => 'required|string|max:255',
-            'tim_kerja_id'      => 'required',
+            'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
             'honor_nias_barat'  => 'nullable|integer',
         ]);
