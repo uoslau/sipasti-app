@@ -103,7 +103,7 @@ class KegiatanController extends Controller
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
-            ->paginate(15);
+            ->paginate(10);
 
         $wilayah_tugas = WilayahTugas::all();
 
