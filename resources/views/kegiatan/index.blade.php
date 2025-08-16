@@ -59,7 +59,7 @@
                                         {{ $k->tanggal_selesai }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-end">
                                     <div class="dropdown">
                                         <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
                                             data-bs-toggle="dropdown">

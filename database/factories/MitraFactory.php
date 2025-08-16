@@ -19,7 +19,7 @@ class MitraFactory extends Factory
         return [
             'nik' => $this->faker->unique()->numberBetween(1, 250),
             'nama_mitra' => $this->faker->name(),
-            'posisi' => $this->faker->jobTitle(),
+            'posisi' => $this->faker->randomElement(['Mitra Pendataan', 'Mitra Pengolahan', 'Mitra (Pendataan dan Pengolahan)']),
             'email' => $this->faker->unique()->safeEmail(),
             'alamat' => $this->faker->address(),
             'tanggal_lahir' => $this->faker->date(),
