@@ -23,6 +23,11 @@ class PetugasKegiatan extends Model
         return $this->belongsTo(Mitra::class, 'nik', 'nik');
     }
 
+    public function wilayahTugas()
+    {
+        return $this->belongsTo(WilayahTugas::class, 'kode_wilayah');
+    }
+
     public function getRouteKeyName()
     {
         return 'nik';
