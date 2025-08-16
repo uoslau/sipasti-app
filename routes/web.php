@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\KontrakController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\PetugasKegiatanController;
 
@@ -32,6 +33,8 @@ Route::post('/kegiatan/{kegiatan}/petugas-import', [PetugasKegiatanController::c
     ->name('petugas.import');
 Route::post('/kegiatan/{kegiatan}/petugas-import-update', [PetugasKegiatanController::class, 'import_update'])
     ->name('petugas.import_update');
+
+Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadKontrak'])->name('kontrak.download');
 
 Route::get('/download/{nama_file}', function ($nama_file) {
     $file_path = storage_path("app/public/template/{$nama_file}");
