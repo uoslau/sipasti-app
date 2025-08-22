@@ -4,7 +4,7 @@
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0">List Kegiatan</h5>
                 <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
-                    + Kegiatan
+                    Tambah
                 </a>
                 <div class="modal fade" id="addKegiatanModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
@@ -70,11 +70,15 @@
                                                 <a class="dropdown-item"
                                                     href="{{ route('kegiatan.edit', $k->slug) }}">Edit</a>
                                             </li>
-                                            <hr class="dropdown-divider" />
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
                                             <li>
                                                 <a class="dropdown-item" href="javascript:void(0);">Unduh</a>
                                             </li>
-                                            <hr class="dropdown-divider" />
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
                                             <li>
                                                 <form action="{{ route('kegiatan.destroy', $k->slug) }}" method="POST"
                                                     class="delete-form">

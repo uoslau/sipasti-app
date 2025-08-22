@@ -25,7 +25,7 @@
         <div class="tab-content border-top">
             {{-- form --}}
             <div class="tab-pane fade show active" id="navs-pills-top-form" role="tabpanel">
-                <form method="POST" action="{{ route('petugas.store', $kegiatan->slug) }}">
+                <form method="POST" id="form-tambah-petugas" action="{{ route('petugas.store', $kegiatan->slug) }}">
                     @csrf
                     {{-- nama mitra --}}
                     <div class="row">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary"><i class='bx bx-user-plus'></i> Tambah</button>
+                        <button type="submit" class="btn btn-primary">Tambah</button>
                     </div>
                 </form>
             </div>
