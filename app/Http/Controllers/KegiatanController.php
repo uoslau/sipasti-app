@@ -47,6 +47,7 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
+        // dd($request);
         $request->merge([
             'honor_nias' => parseNominal($request->honor_nias),
             'honor_nias_barat' => parseNominal($request->honor_nias_barat),
@@ -55,6 +56,7 @@ class KegiatanController extends Controller
         // validasi inputan form
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
+            'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
             'tanggal_selesai'   => [
                 'required',
@@ -146,6 +148,7 @@ class KegiatanController extends Controller
         // validasi inputan form
         $validatedData = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
+            'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
             'tanggal_selesai'   => [
                 'required',
@@ -169,17 +172,17 @@ class KegiatanController extends Controller
         Kegiatan::where('id', $kegiatan->id)
             ->update($validatedData);
 
-        // Update honor berdasarkan wilayah tugas
+        // Update honor berdasarkan wilayah tugas& cek apakah merupakan kegiatan O-B
         PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('wilayah_tugas', '1201')
             ->update([
-                'honor' => DB::raw('beban_kerja * ' . ($validatedData['honor_nias'] ?? 0))
+                'honor' => $validatedData['is_ob'] ? ($validatedData['honor_nias']) : DB::raw('beban_kerja * ' . ($validatedData['honor_nias'] ?? 0))
             ]);
 
         PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('wilayah_tugas', '1225')
             ->update([
-                'honor' => DB::raw('beban_kerja * ' . ($validatedData['honor_nias_barat'] ?? 0))
+                'honor' => $validatedData['is_ob'] ? ($validatedData['honor_nias_barat']) : DB::raw('beban_kerja * ' . ($validatedData['honor_nias_barat'] ?? 0))
             ]);
 
         return to_route('kegiatan.edit', $kegiatan->slug)

@@ -33,7 +33,7 @@ class Kegiatan extends Model
 
     public function petugasKegiatan()
     {
-        return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id', 'id');
+        return $this->hasMany(PetugasKegiatan::class, 'kegiatan_id', 'id')->whereNull('deleted_at');
     }
 
     protected static function booted()

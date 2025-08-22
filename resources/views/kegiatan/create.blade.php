@@ -6,13 +6,24 @@
             <div class="col-md-12">
                 <div class="mb-6">
                     <label class="form-label" for="nama_kegiatan">Nama Kegiatan</label>
-                    <input type="text" class="form-control @error('nama_kegiatan') is-invalid @enderror"
-                        id="nama_kegiatan" name="nama_kegiatan"
-                        placeholder="Gunakan Huruf Kapital Untuk Setiap Awal Kata" required autofocus
-                        value="{{ old('nama_kegiatan') }}" />
-                    @error('nama_kegiatan')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input type="hidden" name="is_ob" value="0">
+                            <input class="form-check-input mt-0" type="checkbox" name="is_ob" value="1"
+                                aria-label="Checkbox for following text input"
+                                {{ old('is_ob') == '1' ? 'checked' : '' }} />
+                        </div>
+                        <input type="text" class="form-control @error('nama_kegiatan') is-invalid @enderror"
+                            id="nama_kegiatan" name="nama_kegiatan"
+                            placeholder="Gunakan Huruf Kapital Untuk Setiap Awal Kata" required autofocus
+                            value="{{ old('nama_kegiatan') }}" aria-describedby="defaultFormControlHelp" />
+                        @error('nama_kegiatan')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div id="defaultFormControlHelp" class="form-text">
+                        (centang checkbox jika merupakan kegiatan O-B)
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,7 +98,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">+ Kegiatan</button>
+            <button type="submit" class="btn btn-primary">Tambah</button>
         </div>
     </form>
 </div>

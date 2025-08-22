@@ -110,10 +110,34 @@ class PetugasKegiatanController extends Controller
                 ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan ini!');
         }
 
-        // Hitung honor berdasarkan wilayah tugas
-        $honor = $validated_data['wilayah_tugas'] == "1201"
-            ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
-            : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
+        if (!$request->has('bypass_ob_check')) {
+            $bulan_kegiatan_baru = \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('m');
+            $tahun_kegiatan_baru = \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('Y');
+
+            $cek_kegiatan_ob = PetugasKegiatan::where('nik', $nik)
+                ->whereHas('kegiatan', function ($query) use ($bulan_kegiatan_baru, $tahun_kegiatan_baru) {
+                    $query->where('is_ob', true)
+                        ->whereRaw('MONTH(tanggal_mulai) = ?', [$bulan_kegiatan_baru])
+                        ->whereRaw('YEAR(tanggal_mulai) = ?', [$tahun_kegiatan_baru]);
+                })
+                ->exists();
+
+            if ($cek_kegiatan_ob) {
+                return to_route('kegiatan.edit', $kegiatan->slug)
+                    ->with('warning', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan O-B pada bulan ini.')
+                    ->withInput();
+            }
+        }
+
+        // Hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
+        if ($kegiatan->is_ob) {
+            $honor = $validated_data['wilayah_tugas'] == "1201"
+                ? $kegiatan->honor_nias : $kegiatan->honor_nias_barat;
+        } else {
+            $honor = $validated_data['wilayah_tugas'] == "1201"
+                ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
+                : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
+        }
 
         PetugasKegiatan::create([
             'nik'                  => $mitra->nik,
@@ -181,10 +205,15 @@ class PetugasKegiatanController extends Controller
 
         $validated_data = $validator->validated();
 
-        // Hitung honor berdasarkan wilayah tugas
-        $honor = $validated_data['wilayah_tugas'] == "1201"
-            ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
-            : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
+        // Hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
+        if ($kegiatan->is_ob) {
+            $honor = $validated_data['wilayah_tugas'] == "1201"
+                ? $kegiatan->honor_nias : $kegiatan->honor_nias_barat;
+        } else {
+            $honor = $validated_data['wilayah_tugas'] == "1201"
+                ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
+                : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
+        }
 
         PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $petugasKegiatan->nik)

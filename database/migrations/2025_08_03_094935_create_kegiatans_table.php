@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('kegiatans', function (Blueprint $table) {
             $table->id();
             $table->string('nama_kegiatan');
+            $table->boolean('is_ob')->default(false)->nullable();
             $table->string('slug')->unique();
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
