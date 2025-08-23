@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\KontrakController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\NomorKontrakController;
 use App\Http\Controllers\PetugasKegiatanController;
 
 Route::get('/kegiatan', [KegiatanController::class, 'index'])
@@ -33,6 +34,9 @@ Route::post('/kegiatan/{kegiatan}/petugas-import', [PetugasKegiatanController::c
     ->name('petugas.import');
 Route::post('/kegiatan/{kegiatan}/petugas-import-update', [PetugasKegiatanController::class, 'import_update'])
     ->name('petugas.import_update');
+
+Route::post('/kegiatan/{kegiatan}/edit-kegiatan/generate', [NomorKontrakController::class, 'generate'])
+    ->name('kontrak.generate');
 
 Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadKontrak'])->name('kontrak.download');
 

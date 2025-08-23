@@ -4,7 +4,7 @@
             <div class="card-header d-flex align-items-center">
                 <h5 class="mb-0">List Kegiatan</h5>
                 <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
-                    Tambah
+                    Tambah Kegiatan
                 </a>
                 <div class="modal fade" id="addKegiatanModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
@@ -74,7 +74,8 @@
                                                 <hr class="dropdown-divider" />
                                             </li>
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);">Unduh</a>
+                                                <a class="dropdown-item {{ $k->is_generated ? '' : 'disabled' }}"
+                                                    href="javascript:void(0);">Unduh</a>
                                             </li>
                                             <li>
                                                 <hr class="dropdown-divider" />

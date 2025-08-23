@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('tim_kerja_id')->constrained('tim_kerjas')->onDelete('cascade');
             $table->integer('honor_nias')->nullable();
             $table->integer('honor_nias_barat')->nullable();
+            $table->boolean('is_generated')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

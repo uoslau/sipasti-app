@@ -19,7 +19,7 @@ class KegiatanController extends Controller
     {
         // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
         $kegiatan = Kegiatan::with(['petugasKegiatan', 'timKerja'])
-            ->select('nama_kegiatan', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
+            ->select('nama_kegiatan', 'is_generated', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
             ->withSum('petugasKegiatan', 'honor')
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -105,7 +105,7 @@ class KegiatanController extends Controller
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
-            ->paginate(10);
+            ->paginate(15);
 
         $wilayah_tugas = WilayahTugas::all();
 

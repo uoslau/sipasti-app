@@ -14,6 +14,10 @@ class Kegiatan extends Model
 
     protected $guarded = ['id', 'slug'];
 
+    protected $casts = [
+        'is_generated' => 'boolean',
+    ];
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
@@ -39,7 +43,9 @@ class Kegiatan extends Model
     protected static function booted()
     {
         static::deleting(function ($kegiatan) {
-            $kegiatan->PetugasKegiatan()->delete();
+            foreach ($kegiatan->petugasKegiatan as $petugas) {
+                $petugas->delete();
+            }
         });
     }
 }

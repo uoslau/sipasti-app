@@ -1,24 +1,25 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
-        <div class="demo-inline-spacing">
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary">Generate</button>
-                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="javascript:void(0);">Action</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Something else here</a></li>
-                    <li>
-                        <hr class="dropdown-divider" />
-                    </li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Separated link</a></li>
-                </ul>
-            </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Aksi
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item {{ $kegiatan->is_generated ? 'disabled' : '' }}" href="javascript:void(0);"
+                        onclick="confirmGenerate()">Generate</a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item {{ $kegiatan->is_generated ? '' : 'disabled' }}"
+                        href="javascript:void(0);">Unduh</a></li>
+            </ul>
         </div>
+        <form id="generate-kontrak" action="{{ route('kontrak.generate', $kegiatan->slug) }}" method="POST"
+            style="display: none;">
+            @csrf
+        </form>
     </div>
     <div class="card-body">
         <form method="POST" action="{{ route('kegiatan.update', [$kegiatan->slug]) }}">
@@ -122,8 +123,10 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <button type="submit" class="btn btn-primary ms-auto">Edit</button>
+                <button type="submit" class="btn btn-primary ms-auto">Edit Kegiatan</button>
             </div>
         </form>
     </div>
 </div>
+
+<script src="{{ asset('js/confirm-generate.js') }}"></script>

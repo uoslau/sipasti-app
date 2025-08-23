@@ -2,7 +2,7 @@
     <div class="card-header d-flex align-items-center">
         <h5 class="mb-0 me-2">Detail Petugas {{ $petugas_kegiatan_updated_at }}</h5>
         <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
-            Tambah
+            Tambah Petugas
         </a>
         <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -55,7 +55,7 @@
                                     {{ formatNominal($p->honor) }}
                                 </span>
                             </td>
-                            <td class="text-center">
+                            <td class="text-end">
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
                                         data-bs-toggle="dropdown">

@@ -28,8 +28,21 @@ class PetugasKegiatan extends Model
         return $this->belongsTo(WilayahTugas::class, 'kode_wilayah');
     }
 
+    public function nomorKontrak()
+    {
+        return $this->hasMany(NomorKontrak::class, 'nik', 'nik')
+            ->where('kegiatan_id', $this->kegiatan_id);
+    }
+
     public function getRouteKeyName()
     {
         return 'nik';
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($petugasKegiatan) {
+            $petugasKegiatan->nomorKontrak()->delete();
+        });
     }
 }
