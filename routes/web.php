@@ -38,6 +38,7 @@ Route::post('/kegiatan/{kegiatan}/petugas-import-update', [PetugasKegiatanContro
 Route::post('/kegiatan/{kegiatan}/edit-kegiatan/generate', [NomorKontrakController::class, 'generate'])
     ->name('kontrak.generate');
 
+Route::get('/kegiatan/download/{kegiatan}', [DownloadController::class, 'downloadBAST'])->name('kegiatan.download');
 Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadKontrak'])->name('kontrak.download');
 
 Route::get('/download/{nama_file}', function ($nama_file) {

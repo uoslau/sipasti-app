@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Kegiatan;
 use App\Models\TimKerja;
+use App\Models\NomorKontrak;
 use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
@@ -54,7 +55,7 @@ class KegiatanController extends Controller
         ]);
 
         // validasi inputan form
-        $validatedData = $request->validate([
+        $validated_data = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
@@ -77,7 +78,7 @@ class KegiatanController extends Controller
             'honor_nias_barat'  => 'nullable|integer',
         ]);
 
-        Kegiatan::create($validatedData);
+        Kegiatan::create($validated_data);
 
         return to_route('kegiatan.index')
             ->with('success', 'Kegiatan berhasil ditambahkan!');
@@ -145,8 +146,7 @@ class KegiatanController extends Controller
             'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
-        // validasi inputan form
-        $validatedData = $request->validate([
+        $validated_data = $request->validate([
             'nama_kegiatan'     => 'required|string|max:255',
             'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
@@ -169,24 +169,53 @@ class KegiatanController extends Controller
             'honor_nias_barat'  => 'nullable|integer',
         ]);
 
-        Kegiatan::where('id', $kegiatan->id)
-            ->update($validatedData);
+        // update nomor kontrak apabila terjadi perubahan bulan kegiatan
+        $old_tanggal_mulai = $kegiatan->tanggal_mulai;
 
-        // Update honor berdasarkan wilayah tugas& cek apakah merupakan kegiatan O-B
-        PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-            ->where('wilayah_tugas', '1201')
-            ->update([
-                'honor' => $validatedData['is_ob'] ? ($validatedData['honor_nias']) : DB::raw('beban_kerja * ' . ($validatedData['honor_nias'] ?? 0))
-            ]);
+        DB::beginTransaction();
+        try {
+            $kegiatan->update($validated_data);
 
-        PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-            ->where('wilayah_tugas', '1225')
-            ->update([
-                'honor' => $validatedData['is_ob'] ? ($validatedData['honor_nias_barat']) : DB::raw('beban_kerja * ' . ($validatedData['honor_nias_barat'] ?? 0))
-            ]);
+            // periksa apakah bulan di tanggal mulai berubah dan nomor kontrak sudah pernah digenerate
+            if (Carbon::parse($old_tanggal_mulai)->format('Ym') !== Carbon::parse($validated_data['tanggal_mulai'])->format('Ym') && $kegiatan->is_generated) {
 
-        return to_route('kegiatan.edit', $kegiatan->slug)
-            ->with('success', 'Kegiatan berhasil diedit!');
+                NomorKontrak::where('kegiatan_id', $kegiatan->id)->delete();
+
+                $kegiatan->is_generated = false;
+                $kegiatan->save();
+
+                // generate ulang nomor kontrak
+                $nomorKontrakController = new NomorKontrakController();
+                $nomorKontrakController->generate($kegiatan);
+            }
+
+            // update honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
+            PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+                ->where('wilayah_tugas', '1201')
+                ->update([
+                    'honor' => $validated_data['is_ob'] ? ($validated_data['honor_nias']) : DB::raw('beban_kerja * ' . ($validated_data['honor_nias'] ?? 0))
+                ]);
+
+            PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
+                ->where('wilayah_tugas', '1225')
+                ->update([
+                    'honor' => $validated_data['is_ob'] ? ($validated_data['honor_nias_barat']) : DB::raw('beban_kerja * ' . ($validated_data['honor_nias_barat'] ?? 0))
+                ]);
+
+            DB::commit();
+
+            if (isset($nomorKontrakController)) {
+                return to_route('kegiatan.edit', $kegiatan->slug)
+                    ->with('success', 'Kegiatan berhasil diedit! Nomor kontrak dan BAST juga telah disesuaikan.');
+            }
+
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('success', 'Kegiatan berhasil diedit!');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Terjadi kesalahan saat memperbarui kegiatan: ' . $th->getMessage());
+        }
     }
 
     /**

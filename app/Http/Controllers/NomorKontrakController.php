@@ -31,13 +31,15 @@ class NomorKontrakController extends Controller
                     ->with('error', 'Belum ada petugas di kegiatan ini!');
             }
 
+            // ambil nomor kontrak terakhir dalam satu tahun
+            $last_nomor_kontrak = NomorKontrak::where('tahun', $tahun)
+                ->max('nomor_kontrak') ?? 0;
+
+            // untuk nomor bast, selalu increment (unik) dari nomor bast terakhir di tahun yang sama
+            $last_nomor_bast = NomorKontrak::where('tahun', $tahun)
+                ->max('nomor_bast') ?? 0;
+
             foreach ($petugas_kegiatan as $p) {
-                // ambil nomor kontrak terakhir dalam satu tahun
-                $last_nomor_kontrak = NomorKontrak::where('tahun', $tahun)->max('nomor_kontrak');
-
-                // cek nomor kontrak terkahir, jika tidak ada, mulai dari 1
-                $nomor_kontrak = $last_nomor_kontrak ? $last_nomor_kontrak + 1 : 1;
-
                 // cek kontrak petugas di bulan dan tahun yang sama
                 // 1 peutgas hanya boleh punya 1 kontrak di bulan yang sama
                 $cek_kontrak_petugas = NomorKontrak::where('nik', $p->nik)
@@ -46,14 +48,15 @@ class NomorKontrakController extends Controller
                     ->first();
 
                 // jika sudah ada, gunakan nomor kontrak yang sama
-                $ins_nomor_kontrak = $cek_kontrak_petugas ? $cek_kontrak_petugas->nomor_kontrak : $nomor_kontrak;
+                if ($cek_kontrak_petugas) {
+                    $ins_nomor_kontrak = $cek_kontrak_petugas->nomor_kontrak;
+                } else {
+                    $last_nomor_kontrak++;
+                    $ins_nomor_kontrak = $last_nomor_kontrak;
+                }
 
-                // untuk nomor bast, selalu increment (unique) dari nomor bast terakhir di tahun yang sama
-                $last_nomor_bast = NomorKontrak::where('tahun', $tahun)->max('nomor_bast');
-
-                $nomor_bast = $last_nomor_bast ? $last_nomor_bast + 1 : 1;
-
-                $ins_nomor_bast = $nomor_bast;
+                $last_nomor_bast++;
+                $ins_nomor_bast = $last_nomor_bast;
 
                 NomorKontrak::create([
                     'nik'                => $p->nik,

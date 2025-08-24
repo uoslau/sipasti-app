@@ -205,7 +205,7 @@ class PetugasKegiatanController extends Controller
 
         $validated_data = $validator->validated();
 
-        // Hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
+        // hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
         if ($kegiatan->is_ob) {
             $honor = $validated_data['wilayah_tugas'] == "1201"
                 ? $kegiatan->honor_nias : $kegiatan->honor_nias_barat;

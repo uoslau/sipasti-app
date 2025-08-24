@@ -12,6 +12,11 @@ class NomorKontrak extends Model
 
     protected $guarded = ['id'];
 
+    public function petugasKegiatan()
+    {
+        return $this->belongsTo(PetugasKegiatan::class, 'nik', 'nik');
+    }
+
     public function getFullNomorKontrakAttribute()
     {
         return str_pad($this->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $this->tahun;

@@ -1,4 +1,3 @@
-// script ini untuk menampilkan sweetalert2 ketika user menakan tombol hapus di menu kegiatan
 document.addEventListener("DOMContentLoaded", function () {
     const deleteButtons = document.querySelectorAll(".btn-delete-kegiatan");
 
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// script ini untuk menampilkan sweetalert2 ketika user menakan tombol hapus di menu edit kegiatan
 document.addEventListener("DOMContentLoaded", function () {
     const deleteButtons = document.querySelectorAll(".btn-delete-petugas");
 

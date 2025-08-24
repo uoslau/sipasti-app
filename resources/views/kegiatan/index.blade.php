@@ -75,7 +75,7 @@
                                             </li>
                                             <li>
                                                 <a class="dropdown-item {{ $k->is_generated ? '' : 'disabled' }}"
-                                                    href="javascript:void(0);">Unduh</a>
+                                                    href="{{ route('kegiatan.download', $k->slug) }}">Unduh</a>
                                             </li>
                                             <li>
                                                 <hr class="dropdown-divider" />
