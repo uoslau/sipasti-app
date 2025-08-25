@@ -13,7 +13,7 @@
                     <hr class="dropdown-divider" />
                 </li>
                 <li><a class="dropdown-item {{ $kegiatan->is_generated ? '' : 'disabled' }}"
-                        href="javascript:void(0);">Unduh</a></li>
+                        href="{{ route('kegiatan.download', $kegiatan->slug) }}">Unduh</a></li>
             </ul>
         </div>
         <form id="generate-kontrak" action="{{ route('kontrak.generate', $kegiatan->slug) }}" method="POST"

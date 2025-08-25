@@ -23,7 +23,7 @@ class NomorKontrakController extends Controller
             $tahun = \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('Y');
             $bulan = \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('m');
 
-            $petugas_kegiatan = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)->get();
+            $petugas_kegiatan = $kegiatan->petugasKegiatan()->get();
 
             if ($petugas_kegiatan->isEmpty()) {
                 DB::rollBack();
@@ -59,12 +59,12 @@ class NomorKontrakController extends Controller
                 $ins_nomor_bast = $last_nomor_bast;
 
                 NomorKontrak::create([
-                    'nik'                => $p->nik,
-                    'kegiatan_id'        => $kegiatan->id,
-                    'tahun'              => $tahun,
-                    'bulan'              => $bulan,
-                    'nomor_kontrak'      => $ins_nomor_kontrak,
-                    'nomor_bast'         => $ins_nomor_bast,
+                    'nik'                   => $p->nik,
+                    'kegiatan_id'           => $kegiatan->id,
+                    'tahun'                 => $tahun,
+                    'bulan'                 => $bulan,
+                    'nomor_kontrak'         => $ins_nomor_kontrak,
+                    'nomor_bast'            => $ins_nomor_bast,
                 ]);
             }
 

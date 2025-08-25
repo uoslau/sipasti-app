@@ -105,6 +105,7 @@ class PetugasKegiatanController extends Controller
         $cek_mitra = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $nik)
             ->exists();
+
         if ($cek_mitra) {
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' sudah terdaftar di kegiatan ini!');

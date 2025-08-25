@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\NumberToWords;
 use ZipArchive;
 use Carbon\Carbon;
 use App\Models\Kegiatan;
 use Illuminate\Http\Request;
+use App\Helpers\NumberToWords;
+use App\Models\PetugasKegiatan;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class DownloadController extends Controller
@@ -22,10 +23,9 @@ class DownloadController extends Controller
                 ->with('error', 'BAST belum bisa diunduh karena nomor belum digenerate.');
         }
 
-        $petugas_kegiatan = $kegiatan->petugasKegiatan()
-            ->with(['mitra', 'nomorKontrak' => function ($query) use ($kegiatan) {
-                $query->where('kegiatan_id', $kegiatan->id);
-            }])
+        $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', 'petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
+            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+            ->select('petugas_kegiatans.*', 'nomor_kontraks.nomor_kontrak', 'nomor_kontraks.nomor_bast')
             ->get();
 
         if ($petugas_kegiatan->isEmpty()) {
@@ -41,7 +41,6 @@ class DownloadController extends Controller
         }
 
         $zip = new ZipArchive();
-
         $zip_file_name = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
 
         if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -59,7 +58,7 @@ class DownloadController extends Controller
             : $base_tanggal;
 
         $tanggal_kontrak    = $tanggal_kontrak_full->format('d');
-        $bulan_kontrak      = $tanggal_kontrak_full->format('m');
+        $bulan_kontrak      = NumberToWords::monthName($tanggal_kontrak_full->format('m'));
         $tahun_kontrak      = $tanggal_kontrak_full->format('Y');
 
         $tanggal_kegiatan   = $base_tanggal_kegiatan->format('d');
@@ -79,26 +78,29 @@ class DownloadController extends Controller
         foreach ($petugas_kegiatan as $p) {
             $templateProcessor = new TemplateProcessor($template_path);
 
+            $full_nomor_bast = str_pad($p->nomor_bast, 3, '0', STR_PAD_LEFT) . "/1201_BAST/" . $tahun_bast;
+            $full_nomor_kontrak = str_pad($p->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $tahun_kontrak;
+
             $data = [
-                'bulan_kegiatan_kapital' => strtoupper($bulan_kegiatan),
-                'tahun_kegiatan' => $tahun_kegiatan,
-                'nomor_bast' => optional($p->nomorKontrak->first())->nomor_bast,
-                'hari' => $hari_bast,
-                'tanggal_terbilang' => $tanggal_bast_terbilang,
-                'bulan' => $bulan_bast,
-                'tahun_terbilang' => $tahun_bast_terbilang,
-                'nama_mitra' => ucwords(strtolower($p->mitra->nama_mitra)),
-                'alamat' => $p->mitra->alamat_mitra,
-                'bulan_kegiatan' => $bulan_kegiatan,
-                'tanggal_kegiatan' => $tanggal_kegiatan,
-                'nomor_kontrak' => optional($p->nomorKontrak->first())->nomor_kontrak,
-                'tanggal_kontrak' => $tanggal_kontrak,
-                'bulan_kontrak' => $bulan_kontrak,
-                'tahun_kontrak' => $tahun_kontrak,
-                'nama_kegiatan' => $kegiatan->nama_kegiatan,
-                'beban' => $p->beban_kerja,
-                'satuan' => $p->satuan_beban_kerja,
-                'tim_kerja' => $p->kegiatan->timKerja->alias_tim_kerja,
+                'bulan_kegiatan_kapital'    => strtoupper($bulan_kegiatan),
+                'tahun_kegiatan'            => $tahun_kegiatan,
+                'nomor_bast'                => $full_nomor_bast,
+                'hari'                      => $hari_bast,
+                'tanggal_terbilang'         => $tanggal_bast_terbilang,
+                'bulan'                     => $bulan_bast,
+                'tahun_terbilang'           => $tahun_bast_terbilang,
+                'nama_mitra'                => ucwords(strtolower($p->mitra->nama_mitra)),
+                'alamat'                    => $p->mitra->alamat,
+                'bulan_kegiatan'            => $bulan_kegiatan,
+                'tanggal_kegiatan'          => $tanggal_kegiatan,
+                'nomor_kontrak'             => $full_nomor_kontrak,
+                'tanggal_kontrak'           => $tanggal_kontrak,
+                'bulan_kontrak'             => $bulan_kontrak,
+                'tahun_kontrak'             => $tahun_kontrak,
+                'nama_kegiatan'             => $kegiatan->nama_kegiatan,
+                'beban'                     => $p->beban_kerja,
+                'satuan'                    => $p->satuan_beban_kerja,
+                'tim_kerja'                 => $p->kegiatan->timKerja->alias_tim_kerja,
             ];
 
             foreach ($data as $key => $value) {
