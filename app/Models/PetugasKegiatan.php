@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class PetugasKegiatan extends Model
 {
@@ -30,8 +32,20 @@ class PetugasKegiatan extends Model
 
     public function nomorKontrak()
     {
-        return $this->hasMany(NomorKontrak::class, 'nik', 'nik')
+        return $this->hasOne(NomorKontrak::class, 'nik', 'nik')
             ->where('kegiatan_id', $this->kegiatan_id);
+    }
+
+    public function timKerja(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            TimKerja::class,
+            Kegiatan::class,
+            'id', // Foreign key di tabel Kegiatan
+            'id', // Foreign key di tabel TimKerja
+            'kegiatan_id', // Local key di tabel PetugasKegiatan
+            'tim_kerja_id' // Local key di tabel Kegiatan
+        );
     }
 
     public function getRouteKeyName()

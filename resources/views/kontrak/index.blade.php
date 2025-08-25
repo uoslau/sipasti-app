@@ -24,8 +24,7 @@
                             <input class="form-control" type="search" value="Cari mitra ..." id="filter-nama" />
                         </div>
                     </div>
-                    <a href="#" id="downloadButton" class="btn btn-primary ms-auto"><i
-                            class="bx bxs-download me-1"></i>Kontrak</a>
+                    <a href="#" id="downloadButton" class="btn btn-primary ms-auto">Download Kontrak</a>
                 </div>
             </form>
             @if ($petugas_bulan->isEmpty())
