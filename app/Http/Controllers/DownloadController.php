@@ -8,6 +8,7 @@ use App\Models\Kegiatan;
 use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class DownloadController extends Controller
@@ -152,7 +153,7 @@ class DownloadController extends Controller
 
     public function downloadSPK(Request $request, $slug)
     {
-        // ambil daftar NIK petugas yang dipilih dari query parameter 'ids'
+        // ambil daftar nik petugas yang dipilih dari query parameter ids
         $selected_petugas = $request->query('ids') ? explode(',', $request->query('ids')) : [];
 
         if (empty($selected_petugas)) {
@@ -170,7 +171,7 @@ class DownloadController extends Controller
             ->whereMonth('kegiatans.tanggal_mulai', $date->format('m'))
             ->whereYear('kegiatans.tanggal_mulai', $date->format('Y'))
             ->whereIn('petugas_kegiatans.nik', $selected_petugas)
-            ->select('petugas_kegiatans.*', 'kegiatans.nama_kegiatan', 'kegiatans.tim_kerja_id', 'kegiatans.is_ob', 'kegiatans.tanggal_mulai', 'kegiatans.tanggal_selesai', 'nomor_kontraks.nomor_kontrak', 'nomor_kontraks.nomor_bast', 'mitras.*')
+            ->select('petugas_kegiatans.*', 'kegiatans.nama_kegiatan', 'kegiatans.tim_kerja_id', 'kegiatans.is_ob', 'kegiatans.tanggal_mulai', 'kegiatans.tanggal_selesai', 'kegiatans.beban_anggaran', 'nomor_kontraks.nomor_kontrak', 'mitras.*')
             ->get();
 
         $rekap_kegiatan_petugas_bulan = [];
@@ -181,11 +182,13 @@ class DownloadController extends Controller
 
             if (!isset($rekap_kegiatan_petugas_bulan[$petugas->nik])) {
                 $rekap_kegiatan_petugas_bulan[$petugas->nik] = [
+                    'petugas'          => $petugas->nama_mitra,
                     'kegiatan'         => [],
                 ];
             }
             $rekap_kegiatan_petugas_bulan[$petugas->nik]['kegiatan'][] = $petugas;
         }
+        dd($rekap_kegiatan_petugas_bulan); // IGNORE
 
         $template_path = storage_path('app/public/template/template_kontrak.docx');
 
@@ -207,6 +210,96 @@ class DownloadController extends Controller
 
         foreach ($rekap_kegiatan_petugas_bulan as $r) {
             $templateProcessor = new TemplateProcessor($template_path);
+
+            $base_tanggal_kegiatan = Carbon::parse($r['kegiatan'][0]->tanggal_mulai);
+            $base_tanggals = $base_tanggal_kegiatan->copy()->startOfMonth();
+            $base_tanggal = ($base_tanggals->isStartOfYear()) ? $base_tanggals->nextWeekday() : $base_tanggals;
+            $tanggal_kontrak_full = ($base_tanggal->isSaturday() || $base_tanggal->isSunday())
+                ? $base_tanggal->previousWeekday()
+                : $base_tanggal;
+
+            $tanggal_kontrak    = $tanggal_kontrak_full->format('d');
+            $hari_kontrak       = NumberToWords::dayName($tanggal_kontrak_full->format('l'));
+            $bulan_kontrak      = NumberToWords::monthName($tanggal_kontrak_full->format('m'));
+            $tahun_kontrak      = $tanggal_kontrak_full->format('Y');
+
+            $jadwal_kegiatan = Carbon::createFromFormat('Y-m-d', $r['kegiatan'][0]->tanggal_mulai);
+            $tanggal_kegiatan = $jadwal_kegiatan->format('d');
+            $bulan_kegiatan = NumberToWords::monthName($jadwal_kegiatan->format('m'));
+            $tahun_kegiatan = $jadwal_kegiatan->format('Y');
+
+            $list_petugas = $r['kegiatan'];
+            $wilayah_tugas = $list_petugas[0]->wilayah_tugas;
+            $nik = $list_petugas[0]->nik;
+            $posisi_petugas = $list_petugas[0]->posisi_petugas;
+
+            $data_honor = DB::table('wilayah_tugas')
+                ->where('kode_wilayah', $wilayah_tugas)
+                ->select('honor_pendataan', 'honor_pengolahan')
+                ->first();
+
+            if ($posisi_petugas === 'Mitra Pendataan') {
+                $honor_max = $data_honor->honor_pendataan;
+            } elseif ($posisi_petugas === 'Mitra Pengolahan') {
+                $honor_max = $data_honor->honor_pengolahan;
+            } elseif ($posisi_petugas === 'Mitra (Pendataan dan Pengolahan)') {
+                $has_pengolahan = collect($list_petugas)->contains('tim_kerja_id', 1);
+                $honor_max = $has_pengolahan ? $data_honor->honor_pengolahan : $data_honor->honor_pendataan;
+            }
+
+            dd($honor_max); // IGNORE
+
+            $total_honor = array_sum(array_column($list_petugas, 'honor'));
+
+            $total_honor_dibayar = ($total_honor > $honor_max) ? $honor_max : $total_honor;
+
+            $total_honor_dibayar_terbilang = NumberToWords::toWords($total_honor_dibayar);
+
+            $full_nomor_kontrak = str_pad($r['kegiatan'][0]->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $tahun_kontrak;
+
+            $data = [
+                'bulan_kegiatan_kapital' => strtoupper($bulan_kegiatan),
+                'tahun_kegiatan'         => $tahun_kegiatan,
+                'nomor_kontrak'          => $full_nomor_kontrak,
+                'hari'                   => $hari_kontrak,
+                'tanggal_terbilang'      => ucfirst(NumberToWords::toWords((int) $tanggal_kontrak)),
+                'bulan'                  => $bulan_kontrak,
+                'tahun_terbilang'        => ucfirst(NumberToWords::toWords((int) $tahun_kontrak)),
+                'nama_mitra'             => ucwords(strtolower($r['petugas'])),
+                'pekerjaan'              => $list_petugas[0]->posisi_petugas,
+                'alamat'                 => $list_petugas[0]->alamat,
+                'bulan_kegiatan'         => $bulan_kegiatan,
+                'total_honor'            => $total_honor_dibayar,
+                'total_honor_terbilang'  => ucfirst($total_honor_dibayar_terbilang)
+            ];
+
+            $templateProcessor->setValues($data);
+
+            dd($data);
+            $templateProcessor->cloneRow('nama_kegiatan', count($list_petugas));
+            foreach ($list_petugas as $index => $l) {
+                $rowIndex = $index + 1;
+                $templateProcessor->setValue("no#rowIndex", $rowIndex);
+                $templateProcessor->setValue("nama_kegiatan#rowIndex" . ($index + 1), $l->nama_kegiatan);
+                $templateProcessor->setValue("tanggal_mulai#rowIndex", $l['tanggal_mulai']);
+                $templateProcessor->setValue("tanggal_selesai#rowIndex", $l['tanggal_selesai']);
+                $templateProcessor->setValue("beban#rowIndex", $l['beban_kerja']);
+                $templateProcessor->setValue("satuan#rowIndex", $l['satuan_beban_kerja']);
+                $templateProcessor->setValue("honor#rowIndex", formatNominal($l['honor']));
+                $templateProcessor->setValue("mata_anggaran#rowIndex", $l->kegiatan->beban_anggaran);
+            }
+            $output_path = storage_path('app/public/bast/KONTRAK_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
+            $templateProcessor->saveAs($output_path);
+            $zip->addFile($output_path, 'KONTRAK_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
+            $kontrak_files[] = $output_path;
         }
+        $zip->close();
+
+        foreach ($kontrak_files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+        return response()->download($zip_file_name)->deleteFileAfterSend(true);
     }
 }
