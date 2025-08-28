@@ -29,8 +29,8 @@ class KegiatanController extends Controller
         $tim_kerja = TimKerja::all();
 
         return view('kegiatan.index', [
-            'kegiatan'  => $kegiatan,
-            'tim_kerja' => $tim_kerja,
+            'kegiatan'      => $kegiatan,
+            'tim_kerja'     => $tim_kerja,
         ]);
     }
 

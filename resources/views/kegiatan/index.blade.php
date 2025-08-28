@@ -26,6 +26,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Nama Kegiatan</th>
                             <th class="text-center">Budget</th>
                             <th class="text-center">Tim Kerja</th>
@@ -36,8 +37,20 @@
                     <tbody class="table-border-bottom">
                         @foreach ($kegiatan as $k)
                             <tr>
-                                <td
-                                    style="max-width: 60ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                @php
+                                    $isGenerated = $k->is_generated;
+                                    $badgeClass = $isGenerated ? 'success' : 'danger';
+                                    $iconClass = $isGenerated ? 'bx bx-check-circle' : 'bx bx-x-circle';
+                                    $titleText = $isGenerated ? 'sudah generate' : 'belum generate';
+                                @endphp
+                                <td>
+                                    <span class="badge rounded-pill bg-label-{{ $badgeClass }}">
+                                        <i class="{{ $iconClass }}" data-bs-toggle="tooltip"
+                                            title="{{ $titleText }}"></i>
+                                    </span>
+                                </td>
+                                <td class="px-0"
+                                    style="max-width: 40ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     <a href="{{ route('kegiatan.edit', $k->slug) }}">{{ $k->nama_kegiatan }}</a>
                                 </td>
                                 <td class="text-center">

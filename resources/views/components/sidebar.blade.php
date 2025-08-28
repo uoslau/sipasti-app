@@ -59,13 +59,13 @@
         <li class="menu-item {{ request()->is('kegiatan*') ? 'active' : '' }}">
             <a href="/kegiatan" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-task"></i>
-                <div class="text-truncate" data-i18n="Dashboards">Kegiatan</div>
+                <div class="text-truncate" data-i18n="Dashboards">Kegiatan / BAST</div>
             </a>
         </li>
         <li class="menu-item {{ request()->is('kontrak*') ? 'active' : '' }}">
             <a href="/kontrak" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
-                <div class="text-truncate" data-i18n="Dashboards">Kontrak Kerja (SPK)</div>
+                <div class="text-truncate" data-i18n="Dashboards">Kontrak / SPK</div>
             </a>
         </li>
     </ul>

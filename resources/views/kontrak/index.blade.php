@@ -24,7 +24,7 @@
                             <input class="form-control" type="search" value="Cari mitra ..." id="filter-nama" />
                         </div>
                     </div>
-                    <a href="#" id="downloadButton" class="btn btn-primary ms-auto">Download Kontrak</a>
+                    <a href="#" id="downloadButton" class="btn btn-primary ms-auto">Unduh</a>
                 </div>
             </form>
             @if ($petugas_bulan->isEmpty())
@@ -159,7 +159,12 @@
             });
 
             if (selectedIds.length === 0) {
-                alert("Silakan pilih mitra untuk download kontrak!");
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal!",
+                    text: "Tidak ada petugas yang dipilih untuk diunduh SPK-nya.",
+                    confirmButtonColor: '#696cff',
+                });
                 return;
             }
 
@@ -169,43 +174,3 @@
         });
     });
 </script>
-
-<style>
-    .collapse {
-        display: none;
-    }
-
-    .collapse.show {
-        display: table-row;
-    }
-
-    .toggle-arrow {
-        transition: transform 0.3s ease;
-    }
-
-    .active-row {
-        background-color: #f5f5f5;
-        transition: background-color 0.3s ease;
-    }
-
-    .form-check {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-    }
-
-    th {
-        vertical-align: middle;
-    }
-
-    th:first-child,
-    td:first-child {
-        width: 50px;
-    }
-</style>

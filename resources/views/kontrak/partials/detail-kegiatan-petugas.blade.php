@@ -10,25 +10,26 @@
                 <tbody class="table-border-bottom-0">
                     @foreach ($p['kegiatan'] as $k)
                         <tr>
-                            <td class="text-center px-0" style="width: 15ch;">
+                            <td class="text-center">
                                 <span
-                                    class="badge rounded-pill {{ $k['status'] === 'Belum Mulai' ? 'bg-label-warning' : ($k['status'] === 'Sedang Berjalan' ? 'bg-label-primary' : 'bg-label-success') }}">
-                                    {{ $k['status'] }}
+                                    class="badge rounded-pill {{ $k['status'] === 'bx bx-calendar-exclamation' ? 'bg-label-warning' : ($k['status'] === 'bx bx-time-five' ? 'bg-label-primary' : 'bg-label-success') }}">
+                                    <i class='{{ $k['status'] }}'></i>
                                 </span>
                             </td>
                             <td class="text-left px-0"
                                 style="max-width: 60ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <span class="badge bg-label-dark">
+                                <span
+                                    class="badge rounded-pill {{ $k['status'] === 'bx bx-calendar-exclamation' ? 'bg-label-warning' : ($k['status'] === 'bx bx-time-five' ? 'bg-label-primary' : 'bg-label-success') }}">
                                     {{ $k['nama_kegiatan'] }}
                                 </span>
                                 /
                                 <span
-                                    class="badge rounded-pill {{ $k['status'] === 'Belum Mulai' ? 'bg-label-warning' : ($k['status'] === 'Sedang Berjalan' ? 'bg-label-primary' : 'bg-label-success') }}">
+                                    class="badge rounded-pill {{ $k['status'] === 'bx bx-calendar-exclamation' ? 'bg-label-warning' : ($k['status'] === 'bx bx-time-five' ? 'bg-label-primary' : 'bg-label-success') }}">
                                     {{ $k['tanggal_mulai'] }}
                                 </span>
                                 -
                                 <span
-                                    class="badge rounded-pill {{ $k['status'] === 'Belum Mulai' ? 'bg-label-warning' : ($k['status'] === 'Sedang Berjalan' ? 'bg-label-primary' : 'bg-label-success') }}">
+                                    class="badge rounded-pill {{ $k['status'] === 'bx bx-calendar-exclamation' ? 'bg-label-warning' : ($k['status'] === 'bx bx-time-five' ? 'bg-label-primary' : 'bg-label-success') }}">
                                     {{ $k['tanggal_selesai'] }}
                                 </span>
                             </td>

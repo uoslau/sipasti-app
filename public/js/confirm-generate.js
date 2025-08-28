@@ -1,6 +1,6 @@
 function confirmGenerate() {
     Swal.fire({
-        title: "Generate nomor SPK & BAST?",
+        title: "Generate nomor SPK/BAST?",
         text: "Generate hanya bisa dilakukan sekali, pastikan semua data sudah final!",
         icon: "warning",
         showCancelButton: true,

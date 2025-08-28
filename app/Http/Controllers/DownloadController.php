@@ -14,7 +14,7 @@ use PhpOffice\PhpWord\TemplateProcessor;
 class DownloadController extends Controller
 {
     /**
-     * ✨ OPTIMASI 3: Helper method untuk mengisolasi logika tanggal.
+     * 
      * @param \App\Models\Kegiatan $kegiatan
      * @return array
      */
@@ -157,7 +157,7 @@ class DownloadController extends Controller
         $selected_petugas = $request->query('ids') ? explode(',', $request->query('ids')) : [];
 
         if (empty($selected_petugas)) {
-            return to_route('kegiatan.index')
+            return to_route('kontrak.index')
                 ->with('error', 'Tidak ada petugas yang dipilih untuk diunduh SPK-nya.');
         }
 
@@ -176,10 +176,33 @@ class DownloadController extends Controller
         $bulan_kontrak      = NumberToWords::monthName($tanggal_kontrak_full->format('m'));
         $tahun_kontrak      = $tanggal_kontrak_full->format('Y');
 
+        // cek apakah semua kegiatan petugas yang dipilih sudah di-generate nomor spk/bast-nya
+        $kegiatan_belum_generate = PetugasKegiatan::join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
+            ->whereIn('petugas_kegiatans.nik', $selected_petugas)
+            ->whereMonth('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('m'))
+            ->whereYear('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('Y'))
+            ->where('kegiatans.is_generated', false)
+            ->distinct()
+            ->pluck('kegiatans.nama_kegiatan');
+
+        if ($kegiatan_belum_generate->isNotEmpty()) {
+            $pesan_error = 'Kegiatan berikut belum di-generate nomor SPK/BAST-nya:<ul>';
+            foreach ($kegiatan_belum_generate as $nama_kegiatan) {
+                $pesan_error .= "<li><b>{$nama_kegiatan}</b></li>";
+            }
+            $pesan_error .= '</ul>Silakan generate terlebih dahulu.';
+
+            return to_route('kontrak.index')
+                ->with('error', $pesan_error);
+        }
+
         // ambil data petugas di bulan dan tahun tersebut beserta data kegiatan, nomor kontrak, dan data mitra
         // 1 petugas bisa memiliki banyak kegiatan sehingga $list_petugas_bulan bisa berisi banyak data dengan nik yang sama
         $list_petugas_bulan = PetugasKegiatan::join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
-            ->join('nomor_kontraks', 'petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
+            ->join('nomor_kontraks', function ($join) {
+                $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
+                    ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
+            })
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->whereMonth('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('m'))
             ->whereYear('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('Y'))
@@ -188,6 +211,7 @@ class DownloadController extends Controller
             ->distinct()
             ->get();
 
+        // dd($list_petugas_bulan);
         // filter petugas yang mengikuti kegiatan OB (karena OB tidak perlu dibuatkan SPK)
         // meskipun mereka mengikuti kegiatan non OB di bulan yang sama
         $list_petugas_ob = [];
@@ -217,6 +241,11 @@ class DownloadController extends Controller
             if ($kegiatan->tim_kerja_id == 1) {
                 $rekap_kegiatan_petugas_bulan[$kegiatan->nik]['has_pengolahan'] = true;
             }
+        }
+
+        if (empty($rekap_kegiatan_petugas_bulan)) {
+            return to_route('kontrak.index')
+                ->with('error', "Semua petugas yang dipilih <b>terlibat dalam kegiatan O-B</b> dan tidak dibuatkan SPK.");
         }
 
         $template_path = storage_path('app/public/template/template_kontrak.docx');

@@ -96,11 +96,11 @@ class KontrakController extends Controller
                 $tanggal_selesai = Carbon::parse($kegiatan->tanggal_selesai);
 
                 if ($now->lessThan($tanggal_mulai)) {
-                    $status = 'Belum Mulai';
+                    $status = 'bx bx-calendar-exclamation'; //'pending';
                 } elseif ($now->between($tanggal_mulai, $tanggal_selesai)) {
-                    $status = 'Sedang Berjalan';
+                    $status = 'bx bx-time-five'; //'ongoing';
                 } else {
-                    $status = 'Selesai';
+                    $status = 'bx bx-task'; //'completed';
                 }
 
                 $nama_kegiatan = $kegiatan->is_ob ? '[O-B] ' . $kegiatan->nama_kegiatan : $kegiatan->nama_kegiatan;
