@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\GeneratesBastDocuments;
 use ZipArchive;
 use Carbon\Carbon;
 use App\Models\Kegiatan;
@@ -13,42 +14,11 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class DownloadController extends Controller
 {
-    /**
-     * 
-     * @param \App\Models\Kegiatan $kegiatan
-     * @return array
-     */
-    private function prepareDateVariables(Kegiatan $kegiatan): array
-    {
-        // ambil tanggal kegiatan sebagai dasar penentuan tanggal kontrak
-        // tanggal kontrak adalah tanggal 1 di bulan kegiatan dimulai
-        // jika tanggal jatuh pada hari sabtu/minggu, maka tanggal kontrak adalah hari jumat di bulan sebelumnya
-        $base_tanggal_kegiatan = Carbon::parse($kegiatan->tanggal_mulai);
-        $base_tanggal = $base_tanggal_kegiatan->copy()->startOfMonth();
-        $tanggal_kontrak_full = ($base_tanggal->isSaturday() || $base_tanggal->isSunday())
-            ? $base_tanggal->previousWeekday()
-            : $base_tanggal;
-
-        $tanggal_kegiatan_selesai = Carbon::parse($kegiatan->tanggal_selesai);
-
-        return [
-            'tanggal_kontrak'         => $tanggal_kontrak_full->format('d'),
-            'bulan_kontrak'           => NumberToWords::monthName($tanggal_kontrak_full->format('m')),
-            'tahun_kontrak'           => $tanggal_kontrak_full->format('Y'),
-            'tanggal_kegiatan'        => $base_tanggal_kegiatan->format('d'),
-            'bulan_kegiatan'          => NumberToWords::monthName($base_tanggal_kegiatan->format('m')),
-            'tahun_kegiatan'          => $base_tanggal_kegiatan->format('Y'),
-            'hari_bast'               => NumberToWords::dayName($tanggal_kegiatan_selesai->format('l')),
-            'tanggal_bast'            => $tanggal_kegiatan_selesai->format('d'),
-            'tanggal_bast_terbilang'  => ucfirst(NumberToWords::toWords((int) $tanggal_kegiatan_selesai->format('d'))),
-            'bulan_bast'              => NumberToWords::monthName($tanggal_kegiatan_selesai->format('m')),
-            'tahun_bast'              => $tanggal_kegiatan_selesai->format('Y'),
-            'tahun_bast_terbilang'    => ucfirst(NumberToWords::toWords((int) $tanggal_kegiatan_selesai->format('Y'))),
-        ];
-    }
+    use GeneratesBastDocuments;
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
+        // ... (Semua validasi awal Anda tetap sama) ...
         if (!$kegiatan) {
             return to_route('kegiatan.index')
                 ->with('error', 'Kegiatan tidak ditemukan.');
@@ -59,6 +29,7 @@ class DownloadController extends Controller
                 ->with('error', 'BAST belum bisa diunduh karena nomor belum digenerate.');
         }
 
+        // ... (Query untuk mendapatkan $petugas_kegiatan tetap sama) ...
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
             $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
                 ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
@@ -82,73 +53,24 @@ class DownloadController extends Controller
                 ->with('error', 'Belum ada petugas di kegiatan ini!');
         }
 
-        $template_path = storage_path('app/public/template/template_bast.docx');
+        // Tentukan path template default
+        $default_template_path = storage_path('app/public/template/template_bast.docx');
 
-        if (!file_exists($template_path)) {
+        if (!file_exists($default_template_path)) {
             return to_route('kegiatan.index')
-                ->with('error', 'Template BAST tidak ditemukan di server.');
+                ->with('error', 'Template BAST default tidak ditemukan di server.');
         }
 
-        $zip = new ZipArchive();
+        try {
+            // Panggil "mesin" untuk membuat ZIP menggunakan template default
+            $zip_file_path = $this->generateAndZipBastDocuments($kegiatan, $petugas_kegiatan, $default_template_path);
 
-        $zip_file_name = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
-
-        if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            return to_route('kegiatan.index')
-                ->with('error', 'Gagal membuat file zip.');
+            // Kirim file ZIP untuk diunduh dan hapus setelah terkirim
+            return response()->download($zip_file_path)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            // Tangani jika ada error dari proses pembuatan ZIP
+            return to_route('kegiatan.index')->with('error', $e->getMessage());
         }
-
-        $dateVars = $this->prepareDateVariables($kegiatan);
-
-        $bast_files = [];
-
-        foreach ($petugas_kegiatan as $p) {
-            $templateProcessor = new TemplateProcessor($template_path);
-
-            $full_nomor_bast = str_pad($p->nomor_bast, 3, '0', STR_PAD_LEFT) . "/1201_BAST/" . $dateVars['tahun_bast'];
-            $full_nomor_kontrak = str_pad($p->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $dateVars['tahun_kontrak'];
-
-            $data = [
-                'bulan_kegiatan_kapital' => strtoupper($dateVars['bulan_kegiatan']),
-                'tahun_kegiatan'         => $dateVars['tahun_kegiatan'],
-                'nomor_bast'             => $full_nomor_bast,
-                'hari'                   => $dateVars['hari_bast'],
-                'tanggal_terbilang'      => $dateVars['tanggal_bast_terbilang'],
-                'bulan'                  => $dateVars['bulan_bast'],
-                'tahun_terbilang'        => $dateVars['tahun_bast_terbilang'],
-                'nama_mitra'             => ucwords(strtolower($p->nama_mitra)),
-                'alamat'                 => $p->alamat,
-                'bulan_kegiatan'         => $dateVars['bulan_kegiatan'],
-                'tanggal_kegiatan'       => $dateVars['tanggal_kegiatan'],
-                'nomor_kontrak'          => $full_nomor_kontrak,
-                'tanggal_kontrak'        => $dateVars['tanggal_kontrak'],
-                'bulan_kontrak'          => $dateVars['bulan_kontrak'],
-                'tahun_kontrak'          => $dateVars['tahun_kontrak'],
-                'nama_kegiatan'          => $kegiatan->nama_kegiatan,
-                'beban'                  => $p->beban_kerja,
-                'satuan'                 => $p->satuan_beban_kerja,
-                'tim_kerja'              => $p->alias_tim_kerja,
-            ];
-
-            $templateProcessor->setValues($data);
-
-            $output_path = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
-
-            $templateProcessor->saveAs($output_path);
-
-            $zip->addFile($output_path, 'BAST_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
-
-            $bast_files[] = $output_path;
-        }
-
-        $zip->close();
-
-        foreach ($bast_files as $file) {
-            if (file_exists($file)) {
-                unlink($file);
-            }
-        }
-        return response()->download($zip_file_name)->deleteFileAfterSend(true);
     }
 
     public function downloadSPK(Request $request, $slug)

@@ -5,8 +5,12 @@ use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\KontrakController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NomorKontrakController;
 use App\Http\Controllers\PetugasKegiatanController;
+
+Route::get('/', [DashboardController::class, 'index'])
+    ->name('dashboard.index');
 
 Route::get('/kegiatan', [KegiatanController::class, 'index'])
     ->name('kegiatan.index');
@@ -40,6 +44,9 @@ Route::post('/kegiatan/{kegiatan}/edit-kegiatan/generate', [NomorKontrakControll
 
 Route::get('/kegiatan/download/{kegiatan}', [DownloadController::class, 'downloadBAST'])->name('kegiatan.download');
 Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadSPK'])->name('kontrak.download');
+
+Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadBASTOB'])->name('kegiatanbast.upload');
+Route::post('/kegiatan/download/{kegiatan}/spk', [KegiatanController::class, 'uploadSPKOB'])->name('kegiatanspk.upload');
 
 Route::get('/download/{nama_file}', function ($nama_file) {
     $file_path = storage_path("app/public/template/{$nama_file}");

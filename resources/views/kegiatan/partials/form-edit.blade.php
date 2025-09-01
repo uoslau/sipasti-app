@@ -12,9 +12,32 @@
                 <li>
                     <hr class="dropdown-divider" />
                 </li>
-                <li><a class="dropdown-item {{ $kegiatan->is_generated ? '' : 'disabled' }}"
-                        href="{{ route('kegiatan.download', $kegiatan->slug) }}">Unduh</a></li>
+                <li>
+                    @if ($kegiatan->is_ob)
+                        <a class="dropdown-item {{ $kegiatan->is_generated ? '' : 'disabled' }}" href="#"
+                            data-bs-toggle="modal" data-bs-target="#unduhModal">
+                            Unduh
+                        </a>
+                    @else
+                        <a class="dropdown-item {{ $kegiatan->is_generated ? '' : 'disabled' }}"
+                            href="{{ route('kegiatan.download', $kegiatan->slug) }}">Unduh
+                        </a>
+                    @endif
+                </li>
             </ul>
+        </div>
+        <div class="modal fade" id="unduhModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="unduhModalLabel">Unduh SPK / BAST</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('kegiatan.partials.unduh-ob')
+                    </div>
+                </div>
+            </div>
         </div>
         <form id="generate-kontrak" action="{{ route('kontrak.generate', $kegiatan->slug) }}" method="POST"
             style="display: none;">
@@ -109,7 +132,8 @@
                         <label for="honor_nias" class="form-label">Honor Nias</label>
                         <input class="form-control" type="text"
                             value="{{ old('honor_nias', number_format($kegiatan->honor_nias, 0, ',', '.')) }}"
-                            id="honor_nias" name="honor_nias" placeholder="per satuan" oninput="formatRupiah(this)" />
+                            id="honor_nias" name="honor_nias" placeholder="per satuan"
+                            oninput="formatRupiah(this)" />
                     </div>
                 </div>
                 <div class="col-md-4">
