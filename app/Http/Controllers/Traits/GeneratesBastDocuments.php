@@ -76,7 +76,9 @@ trait GeneratesBastDocuments
             $bast_files[] = $output_path;
         }
 
-        $zip->close();
+        if ($zip->close() === false) {
+            throw new \Exception('Gagal menyelesaikan pembuatan file zip. Periksa izin folder atau file zip yang mungkin terkunci.');
+        }
 
         // Hapus file-file DOCX individual setelah dimasukkan ke dalam zip
         foreach ($bast_files as $file) {

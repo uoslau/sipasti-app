@@ -147,7 +147,7 @@ class KegiatanController extends Controller
         ]);
 
         $uploaded_template_path = $request->file('word_file')->store('public/temp');
-        $absolute_template_path = storage_path('app/' . $uploaded_template_path);
+        $absolute_template_path = Storage::path($uploaded_template_path);
 
         // 2. Ambil data petugas (logika yang sama seperti di downloadBAST)
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
