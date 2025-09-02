@@ -1,11 +1,23 @@
 <x-layout>
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="mb-0">List Kegiatan</h5>
-                <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
-                    Tambah Kegiatan
-                </a>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Daftar Kegiatan</h5>
+                <div class="d-flex align-items-center">
+                    <div class="row w-auto">
+                        <div class="col-md-10">
+                            <form action="{{ route('kegiatan.index') }}" method="GET">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control"
+                                        placeholder="Cari kegiatan..." value="{{ $search ?? '' }}" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
+                        Tambah Kegiatan
+                    </a>
+                </div>
                 <div class="modal fade" id="addKegiatanModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -82,13 +94,6 @@
                                             <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('kegiatan.edit', $k->slug) }}">Edit</a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider" />
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item {{ $k->is_generated ? '' : 'disabled' }}"
-                                                    href="{{ route('kegiatan.download', $k->slug) }}">Unduh</a>
                                             </li>
                                             <li>
                                                 <hr class="dropdown-divider" />

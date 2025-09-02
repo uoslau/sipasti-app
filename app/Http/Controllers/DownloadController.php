@@ -18,18 +18,16 @@ class DownloadController extends Controller
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
-        // ... (Semua validasi awal Anda tetap sama) ...
         if (!$kegiatan) {
-            return to_route('kegiatan.index')
+            return to_route('kegiatan.edit', $kegiatan->slug,)
                 ->with('error', 'Kegiatan tidak ditemukan.');
         }
 
         if (!$kegiatan->is_generated) {
-            return to_route('kegiatan.index')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'BAST belum bisa diunduh karena nomor belum digenerate.');
         }
 
-        // ... (Query untuk mendapatkan $petugas_kegiatan tetap sama) ...
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
             $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
                 ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
@@ -49,27 +47,24 @@ class DownloadController extends Controller
             ->get();
 
         if ($petugas_kegiatan->isEmpty()) {
-            return to_route('kegiatan.index')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'Belum ada petugas di kegiatan ini!');
         }
 
-        // Tentukan path template default
         $default_template_path = storage_path('app/public/template/template_bast.docx');
 
         if (!file_exists($default_template_path)) {
-            return to_route('kegiatan.index')
+            return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'Template BAST default tidak ditemukan di server.');
         }
 
         try {
-            // Panggil "mesin" untuk membuat ZIP menggunakan template default
             $zip_file_path = $this->generateAndZipBastDocuments($kegiatan, $petugas_kegiatan, $default_template_path);
 
-            // Kirim file ZIP untuk diunduh dan hapus setelah terkirim
             return response()->download($zip_file_path)->deleteFileAfterSend(true);
         } catch (\Exception $e) {
-            // Tangani jika ada error dari proses pembuatan ZIP
-            return to_route('kegiatan.index')->with('error', $e->getMessage());
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', $e->getMessage());
         }
     }
 

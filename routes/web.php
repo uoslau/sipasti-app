@@ -45,8 +45,7 @@ Route::post('/kegiatan/{kegiatan}/edit-kegiatan/generate', [NomorKontrakControll
 Route::get('/kegiatan/download/{kegiatan}', [DownloadController::class, 'downloadBAST'])->name('kegiatan.download');
 Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadSPK'])->name('kontrak.download');
 
-Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadBASTOB'])->name('kegiatanbast.upload');
-Route::post('/kegiatan/download/{kegiatan}/spk', [KegiatanController::class, 'uploadSPKOB'])->name('kegiatanspk.upload');
+Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadOB'])->name('kegiatanob.download');
 
 Route::get('/download/{nama_file}', function ($nama_file) {
     $file_path = storage_path("app/public/template/{$nama_file}");

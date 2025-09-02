@@ -21,14 +21,27 @@ class KegiatanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->query('search');
+
         // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
-        $kegiatan = Kegiatan::with(['petugasKegiatan', 'timKerja'])
+        $query = Kegiatan::with(['petugasKegiatan', 'timKerja'])
             ->select('nama_kegiatan', 'is_generated', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
             ->withSum('petugasKegiatan', 'honor')
-            ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->orderBy('id', 'desc');
+
+        $query->when($search, function ($q, $search) {
+            return $q->where('nama_kegiatan', 'like', "%{$search}%")
+                // Anda bisa menambahkan pencarian di relasi lain juga
+                ->orWhereHas('timKerja', function ($timQuery) use ($search) {
+                    $timQuery->where('alias_tim_kerja', 'like', "%{$search}%");
+                });
+        });
+
+        $kegiatan = $query->paginate(10);
+
+        $kegiatan->appends(['search' => $search]);
 
         // mengambil data tim kerja untuk create kegiatan
         $tim_kerja = TimKerja::all();
@@ -36,6 +49,7 @@ class KegiatanController extends Controller
         return view('kegiatan.index', [
             'kegiatan'      => $kegiatan,
             'tim_kerja'     => $tim_kerja,
+            'search'        => $search,
         ]);
     }
 
@@ -111,7 +125,7 @@ class KegiatanController extends Controller
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
-            ->paginate(15);
+            ->paginate(10);
 
         $wilayah_tugas = WilayahTugas::all();
 
@@ -140,16 +154,15 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function uploadAndDownloadBASTOB(Request $request, Kegiatan $kegiatan)
+    public function uploadAndDownloadOB(Request $request, Kegiatan $kegiatan)
     {
         $request->validate([
             'word_file' => 'required|file|mimes:docx|max:2048'
         ]);
 
-        $uploaded_template_path = $request->file('word_file')->store('public/temp');
-        $absolute_template_path = Storage::path($uploaded_template_path);
+        $uploaded_template_path = $request->file('word_file')->store('temp', 'public');
+        $absolute_template_path = Storage::disk('public')->path($uploaded_template_path);
 
-        // 2. Ambil data petugas (logika yang sama seperti di downloadBAST)
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
             $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
                 ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
@@ -169,30 +182,22 @@ class KegiatanController extends Controller
             ->get();
 
         if ($petugas_kegiatan->isEmpty()) {
-            // Hapus template sementara sebelum redirect
-            Storage::delete($uploaded_template_path);
+            Storage::disk('public')->delete($uploaded_template_path);
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'Belum ada petugas di kegiatan ini!');
         }
 
         try {
-            // 1. Panggil "mesin" untuk membuat file ZIP.
-            //    Setelah baris ini selesai, file template sudah tidak dibutuhkan lagi.
             $zip_file_path = $this->generateAndZipBastDocuments($kegiatan, $petugas_kegiatan, $absolute_template_path);
 
-            // 2. HAPUS FILE TEMPLATE DI SINI, SETELAH ZIP DIBUAT
-            Storage::delete($uploaded_template_path);
+            Storage::disk('public')->delete($uploaded_template_path);
 
-            // 3. Kirim hasil ZIP untuk diunduh.
-            //    deleteFileAfterSend(true) akan menghapus file ZIP setelah diunduh.
             return response()->download($zip_file_path)->deleteFileAfterSend(true);
         } catch (\Exception $e) {
-            // Jika terjadi error selama pembuatan ZIP, pastikan template tetap dihapus
-            Storage::delete($uploaded_template_path);
+            Storage::disk('public')->delete($uploaded_template_path);
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', $e->getMessage());
         }
-        // Blok 'finally' tidak lagi dibutuhkan
     }
 
     /**

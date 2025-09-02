@@ -24,30 +24,30 @@ trait GeneratesBastDocuments
         $zip_file_name = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
 
         if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            // Jika gagal, lempar exception atau tangani error
             throw new \Exception('Gagal membuat file zip.');
         }
 
         $tempDirectory = storage_path('app/public/temp');
         if (!is_dir($tempDirectory)) {
-            // Buat direktori jika belum ada. 
-            // Parameter ketiga (true) memungkinkan pembuatan direktori secara rekursif.
             mkdir($tempDirectory, 0755, true);
         }
 
         $dateVars = $this->prepareDateVariables($kegiatan);
-        $bast_files = []; // Untuk melacak file DOCX yang dibuat agar bisa dihapus
+        $bast_files = [];
 
         foreach ($petugas_kegiatan as $p) {
             $templateProcessor = new TemplateProcessor($templatePath);
 
-            $full_nomor_bast = str_pad($p->nomor_bast, 3, '0', STR_PAD_LEFT) . "/1201_BAST/" . $dateVars['tahun_bast'];
-            $full_nomor_kontrak = str_pad($p->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $dateVars['tahun_kontrak'];
+            $nomor_bast         = str_pad($p->nomor_bast, 3, '0', STR_PAD_LEFT);
+            $full_nomor_bast    = $nomor_bast . "/1201_BAST/" . $dateVars['tahun_bast'];
 
-            // ... (Semua data array Anda sama persis) ...
+            $nomor_kontrak      = str_pad($p->nomor_kontrak, 3, '0', STR_PAD_LEFT);
+            $full_nomor_kontrak = $nomor_kontrak . "/1201_MITRA/" . $dateVars['tahun_kontrak'];
+
             $data = [
                 'bulan_kegiatan_kapital' => strtoupper($dateVars['bulan_kegiatan']),
                 'tahun_kegiatan'         => $dateVars['tahun_kegiatan'],
+                'no_bast'                => $nomor_bast,
                 'nomor_bast'             => $full_nomor_bast,
                 'hari'                   => $dateVars['hari_bast'],
                 'tanggal_terbilang'      => $dateVars['tanggal_bast_terbilang'],
@@ -57,6 +57,7 @@ trait GeneratesBastDocuments
                 'alamat'                 => $p->alamat,
                 'bulan_kegiatan'         => $dateVars['bulan_kegiatan'],
                 'tanggal_kegiatan'       => $dateVars['tanggal_kegiatan'],
+                'no_kontrak'             => $nomor_kontrak,
                 'nomor_kontrak'          => $full_nomor_kontrak,
                 'tanggal_kontrak'        => $dateVars['tanggal_kontrak'],
                 'bulan_kontrak'          => $dateVars['bulan_kontrak'],
@@ -80,14 +81,12 @@ trait GeneratesBastDocuments
             throw new \Exception('Gagal menyelesaikan pembuatan file zip. Periksa izin folder atau file zip yang mungkin terkunci.');
         }
 
-        // Hapus file-file DOCX individual setelah dimasukkan ke dalam zip
         foreach ($bast_files as $file) {
             if (file_exists($file)) {
                 unlink($file);
             }
         }
 
-        // Kembalikan path file ZIP yang sudah jadi
         return $zip_file_name;
     }
 
