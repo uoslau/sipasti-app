@@ -7,6 +7,9 @@
             confirmButtonColor: '#696cff',
         });
     </script>
+    @php
+        session()->forget('success');
+    @endphp
 @endif
 
 @if (session()->has('warning'))

@@ -60,8 +60,14 @@
             <a href="/" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>
             </a>
         </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">SPK &amp; BAST</span>
+        </li>
+
         <li class="menu-item {{ request()->is('kegiatan*') ? 'active' : '' }}">
             <a href="/kegiatan" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-task"></i>
@@ -73,6 +79,28 @@
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Kontrak / SPK</div>
             </a>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Akun</span>
+        </li>
+
+        <li class="menu-item {{ request()->is('profil*') ? 'active' : '' }}">
+            <a href="/profil" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-circle"></i>
+                <div class="text-truncate" data-i18n="Dashboards">Profil</div>
+                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="#" class="menu-link"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="menu-icon tf-icons bx bx-log-out-circle"></i>
+                <div class="text-truncate" data-i18n="Dashboards">Log out</div>
+            </a>
+            <form id="logout-form" action="/logout" method="POST" style="display: none;">
+                @csrf
+            </form>
         </li>
     </ul>
 </aside>
