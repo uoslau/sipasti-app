@@ -9,4 +9,9 @@ class TimKerja extends Model
 {
     /** @use HasFactory<\Database\Factories\TimKerjaFactory> */
     use HasFactory;
+
+    public function user()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

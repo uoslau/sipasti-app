@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@example.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('username'),
+            'password' => Hash::make('admin'),
             'is_admin' => 1,
         ]);
 
@@ -50,6 +50,18 @@ class UserSeeder extends Seeder
             'yusnidar.zebua@bps.go.id',
         ];
 
+        $userTimKerjaMap = [
+            'yuris.tz'       => 1,
+            'gregorius.gulo' => 2,
+            'faberlius.hulu' => 3,
+            'geni.harefa'    => 5,
+            'anugrah.marbun' => 6,
+            'alfrince.hulu'  => 7,
+            'hiskia.harefa'  => 8,
+            'kurniaman.harefa' => 9,
+            'trisno.harefa'  => 10,
+        ];
+
         // Loop untuk membuat setiap user
         foreach ($emails as $email) {
             // 1. Ekstrak username dari email
@@ -59,7 +71,7 @@ class UserSeeder extends Seeder
             $name = ucwords(str_replace(['.', '-'], ' ', $username));
 
             // 3. Buat user menggunakan factory
-            User::factory()->create([
+            $user = User::factory()->create([
                 'name'              => $name,
                 'username'          => $username,
                 'email'             => $email,
@@ -67,6 +79,12 @@ class UserSeeder extends Seeder
                 'password'          => Hash::make($username),
                 'is_admin'          => 0,
             ]);
+
+            if (isset($userTimKerjaMap[$username])) {
+                // Jika ada, hubungkan user dengan tim kerja yang sesuai
+                $timKerjaId = $userTimKerjaMap[$username];
+                $user->timKerja()->attach($timKerjaId);
+            }
         }
     }
 }

@@ -57,7 +57,7 @@
 
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is('/*') ? 'active' : '' }}">
-            <a href="/" class="menu-link">
+            <a href="#" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
                 <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>
@@ -65,7 +65,7 @@
         </li>
 
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">SPK &amp; BAST</span>
+            <span class="menu-header-text">BAST &amp; SPK</span>
         </li>
 
         <li class="menu-item {{ request()->is('kegiatan*') ? 'active' : '' }}">
@@ -86,7 +86,7 @@
         </li>
 
         <li class="menu-item {{ request()->is('profil*') ? 'active' : '' }}">
-            <a href="/profil" class="menu-link">
+            <a href="#" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user-circle"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Profil</div>
                 <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>

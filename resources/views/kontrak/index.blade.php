@@ -3,47 +3,48 @@
         <div class="card">
             <form method="GET" action="{{ route('kontrak.index') }}">
                 @csrf
-                <div class="card-header d-flex align-items-center">
-                    <h5 class="mb-0 me-2">Daftar Mitra Bulan </h5>
-                    <select id="bulan" name="bulan" class="form-select w-auto" onchange="this.form.submit()">
-                        @foreach ($nama_bulan as $key => $bulan)
-                            <option value="{{ $key }}" {{ $key == $bulan_sekarang ? 'selected' : '' }}>
-                                {{ $bulan }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <select id="tahun" name="tahun" class="form-select w-auto" onchange="this.form.submit()">
-                        @foreach ($tahun_range as $tahun)
-                            <option value="{{ $tahun }}" {{ $tahun == $tahun_sekarang ? 'selected' : '' }}>
-                                {{ $tahun }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="mx-1 row w-auto">
-                        <div class="col-md-10">
-                            <input class="form-control" type="search" value="Cari mitra ..." id="filter-nama" />
-                        </div>
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <h5 class="mb-0">Daftar Mitra Bulan</h5>
+                        <select id="bulan" name="bulan" class="form-select w-auto" onchange="this.form.submit()">
+                            @foreach ($nama_bulan as $key => $bulan)
+                                <option value="{{ $key }}" {{ $key == $bulan_sekarang ? 'selected' : '' }}>
+                                    {{ $bulan }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <select id="tahun" name="tahun" class="form-select w-auto" onchange="this.form.submit()">
+                            @foreach ($tahun_range as $tahun)
+                                <option value="{{ $tahun }}" {{ $tahun == $tahun_sekarang ? 'selected' : '' }}>
+                                    {{ $tahun }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                    <a href="#" id="downloadButton" class="btn btn-primary ms-auto">Unduh</a>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <input class="form-control" type="search" placeholder="cari mitra" id="filter-nama" />
+                        <a href="#" id="downloadButton" class="btn btn-primary">Unduh</a>
+                    </div>
                 </div>
             </form>
             @if ($petugas_bulan->isEmpty())
                 <h5 class="card-header border-top text-center">Belum ada data.</h5>
             @else
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-hover">
+                    <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>
+                                <th style="width: 5%;">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="checkboxDashboard" />
                                     </div>
                                 </th>
-                                <th class="text-left px-0">Nama</th>
-                                <th class="text-center">Honor</th>
-                                <th class="text-center">Sisa Honor</th>
-                                <th class="text-center">Bisa Dibayarkan</th>
-                                <th></th>
+                                <th class="text-start px-0" style="width: 45%;">Nama</th>
+                                <th class="text-center" style="width: 15%;">Honor</th>
+                                <th class="text-center" style="width: 15%;">Sisa Honor</th>
+                                <th class="text-center" style="width: 15%;">Bisa Dibayarkan</th>
+                                <th style="width: 5%;"></th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom">
@@ -56,9 +57,11 @@
                                                 data-id="{{ $p['nik'] }}" />
                                         </div>
                                     </td>
-                                    <td class="text-left px-0"
-                                        style="max-width: 500px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        {{ ucwords(strtolower($p['nama_mitra'])) }}</td>
+                                    <td class="px-0">
+                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            {{ ucwords(strtolower($p['nama_mitra'])) }}
+                                        </div>
+                                    </td>
                                     <td class="text-center">
                                         <span class="badge bg-label-primary">
                                             {{ formatNominal($p['total_honor']) }}

@@ -1,8 +1,8 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
-        <h5 class="mb-0 me-2">Detail Petugas {{ $petugas_kegiatan_updated_at }}</h5>
+        <h5 class="mb-0 me-2">Daftar Petugas {{ $petugas_kegiatan_updated_at }}</h5>
         <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
-            Tambah Petugas
+            Tambah
         </a>
         <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -23,22 +23,24 @@
         <h5 class="card-header border-top text-center">Belum ada petugas untuk kegiatan ini.</h5>
     @else
         <div class="table-responsive text-nowrap">
-            <table class="table table-hover">
+            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
-                        <th>Nama Mitra</th>
-                        <th class="text-center">Tugas / Beban</th>
-                        <th class="text-center">Wilayah Tugas</th>
-                        <th class="text-center">Honor</th>
-                        <th></th>
+                        <th class="text-start" style="width: 40%;">Nama Mitra</th>
+                        <th class="text-center" style="width: 25%;">Tugas / Beban</th>
+                        <th class="text-center" style="width: 15%;">Wilayah Tugas</th>
+                        <th class="text-center" style="width: 15%;">Honor</th>
+                        <th style="width: 5%;"></th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom">
                     @foreach ($petugas_kegiatan as $p)
                         <tr>
-                            <td
-                                style="max-width: 500px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                {{ ucwords(strtolower($p->nama_mitra)) }}</td>
+                            <td>
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ ucwords(strtolower($p->nama_mitra)) }}
+                                </div>
+                            </td>
                             <td class="text-center">
                                 <span class="badge bg-label-danger">
                                     {{ $p->bertugas_sebagai }} / {{ $p->beban_kerja }}

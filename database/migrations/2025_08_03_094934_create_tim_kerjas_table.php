@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nama_tim_kerja');
             $table->string('alias_tim_kerja');
-            $table->softDeletes();
             $table->timestamps();
         });
     }

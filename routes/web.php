@@ -14,9 +14,9 @@ Route::get('/login', [LoginController::class, 'index'])->name('login')->middlewa
 Route::post('/login', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout']);
 
-Route::middleware(['prevent-back-history'])->group(function () {
-    // Route::get('/', [DashboardController::class, 'index'])
-    //     ->name('dashboard.index');
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])
+        ->name('dashboard.index');
 
     Route::get('/kegiatan', [KegiatanController::class, 'index'])
         ->name('kegiatan.index');
@@ -47,10 +47,15 @@ Route::middleware(['prevent-back-history'])->group(function () {
     Route::post('/kegiatan/{kegiatan}/edit-kegiatan/generate', [NomorKontrakController::class, 'generate'])
         ->name('kontrak.generate');
 
-    Route::get('/kegiatan/download/{kegiatan}', [DownloadController::class, 'downloadBAST'])->name('kegiatan.download');
-    Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadSPK'])->name('kontrak.download');
-
-    Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadOB'])->name('kegiatanob.download');
+    Route::get('/kegiatan/download/{kegiatan}', [DownloadController::class, 'downloadBAST'])
+        ->name('kegiatan.download')
+        ->withoutMiddleware('prevent-back-history');
+    Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadSPK'])
+        ->name('kontrak.download')
+        ->withoutMiddleware('prevent-back-history');
+    Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadOB'])
+        ->name('kegiatanob.download')
+        ->withoutMiddleware('prevent-back-history');
 
     Route::get('/download/{nama_file}', function ($nama_file) {
         $file_path = storage_path("app/public/template/{$nama_file}");

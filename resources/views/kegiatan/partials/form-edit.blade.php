@@ -147,7 +147,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <button type="submit" class="btn btn-primary ms-auto">Edit Kegiatan</button>
+                <button type="submit" class="btn btn-primary ms-auto">Edit</button>
             </div>
         </form>
     </div>

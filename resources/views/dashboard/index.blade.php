@@ -1,3 +1,3 @@
 <x-layout>
-    <h3>WIP!</h3>
+    <h3>Welcome back, {{ auth()->user()->name }}</h3>
 </x-layout>

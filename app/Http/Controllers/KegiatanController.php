@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Traits\GeneratesBastDocuments;
 
@@ -46,10 +47,17 @@ class KegiatanController extends Controller
         // mengambil data tim kerja untuk create kegiatan
         $tim_kerja = TimKerja::all();
 
+        $user = Auth::user();
+
+        $userTimKerja = $user->timKerja->first();
+
+        $user_tim_kerja_id = $userTimKerja ? $userTimKerja->id : null;
+
         return view('kegiatan.index', [
-            'kegiatan'      => $kegiatan,
-            'tim_kerja'     => $tim_kerja,
-            'search'        => $search,
+            'kegiatan'          => $kegiatan,
+            'tim_kerja'         => $tim_kerja,
+            'search'            => $search,
+            'user_tim_kerja_id' => $user_tim_kerja_id,
         ]);
     }
 
