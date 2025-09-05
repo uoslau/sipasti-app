@@ -8,8 +8,11 @@
 
                 <div class="d-flex align-items-center gap-2">
                     <form action="{{ route('kegiatan.index') }}" method="GET" class="mb-0">
-                        <input type="search" name="search" class="form-control" placeholder="cari kegiatan"
-                            value="{{ $search ?? '' }}" />
+                        <div class="input-group">
+                            <span class="input-group-text bg-label-primary"><i class='bx bx-search'></i></span>
+                            <input type="search" name="search" class="form-control" placeholder="Cari kegiatan..."
+                                value="{{ $search ?? '' }}" />
+                        </div>
                     </form>
 
                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">

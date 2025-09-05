@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\GeneratesBastDocuments;
 use ZipArchive;
 use Carbon\Carbon;
 use App\Models\Kegiatan;
+use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
-use App\Models\WilayahTugas;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
+use App\Http\Controllers\Traits\GeneratesBastDocuments;
 
 class DownloadController extends Controller
 {
@@ -18,11 +19,6 @@ class DownloadController extends Controller
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
-        if (!$kegiatan) {
-            return to_route('kegiatan.edit', $kegiatan->slug,)
-                ->with('error', 'Kegiatan tidak ditemukan.');
-        }
-
         if (!$kegiatan->is_generated) {
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'BAST belum bisa diunduh karena nomor belum digenerate.');
@@ -261,5 +257,73 @@ class DownloadController extends Controller
             }
         }
         return response()->download($zip_file_name)->deleteFileAfterSend(true);
+    }
+
+    public function uploadOB(Request $request, Kegiatan $kegiatan)
+    {
+        $request->validate([
+            'word_file' => 'required|file|mimes:docx|max:2048'
+        ]);
+
+        try {
+            $file_name  = $kegiatan->slug . '.docx';
+            $path       = 'template_ob';
+
+            $request->file('word_file')->storeAs($path, $file_name, 'public');
+
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('showDownloadAlert', true);
+        } catch (\Exception $e) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Terjadi kesalahan saat menyimpan file: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadOB(Kegiatan $kegiatan)
+    {
+        $template_name = $kegiatan->slug . '.docx';
+        $template_relative = 'template_ob/' . $template_name;
+        $template_path = storage_path('app/public/' . $template_relative);
+
+        if (!file_exists($template_path)) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Template OB tidak ditemukan.');
+        }
+
+        $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
+            $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
+                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
+        })
+            ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+            ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
+            ->join('tim_kerjas', 'kegiatans.tim_kerja_id', '=', 'tim_kerjas.id')
+            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+            ->select(
+                'petugas_kegiatans.*',
+                'nomor_kontraks.nomor_kontrak',
+                'nomor_kontraks.nomor_bast',
+                'mitras.nama_mitra',
+                'mitras.alamat',
+                'tim_kerjas.alias_tim_kerja'
+            )
+            ->get();
+
+        if ($petugas_kegiatan->isEmpty()) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Belum ada petugas di kegiatan ini!');
+        }
+
+        try {
+            $zip_file_path = $this->generateAndZipBastDocuments($kegiatan, $petugas_kegiatan, $template_path);
+
+            // ini gatau kenapa ga jalan kalo pake idm
+            // jadinya templatenya tetap di storage tapi bakal ketimpa sama yang baru (kalo diupload)
+            // Storage::disk('public')->delete($template_relative);
+
+            return response()->download($zip_file_path)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Gagal men-generate dokumen: ' . $e->getMessage());
+        }
     }
 }

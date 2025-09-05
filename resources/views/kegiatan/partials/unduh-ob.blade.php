@@ -58,12 +58,12 @@
                     </table>
                 </div>
             </div>
-            {{-- bast --}}
+            {{-- import --}}
             <div class="tab-pane fade show" id="navs-pills-top-bast" role="tabpanel">
                 <div class="col-12">
                     <h5 class="card-header text-center">Import Template Kegiatan OB</h5>
                     <div class="card-body demo-vertical-spacing demo-only-element">
-                        <form action="{{ route('kegiatanob.download', $kegiatan->slug) }}" method="POST"
+                        <form action="{{ route('kegiatanob.upload', $kegiatan->slug) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="slug" value="{{ $kegiatan->slug }}">
@@ -74,7 +74,10 @@
                                 @error('template_file')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <button class="btn btn-primary" type="submit">Unduh</button>
+                                <button class="btn btn-primary" type="submit">Import</button>
+                            </div>
+                            <div id="defaultFormControlHelp" class="form-text text-primary">
+                                [Pastikan placeholder sudah disalin di template yang akan digunakan.]
                             </div>
                         </form>
                     </div>

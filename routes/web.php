@@ -53,7 +53,10 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/kontrak/{slug}', [DownloadController::class, 'downloadSPK'])
         ->name('kontrak.download')
         ->withoutMiddleware('prevent-back-history');
-    Route::post('/kegiatan/download/{kegiatan}/bast', [KegiatanController::class, 'uploadAndDownloadOB'])
+    Route::post('/kegiatan/download/{kegiatan}/ob', [DownloadController::class, 'uploadOB'])
+        ->name('kegiatanob.upload')
+        ->withoutMiddleware('prevent-back-history');
+    Route::get('/kegiatan/download/{kegiatan}/ob', [DownloadController::class, 'downloadOB'])
         ->name('kegiatanob.download')
         ->withoutMiddleware('prevent-back-history');
 

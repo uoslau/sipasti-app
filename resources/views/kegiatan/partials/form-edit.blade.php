@@ -1,3 +1,21 @@
+@if (session('showDownloadAlert'))
+    <script>
+        Swal.fire({
+            title: 'Template berhasil diunggah!',
+            text: "Silahkan unduh dengan menekan tombol Unduh dibawah ini.",
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonColor: '#696cff',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Unduh',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('kegiatanob.download', $kegiatan->slug) }}";
+            }
+        });
+    </script>
+@endif
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
@@ -30,7 +48,7 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="unduhModalLabel">Unduh SPK / BAST</h5>
+                        <h5 class="modal-title" id="unduhModalLabel">Unduh SPK / BAST Kegiatan OB</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -68,8 +86,8 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div id="defaultFormControlHelp" class="form-text">
-                            (centang checkbox jika merupakan kegiatan O-B)
+                        <div id="defaultFormControlHelp" class="form-text text-primary">
+                            [centang checkbox jika merupakan kegiatan O-B]
                         </div>
                     </div>
                 </div>
@@ -96,11 +114,14 @@
                     <div class="mb-6">
                         <label class="form-label" for="beban_anggaran">Beban Anggaran</label>
                         <input type="text" class="form-control @error('beban_anggaran') is-invalid @enderror"
-                            id="beban_anggaran" name="beban_anggaran" placeholder="contoh: 2903.BMA.009.005.A.521213"
-                            required autofocus value="{{ old('beban_anggaran', $kegiatan->beban_anggaran) }}" />
+                            id="beban_anggaran" name="beban_anggaran" placeholder="XXXX.XXX.XXX.005.A.521213" required
+                            autofocus value="{{ old('beban_anggaran', $kegiatan->beban_anggaran) }}" />
                         @error('beban_anggaran')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <div id="defaultFormControlHelp" class="form-text text-primary">
+                            [contoh: 2903.BMA.009.005.A.521213]
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,19 +151,31 @@
                 <div class="col-md-4">
                     <div class="mb-6">
                         <label for="honor_nias" class="form-label">Honor Nias</label>
-                        <input class="form-control" type="text"
-                            value="{{ old('honor_nias', number_format($kegiatan->honor_nias, 0, ',', '.')) }}"
-                            id="honor_nias" name="honor_nias" placeholder="per satuan"
-                            oninput="formatRupiah(this)" />
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input class="form-control" type="text"
+                                value="{{ old('honor_nias', number_format($kegiatan->honor_nias, 0, ',', '.')) }}"
+                                id="honor_nias" name="honor_nias" placeholder="1.234.567.890"
+                                oninput="formatRupiah(this)" />
+                        </div>
+                        <div id="defaultFormControlHelp" class="form-text text-primary">
+                            [per 1 beban kerja]
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-6">
                         <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
-                        <input class="form-control" type="text"
-                            value="{{ old('honor_nias_barat', number_format($kegiatan->honor_nias_barat, 0, ',', '.')) }}"
-                            id="honor_nias_barat" name="honor_nias_barat" placeholder="per satuan"
-                            oninput="formatRupiah(this)" />
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input class="form-control" type="text"
+                                value="{{ old('honor_nias_barat', number_format($kegiatan->honor_nias_barat, 0, ',', '.')) }}"
+                                id="honor_nias_barat" name="honor_nias_barat" placeholder="1.234.567.890"
+                                oninput="formatRupiah(this)" />
+                        </div>
+                        <div id="defaultFormControlHelp" class="form-text text-primary">
+                            [per 1 beban kerja]
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,3 +187,4 @@
 </div>
 
 <script src="{{ asset('js/confirm-generate.js') }}"></script>
+// Cek apakah ada session dengan nama 'showDownloadAlert'

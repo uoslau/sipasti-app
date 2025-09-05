@@ -15,28 +15,34 @@ trait GeneratesBastDocuments
      *
      * @param Kegiatan $kegiatan
      * @param \Illuminate\Support\Collection $petugas_kegiatan
-     * @param string $templatePath Path absolut ke file template .docx
+     * @param string $template_path Path absolut ke file template .docx
      * @return string Path absolut ke file ZIP yang dihasilkan
      */
-    protected function generateAndZipBastDocuments(Kegiatan $kegiatan, $petugas_kegiatan, $templatePath)
+    protected function generateAndZipBastDocuments(Kegiatan $kegiatan, $petugas_kegiatan, $template_path)
     {
         $zip = new ZipArchive();
-        $zip_file_name = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
 
-        if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            throw new \Exception('Gagal membuat file zip.');
+        if (!$kegiatan->is_ob) {
+            $zip_file_name = storage_path('app/public/bast/BAST_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
+            $outputPath = 'app/public/bast/BAST_';
+            $prefix = 'BAST_';
+        } else {
+            $zip_file_name = storage_path('app/public/ob/OB_' . str_replace(' ', '_', $kegiatan->nama_kegiatan) . '.zip');
+            $outputPath = 'app/public/ob/OB_';
+            $prefix = 'OB_';
         }
 
-        $tempDirectory = storage_path('app/public/temp');
-        if (!is_dir($tempDirectory)) {
-            mkdir($tempDirectory, 0755, true);
+        if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', 'Gagal membuat file zip.');
         }
 
         $dateVars = $this->prepareDateVariables($kegiatan);
-        $bast_files = [];
+
+        $word_files = [];
 
         foreach ($petugas_kegiatan as $p) {
-            $templateProcessor = new TemplateProcessor($templatePath);
+            $templateProcessor = new TemplateProcessor($template_path);
 
             $nomor_bast         = str_pad($p->nomor_bast, 3, '0', STR_PAD_LEFT);
             $full_nomor_bast    = $nomor_bast . "/1201_BAST/" . $dateVars['tahun_bast'];
@@ -70,18 +76,22 @@ trait GeneratesBastDocuments
 
             $templateProcessor->setValues($data);
 
-            $output_path = storage_path('app/public/temp/BAST_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
+            $file_name = str_replace(' ', '_', $data['nama_mitra']) . '.docx';
+
+            $output_path = storage_path($outputPath . $file_name);
+
             $templateProcessor->saveAs($output_path);
 
-            $zip->addFile($output_path, 'BAST_' . str_replace(' ', '_', $data['nama_mitra']) . '.docx');
-            $bast_files[] = $output_path;
+            $zip->addFile($output_path, $prefix . $file_name);
+
+            $word_files[] = $output_path;
         }
 
         if ($zip->close() === false) {
             throw new \Exception('Gagal menyelesaikan pembuatan file zip. Periksa izin folder atau file zip yang mungkin terkunci.');
         }
 
-        foreach ($bast_files as $file) {
+        foreach ($word_files as $file) {
             if (file_exists($file)) {
                 unlink($file);
             }

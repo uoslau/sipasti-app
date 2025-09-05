@@ -84,21 +84,27 @@
             <div class="col-md-6">
                 <div class="mb-6">
                     <label for="honor_nias" class="form-label">Honor Nias</label>
-                    <input class="form-control" type="text" value="{{ old('honor_nias') }}" id="honor_nias"
-                        name="honor_nias" placeholder="1.234.567.890" oninput="formatRupiah(this)" />
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input class="form-control" type="text" value="{{ old('honor_nias') }}" id="honor_nias"
+                            name="honor_nias" placeholder="1.234.567.890" oninput="formatRupiah(this)" />
+                    </div>
                     <div id="defaultFormControlHelp" class="form-text text-primary">
-                        [per satuan]
+                        [per 1 beban kerja]
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-6">
                     <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
-                    <input class="form-control" type="text" value="{{ old('honor_nias_barat') }}"
-                        id="honor_nias_barat" name="honor_nias_barat" placeholder="1.234.567.890"
-                        oninput="formatRupiah(this)" />
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input class="form-control" type="text" value="{{ old('honor_nias_barat') }}"
+                            id="honor_nias_barat" name="honor_nias_barat" placeholder="1.234.567.890"
+                            oninput="formatRupiah(this)" />
+                    </div>
                     <div id="defaultFormControlHelp" class="form-text text-primary">
-                        [per satuan]
+                        [per 1 beban kerja]
                     </div>
                 </div>
             </div>

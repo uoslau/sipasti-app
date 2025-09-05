@@ -78,7 +78,7 @@
                             <div class="mb-6">
                                 <label for="beban_kerja" class="form-label">Beban Kerja</label>
                                 <input class="form-control" type="number" value="{{ old('beban_kerja') }}"
-                                    id="beban_kerja" name="beban_kerja" placeholder="Beban Kerja" />
+                                    id="beban_kerja" name="beban_kerja" placeholder="Jumlah Beban Kerja" />
                             </div>
                         </div>
                         <div class="col-md-6">

@@ -162,52 +162,6 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function uploadAndDownloadOB(Request $request, Kegiatan $kegiatan)
-    {
-        $request->validate([
-            'word_file' => 'required|file|mimes:docx|max:2048'
-        ]);
-
-        $uploaded_template_path = $request->file('word_file')->store('temp', 'public');
-        $absolute_template_path = Storage::disk('public')->path($uploaded_template_path);
-
-        $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
-            $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
-                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
-        })
-            ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-            ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
-            ->join('tim_kerjas', 'kegiatans.tim_kerja_id', '=', 'tim_kerjas.id')
-            ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
-            ->select(
-                'petugas_kegiatans.*',
-                'nomor_kontraks.nomor_kontrak',
-                'nomor_kontraks.nomor_bast',
-                'mitras.nama_mitra',
-                'mitras.alamat',
-                'tim_kerjas.alias_tim_kerja'
-            )
-            ->get();
-
-        if ($petugas_kegiatan->isEmpty()) {
-            Storage::disk('public')->delete($uploaded_template_path);
-            return to_route('kegiatan.edit', $kegiatan->slug)
-                ->with('error', 'Belum ada petugas di kegiatan ini!');
-        }
-
-        try {
-            $zip_file_path = $this->generateAndZipBastDocuments($kegiatan, $petugas_kegiatan, $absolute_template_path);
-
-            Storage::disk('public')->delete($uploaded_template_path);
-
-            return response()->download($zip_file_path)->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
-            Storage::disk('public')->delete($uploaded_template_path);
-            return to_route('kegiatan.edit', $kegiatan->slug)
-                ->with('error', $e->getMessage());
-        }
-    }
-
     /**
      * Update the specified resource in storage.
      */
