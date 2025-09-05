@@ -44,7 +44,6 @@ class KegiatanController extends Controller
 
         $kegiatan->appends(['search' => $search]);
 
-        // mengambil data tim kerja untuk create kegiatan
         $tim_kerja = TimKerja::all();
 
         $user = Auth::user();

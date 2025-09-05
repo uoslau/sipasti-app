@@ -66,7 +66,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             abort(404, 'File tidak ditemukan');
         }
         return Response::download($file_path, $nama_file);
-    })->name('file.download');
+    })->name('file.download')
+        ->withoutMiddleware('prevent-back-history');
 
     Route::get('/kontrak', [KontrakController::class, 'index'])
         ->name('kontrak.index');

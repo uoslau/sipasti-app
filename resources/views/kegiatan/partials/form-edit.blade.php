@@ -18,9 +18,21 @@
 @endif
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
+        <div class="d-flex align-items-center gap-2">
+            @php
+                $isGenerated = $kegiatan->is_generated;
+                $badgeClass = $isGenerated ? 'success' : 'danger';
+                $iconClass = $isGenerated ? 'bx bx-check-circle' : 'bx bx-x-circle';
+                $titleText = $isGenerated ? 'sudah generate' : 'belum generate';
+            @endphp
+            <span class="badge rounded-pill bg-label-{{ $badgeClass }}">
+                <i class="{{ $iconClass }}" data-bs-toggle="tooltip" title="{{ $titleText }}"></i>
+            </span>
+            <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
+        </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
                 Aksi
             </button>
             <ul class="dropdown-menu">
@@ -187,4 +199,3 @@
 </div>
 
 <script src="{{ asset('js/confirm-generate.js') }}"></script>
-// Cek apakah ada session dengan nama 'showDownloadAlert'

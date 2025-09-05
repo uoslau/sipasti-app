@@ -5,7 +5,7 @@
                 @csrf
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-2">
-                        <h5 class="mb-0">Daftar Mitra Bulan</h5>
+                        <h5 class="mb-0">Daftar Mitra</h5>
                         <select id="bulan" name="bulan" class="form-select w-auto" onchange="this.form.submit()">
                             @foreach ($nama_bulan as $key => $bulan)
                                 <option value="{{ $key }}" {{ $key == $bulan_sekarang ? 'selected' : '' }}>
