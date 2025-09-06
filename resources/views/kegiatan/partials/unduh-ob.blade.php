@@ -22,40 +22,7 @@
                     <h6>Daftar Placeholder yang Tersedia:</h6>
                     <p><small>Salin dan tempel placeholder berikut ke dalam file Word (.docx) Anda. Sistem akan
                             menggantinya secara otomatis saat dokumen diunduh.</small></p>
-                    <table>
-                        <tr>
-                            <td><code>${no_kontrak}</code></td>
-                            <td><code>: Nomor SPK (Hanya Nomor)</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${nomor_kontrak}</code></td>
-                            <td><code>: Nomor SPK (Nomor Lengkap)</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${no_bast}</code></td>
-                            <td><code>: Nomor BAST (Hanya Nomor)</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${nomor_bast}</code></td>
-                            <td><code>: Nomor BAST (Nomor Lengkap)</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${nama_kegiatan}</code></td>
-                            <td><code>: Nama Kegiatan</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${nama_mitra}</code></td>
-                            <td><code>: Nama Mitra</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${beban}</code></td>
-                            <td><code>: Volume / Beban Kerja</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>${alamat}</code></td>
-                            <td><code>: Alamat Mitra</code></td>
-                        </tr>
-                    </table>
+                    @include('kegiatan.partials.placeholder')
                 </div>
             </div>
             {{-- import --}}

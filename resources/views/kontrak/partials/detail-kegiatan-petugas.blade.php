@@ -29,8 +29,8 @@
                                 class="mb-0 activity-name">{{ $k['nama_kegiatan'] }}</a>
                             <small class="text-muted d-flex align-items-center gap-1">
                                 <i class='bx bx-calendar'></i>
-                                <span>{{ $k['tanggal_mulai'] }} &mdash;
-                                    {{ $k['tanggal_selesai'] }}</span>
+                                <small class="text-muted">{{ $k['tanggal_mulai'] }} &mdash;
+                                    {{ $k['tanggal_selesai'] }}</small>
                             </small>
                         </div>
 
@@ -51,7 +51,7 @@
                             </div>
 
                             <div class="text-end" style="width: 120px;">
-                                <p class="fw-semibold mb-0">
+                                <p class="fw-semibold mb-0 ">
                                     {{ formatNominal($k['honor']) }}
                                 </p>
                                 <small class="text-muted">Honor</small>
