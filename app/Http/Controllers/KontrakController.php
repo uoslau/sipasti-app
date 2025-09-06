@@ -49,7 +49,7 @@ class KontrakController extends Controller
             )
             ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-            ->join('wilayah_tugas', 'petugas_kegiatans.wilayah_tugas', '=', 'wilayah_tugas.kode_wilayah')
+            ->join('wilayah_tugas', 'mitras.wilayah_id', '=', 'wilayah_tugas.id')
             ->whereMonth('kegiatans.tanggal_mulai', $bulan_sekarang)
             ->whereYear('kegiatans.tanggal_mulai', $tahun_sekarang)
             ->whereNull('petugas_kegiatans.deleted_at')
@@ -66,7 +66,8 @@ class KontrakController extends Controller
         $nik_petugas = $data_petugas->pluck('nik');
 
         $kegiatan_petugas_bulan = Kegiatan::query()
-            ->select('petugas_kegiatans.nik', 'kegiatans.*')
+            ->with('timKerja')
+            ->select('petugas_kegiatans.*', 'kegiatans.*')
             ->join('petugas_kegiatans', function ($join) {
                 $join->on('kegiatans.id', '=', 'petugas_kegiatans.kegiatan_id')
                     ->whereNull('petugas_kegiatans.deleted_at');
@@ -90,10 +91,10 @@ class KontrakController extends Controller
                 $honor_max = $has_pengolahan ? $item->honor_pengolahan : $item->honor_pendataan;
             }
 
-            $rekap_kegiatan = $kegiatans->map(function ($kegiatan) {
+            $rekap_kegiatan = $kegiatans->map(function ($detail_kegiatan) {
                 $now = now();
-                $tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
-                $tanggal_selesai = Carbon::parse($kegiatan->tanggal_selesai);
+                $tanggal_mulai = Carbon::parse($detail_kegiatan->tanggal_mulai);
+                $tanggal_selesai = Carbon::parse($detail_kegiatan->tanggal_selesai);
 
                 if ($now->lessThan($tanggal_mulai)) {
                     $status = 'bx bx-calendar-exclamation'; //'pending';
@@ -103,14 +104,20 @@ class KontrakController extends Controller
                     $status = 'bx bx-task'; //'completed';
                 }
 
-                $nama_kegiatan = $kegiatan->is_ob ? '[O-B] ' . $kegiatan->nama_kegiatan : $kegiatan->nama_kegiatan;
+                $nama_kegiatan = $detail_kegiatan->is_ob ? '[O-B] ' . $detail_kegiatan->nama_kegiatan : $detail_kegiatan->nama_kegiatan;
 
                 return [
-                    'nama_kegiatan'   => $nama_kegiatan,
-                    'tanggal_mulai'   => $kegiatan->tanggal_mulai,
-                    'tanggal_selesai' => $kegiatan->tanggal_selesai,
-                    'tim_kerja_id'    => $kegiatan->tim_kerja_id,
-                    'status'          => $status,
+                    'nama_kegiatan'      => $nama_kegiatan,
+                    'slug'               => $detail_kegiatan->slug,
+                    'tanggal_mulai'      => $detail_kegiatan->tanggal_mulai,
+                    'tanggal_selesai'    => $detail_kegiatan->tanggal_selesai,
+                    'beban_anggaran'     => $detail_kegiatan->beban_anggaran,
+                    'alias_tim_kerja'    => $detail_kegiatan->timKerja->alias_tim_kerja,
+                    'bertugas_sebagai'   => $detail_kegiatan->bertugas_sebagai,
+                    'beban_kerja'        => $detail_kegiatan->beban_kerja,
+                    'satuan_beban_kerja' => $detail_kegiatan->satuan_beban_kerja,
+                    'honor'              => $detail_kegiatan->honor,
+                    'status'             => $status,
                 ];
             })->values();
 

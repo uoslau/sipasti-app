@@ -60,7 +60,7 @@
                                                 data-id="{{ $p['nik'] }}" />
                                         </div>
                                     </td>
-                                    <td class="px-0">
+                                    <td class="px-0 fw-semibold">
                                         <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             {{ ucwords(strtolower($p['nama_mitra'])) }}
                                         </div>

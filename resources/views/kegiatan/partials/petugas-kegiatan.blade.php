@@ -36,7 +36,7 @@
                 <tbody class="table-border-bottom">
                     @foreach ($petugas_kegiatan as $p)
                         <tr>
-                            <td>
+                            <td class="fw-semibold">
                                 <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     {{ ucwords(strtolower($p->nama_mitra)) }}
                                 </div>
