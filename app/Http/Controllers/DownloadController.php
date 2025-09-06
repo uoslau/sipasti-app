@@ -120,7 +120,7 @@ class DownloadController extends Controller
             ->whereMonth('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('m'))
             ->whereYear('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('Y'))
             ->whereIn('petugas_kegiatans.nik', $selected_petugas)
-            ->select('petugas_kegiatans.nik', 'petugas_kegiatans.kegiatan_id', 'petugas_kegiatans.wilayah_tugas', 'petugas_kegiatans.beban_kerja', 'petugas_kegiatans.satuan_beban_kerja', 'petugas_kegiatans.honor', 'kegiatans.nama_kegiatan', 'kegiatans.tim_kerja_id', 'kegiatans.is_ob', 'kegiatans.tanggal_mulai', 'kegiatans.tanggal_selesai', 'kegiatans.beban_anggaran', 'nomor_kontraks.nomor_kontrak', 'mitras.nama_mitra', 'mitras.posisi', 'mitras.alamat', 'mitras.pekerjaan')
+            ->select('petugas_kegiatans.nik', 'petugas_kegiatans.kegiatan_id', 'petugas_kegiatans.beban_kerja', 'petugas_kegiatans.satuan_beban_kerja', 'petugas_kegiatans.honor', 'kegiatans.nama_kegiatan', 'kegiatans.tim_kerja_id', 'kegiatans.is_ob', 'kegiatans.tanggal_mulai', 'kegiatans.tanggal_selesai', 'kegiatans.beban_anggaran', 'nomor_kontraks.nomor_kontrak', 'mitras.nama_mitra', 'mitras.posisi', 'mitras.wilayah_id', 'mitras.alamat', 'mitras.pekerjaan')
             ->distinct()
             ->get();
 
@@ -191,7 +191,7 @@ class DownloadController extends Controller
             // sebenaranya disini seorang petugas hanya memiliki 1 wilayah tugas
             $data_petugas_kegiatan   = $r['kegiatan'];
 
-            $data_honor = WilayahTugas::where('kode_wilayah', $data_petugas_kegiatan[0]->wilayah_tugas)
+            $data_honor = WilayahTugas::where('id', $data_petugas_kegiatan[0]->wilayah_id)
                 ->select('honor_pendataan', 'honor_pengolahan')
                 ->first();
 
@@ -214,7 +214,7 @@ class DownloadController extends Controller
             $full_nomor_kontrak = str_pad($r['kegiatan'][0]->nomor_kontrak, 3, '0', STR_PAD_LEFT) . "/1201_MITRA/" . $tahun_kontrak;
 
             $data_to_ins = [
-                'bulan_kegiatan_kapital' => strtoupper($bulan_kegiatan),
+                'bulan_kapital'          => strtoupper($bulan_kegiatan),
                 'tahun_kegiatan'         => $tahun_kegiatan,
                 'nomor_kontrak'          => $full_nomor_kontrak,
                 'hari'                   => $hari_kontrak,
@@ -225,13 +225,15 @@ class DownloadController extends Controller
                 'pekerjaan'              => $data_petugas_kegiatan[0]->pekerjaan,
                 'alamat'                 => $data_petugas_kegiatan[0]->alamat,
                 'bulan_kegiatan'         => $bulan_kegiatan,
-                'total_honor'            => formatNominal($total_honor_dibayar),
+                'total_honor'            => number_format($total_honor_dibayar, 0, ',', '.'),
                 'total_honor_terbilang'  => ucfirst($total_honor_dibayar_terbilang)
             ];
 
             $templateProcessor->setValues($data_to_ins);
 
             $templateProcessor->cloneRow('no', count($data_petugas_kegiatan));
+
+            /** @var \stdClass $kegiatan_data */
             foreach ($data_petugas_kegiatan as $index => $kegiatan_data) {
                 $rowIndex = $index + 1;
                 $templateProcessor->setValue("no#$rowIndex", $rowIndex);
