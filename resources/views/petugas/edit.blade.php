@@ -47,19 +47,10 @@
                                 <div class="col-md-6">
                                     <div class="mb-6">
                                         <label for="wilayah_tugas" class="form-label">Wilayah Tugas</label>
-                                        <select class="form-select" id="wilayah_tugas" name="wilayah_tugas">
-                                            <option selected disabled>Pilih Wilayah Tugas</option>
-                                            @foreach ($wilayah_tugas as $w)
-                                                @if (old('kode_wilayah', $petugas_kegiatan->wilayah_tugas) == $w->kode_wilayah)
-                                                    <option value="{{ $w->kode_wilayah }}" selected>
-                                                        {{ $w->nama_wilayah }}
-                                                    </option>
-                                                @else
-                                                    <option value="{{ $w->kode_wilayah }}">{{ $w->nama_wilayah }}
-                                                    </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
+                                        <input class="form-control" type="text" id="wilayah_tugas"
+                                            name="wilayah_tugas" placeholder="Otomatis Terisi"
+                                            value="{{ old('nama_wilayah', $petugas_kegiatan->mitra->wilayahTugas->nama_wilayah) }}"
+                                            disabled readonly />
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <button type="submit" class="btn btn-primary ms-auto">Edit Petugas</button>
+                                <button type="submit" class="btn btn-primary ms-auto">Edit</button>
                             </div>
                         </form>
                     </div>

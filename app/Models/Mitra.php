@@ -14,4 +14,9 @@ class Mitra extends Model
     {
         return $this->hasMany(PetugasKegiatan::class, 'nik', 'nik');
     }
+
+    public function wilayahTugas()
+    {
+        return $this->belongsTo(WilayahTugas::class, 'wilayah_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Mitra;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,14 +17,15 @@ class PetugasKegiatanFactory extends Factory
      */
     public function definition(): array
     {
+        $mitra = Mitra::inRandomOrder()->first();
+
         return [
-            'nik' => $this->faker->numberBetween(1, 250),
+            'nik' => $mitra->nik,
             'kegiatan_id' => $this->faker->numberBetween(1, 50),
-            'bertugas_sebagai' => $this->faker->jobTitle(),
-            'wilayah_tugas' => $this->faker->randomElement(['1201', '1225']),
-            'beban_kerja' => $this->faker->numberBetween(1, 100),
-            'satuan_beban_kerja' => $this->faker->word(),
-            'honor' => $this->faker->numberBetween(100000, 1000000),
+            'bertugas_sebagai' => $this->faker->randomElement(['PCL']),
+            'beban_kerja' => $this->faker->numberBetween(1, 10),
+            'satuan_beban_kerja' => $this->faker->randomElement(['Dokumen']),
+            'honor' => $this->faker->numberBetween(10000, 11000),
         ];
     }
 }

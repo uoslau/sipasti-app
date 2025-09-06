@@ -42,6 +42,7 @@ class PetugasImport implements ToCollection
                 $wilayah_tugas      = trim(Arr::get($row, 4, ''));
                 $beban_kerja        = (int) Arr::get($row, 5, 0);
                 $satuan_beban       = trim(Arr::get($row, 6, ''));
+
                 $validator = Validator::make(
                     [
                         'nik'              => $nik,
@@ -75,30 +76,32 @@ class PetugasImport implements ToCollection
 
                 $processed_nik[] = $nik;
 
-                $nama_mitra = Mitra::where('nik', $nik)->get('nama_mitra')->first();
+                $mitra = Mitra::where('nik', $nik)->firstOrFail();
+
+                $nama_mitra = $mitra->nama_mitra;
 
                 $cek_mitra = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
                     ->where('nik', $nik)
                     ->exists();
+
                 if ($cek_mitra) {
                     $errors[] = "Baris ke-" . ($index + 1) . ": {$nama_mitra} sudah terdaftar di kegiatan ini.";
                     continue;
                 }
 
-                $honor = $wilayah_tugas == "1201"
+                $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
                     ? $kegiatan->honor_nias * $beban_kerja
                     : $kegiatan->honor_nias_barat * $beban_kerja;
 
                 PetugasKegiatan::create([
                     'nik'                => $nik,
-                    'nama_mitra'         => $nama_mitra,
                     'kegiatan_id'        => $kegiatan->id,
                     'bertugas_sebagai'   => $bertugas_sebagai,
-                    'wilayah_tugas'      => $wilayah_tugas,
                     'beban_kerja'        => $beban_kerja,
                     'satuan_beban_kerja' => $satuan_beban,
                     'honor'              => $honor,
                 ]);
+
                 $imported_count++;
             }
 

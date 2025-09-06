@@ -76,9 +76,11 @@ class PetugasImportUpdate implements ToCollection
 
                 $processed_nik[] = $nik;
 
-                $nama_mitra = Mitra::where('nik', $nik)->value('nama_mitra');
+                $mitra = Mitra::where('nik', $nik)->firstOrFail();
 
-                $honor = $wilayah_tugas == "1201"
+                $nama_mitra = $mitra->nama_mitra;
+
+                $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
                     ? $kegiatan->honor_nias * $beban_kerja
                     : $kegiatan->honor_nias_barat * $beban_kerja;
 
@@ -88,9 +90,7 @@ class PetugasImportUpdate implements ToCollection
 
                 if ($petugas) {
                     $petugas->update([
-                        'nama_mitra'         => $nama_mitra,
                         'bertugas_sebagai'   => $bertugas_sebagai,
-                        'wilayah_tugas'      => $wilayah_tugas,
                         'beban_kerja'        => $beban_kerja,
                         'satuan_beban_kerja' => $satuan_beban,
                         'honor'              => $honor,

@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
-        <h5 class="mb-0 me-2">Daftar Petugas {{ $petugas_kegiatan_updated_at }}</h5>
+        <h5 class="mb-0 me-2">Daftar Petugas</h5>
         <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
             Tambah
         </a>
@@ -49,7 +49,7 @@
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-label-primary">
-                                    {{ $p->wilayah_tugas == '1201' ? 'Nias' : 'Nias Barat' }}
+                                    {{ $p->nama_wilayah }}
                                 </span>
                             </td>
                             <td class="text-center">
@@ -87,8 +87,11 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="pagination pagination-sm justify-content-end pt-3">
-                {{ $petugas_kegiatan->onEachSide(0)->links() }}
+            <div class="d-flex justify-content-between align-items-center px-5 py-3">
+                <small class="text-muted">*terakhir diubah: {{ $petugas_kegiatan_updated_at }}</small>
+                <div class="pagination pagination-sm">
+                    {{ $petugas_kegiatan->onEachSide(0)->links() }}
+                </div>
             </div>
         </div>
     @endif

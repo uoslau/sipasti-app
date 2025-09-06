@@ -21,6 +21,7 @@ class MitraFactory extends Factory
             'nama_mitra' => $this->faker->name(),
             'posisi' => $this->faker->randomElement(['Mitra Pendataan', 'Mitra Pengolahan', 'Mitra (Pendataan dan Pengolahan)']),
             'email' => $this->faker->unique()->safeEmail(),
+            'wilayah_id' => $this->faker->numberBetween(1, 2),
             'alamat' => $this->faker->address(),
             'tanggal_lahir' => $this->faker->date(),
             'npwp' => $this->faker->optional()->numerify('##.###.###.###.###'),

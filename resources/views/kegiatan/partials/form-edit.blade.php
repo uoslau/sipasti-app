@@ -28,7 +28,7 @@
             <span class="badge rounded-pill bg-label-{{ $badgeClass }}">
                 <i class="{{ $iconClass }}" data-bs-toggle="tooltip" title="{{ $titleText }}"></i>
             </span>
-            <h5 class="mb-0">Edit Kegiatan {{ $kegiatan_updated_at }}</h5>
+            <h5 class="mb-0">Edit Kegiatan</h5>
         </div>
         <div class="btn-group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
@@ -108,7 +108,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-6">
-                        <label for="tangal_mulai" class="form-label">Tanggal Mulai</label>
+                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
                         <input class="form-control" type="date"
                             value="{{ old('tanggal_mulai', $kegiatan->tanggal_mulai) }}" id="tanggal_mulai"
                             name="tanggal_mulai" />
@@ -192,6 +192,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">*terakhir diubah: {{ $kegiatan_updated_at }}</small>
                 <button type="submit" class="btn btn-primary ms-auto">Edit</button>
             </div>
         </form>

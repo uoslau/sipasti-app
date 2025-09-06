@@ -9,4 +9,9 @@ class WilayahTugas extends Model
 {
     /** @use HasFactory<\Database\Factories\WilayahTugasFactory> */
     use HasFactory;
+
+    public function mitra()
+    {
+        return $this->hasMany(Mitra::class, 'wilayah_id', 'id');
+    }
 }

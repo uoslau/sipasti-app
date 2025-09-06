@@ -62,17 +62,8 @@
                         <div class="col-md-6">
                             <div class="mb-6">
                                 <label for="wilayah_tugas" class="form-label">Wilayah Tugas</label>
-                                <select class="form-select" id="wilayah_tugas" name="wilayah_tugas">
-                                    <option selected disabled>Pilih Wilayah Tugas</option>
-                                    @foreach ($wilayah_tugas as $w)
-                                        @if (old('wilayah_tugas') == $w->kode_wilayah)
-                                            <option value="{{ $w->kode_wilayah }}" selected>{{ $w->nama_wilayah }}
-                                            </option>
-                                        @else
-                                            <option value="{{ $w->kode_wilayah }}">{{ $w->nama_wilayah }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
+                                <input class="form-control" type="text" value="{{ old('wilayah_id') }}"
+                                    id="wilayah_tugas" name="wilayah_tugas" placeholder="Otomatis Terisi" disabled />
                             </div>
                         </div>
                     </div>
@@ -252,6 +243,7 @@
 
         document.getElementById('nama_mitra').value = formattedName;
         document.getElementById('nik').value = item.nik;
+        document.getElementById('wilayah_tugas').value = item.wilayah_tugas.nama_wilayah;
         document.getElementById('mitra-list').innerHTML = '';
         activeIndex = -1;
     }

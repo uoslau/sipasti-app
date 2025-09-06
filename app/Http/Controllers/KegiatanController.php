@@ -129,16 +129,18 @@ class KegiatanController extends Controller
 
         // mengambil nama petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
         $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+            ->join('wilayah_tugas', 'wilayah_tugas.id', '=', 'mitras.wilayah_id')
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->orderBy('mitras.nama_mitra', 'asc')
-            ->select('petugas_kegiatans.*', 'mitras.nama_mitra')
+            ->select('petugas_kegiatans.*', 'mitras.nama_mitra', 'wilayah_tugas.nama_wilayah')
             ->paginate(10);
+        // dd($petugas_kegiatan);
 
-        $wilayah_tugas = WilayahTugas::all();
+        // $wilayah_tugas = WilayahTugas::all();
 
         // menambahkan keterangan waktu update kegiatan dan petugas_kegiatan
         $kegiatan_updated_at = $kegiatan->created_at != $kegiatan->updated_at
-            ? '- [Terakhir Diupdate: ' . $kegiatan->updated_at->format('d M Y H:i') . ']'
+            ? $kegiatan->updated_at->format('d M Y H:i')
             : '';
 
         $petugas_created_at = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
@@ -148,13 +150,13 @@ class KegiatanController extends Controller
             ->orderBy('updated_at', 'desc')
             ->value('updated_at');
         $petugas_kegiatan_updated_at = $petugas_created_at != $petugas_updated_at
-            ? '- [Terakhir Diupdate: ' . $petugas_updated_at->format('d M Y H:i') . ']'
+            ? $petugas_updated_at->format('d M Y H:i')
             : '';
 
         return view('kegiatan.edit', [
             'kegiatan'                      => $kegiatan,
             'petugas_kegiatan'              => $petugas_kegiatan,
-            'wilayah_tugas'                 => $wilayah_tugas,
+            // 'wilayah_tugas'                 => $wilayah_tugas,
             'tim_kerja'                     => $tim_kerja,
             'kegiatan_updated_at'           => $kegiatan_updated_at,
             'petugas_kegiatan_updated_at'   => $petugas_kegiatan_updated_at,

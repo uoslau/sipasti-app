@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama_mitra');
             $table->string('posisi');
             $table->string('email');
+            $table->foreignId('wilayah_id')->constrained('wilayah_tugas')->onDelete('cascade');
             $table->string('alamat');
             $table->date('tanggal_lahir');
             $table->string('npwp')->nullable();

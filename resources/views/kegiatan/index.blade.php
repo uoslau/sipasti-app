@@ -10,8 +10,8 @@
                     <form action="{{ route('kegiatan.index') }}" method="GET" class="mb-0">
                         <div class="input-group">
                             <span class="input-group-text bg-label-primary"><i class='bx bx-search'></i></span>
-                            <input type="search" name="search" class="form-control" placeholder="Cari kegiatan..."
-                                value="{{ $search ?? '' }}" />
+                            <input type="search" name="search" class="form-control"
+                                placeholder="Cari kegiatan / tim kerja" value="{{ $search ?? '' }}" />
                         </div>
                     </form>
 
@@ -123,7 +123,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="pagination pagination-sm justify-content-end pt-3">
+                    <div class="pagination pagination-sm justify-content-end px-5 py-3">
                         {{ $kegiatan->onEachSide(0)->links() }}
                     </div>
                 </div>

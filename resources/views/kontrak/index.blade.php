@@ -25,7 +25,7 @@
                     <div class="d-flex align-items-center gap-2">
                         <div class="input-group">
                             <span class="input-group-text bg-label-primary"><i class='bx bx-search'></i></span>
-                            <input class="form-control" type="search" placeholder="Cari mitra..." id="filter-nama" />
+                            <input class="form-control" type="search" placeholder="Cari mitra" id="filter-nama" />
                         </div>
                         <a href="#" id="downloadButton" class="btn btn-primary">Unduh</a>
                     </div>

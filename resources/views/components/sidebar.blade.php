@@ -60,7 +60,7 @@
             <a href="#" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>
+                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
 
@@ -89,7 +89,7 @@
             <a href="#" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user-circle"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Profil</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">soon</div>
+                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
         <li class="menu-item">

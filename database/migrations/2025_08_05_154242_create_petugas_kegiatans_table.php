@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nik');
             $table->foreignId('kegiatan_id')->constrained('kegiatans')->onDelete('cascade');
             $table->string('bertugas_sebagai');
-            $table->string('wilayah_tugas');
             $table->integer('beban_kerja')->default(0);
             $table->string('satuan_beban_kerja');
             $table->integer('honor');
