@@ -217,17 +217,25 @@ class KegiatanController extends Controller
                 $nomorKontrakController->generate($kegiatan);
             }
 
-            // update honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
-            PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-                ->where('wilayah_tugas', '1201')
+            DB::table('petugas_kegiatans')
+                ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+                ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+                ->where('mitras.wilayah_id', '1')
                 ->update([
-                    'honor' => $validated_data['is_ob'] ? ($validated_data['honor_nias']) : DB::raw('beban_kerja * ' . ($validated_data['honor_nias'] ?? 0))
+                    'honor' => $validated_data['is_ob']
+                        ? ($validated_data['honor_nias'])
+                        : DB::raw('beban_kerja * ' . ($validated_data['honor_nias'] ?? 0))
                 ]);
 
-            PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
-                ->where('wilayah_tugas', '1225')
+            // Untuk Wilayah Nias Barat (1225)
+            DB::table('petugas_kegiatans')
+                ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+                ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+                ->where('mitras.wilayah_id', '2')
                 ->update([
-                    'honor' => $validated_data['is_ob'] ? ($validated_data['honor_nias_barat']) : DB::raw('beban_kerja * ' . ($validated_data['honor_nias_barat'] ?? 0))
+                    'honor' => $validated_data['is_ob']
+                        ? ($validated_data['honor_nias_barat'])
+                        : DB::raw('beban_kerja * ' . ($validated_data['honor_nias_barat'] ?? 0))
                 ]);
 
             DB::commit();
