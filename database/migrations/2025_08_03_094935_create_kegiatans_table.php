@@ -19,7 +19,8 @@ return new class extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->string('beban_anggaran');
-            $table->foreignId('tim_kerja_id')->constrained('tim_kerjas')->onDelete('cascade');
+            $table->foreignId('fungsi_id')->default(6)->constrained('fungsis')->onDelete('cascade');
+            $table->foreignId('tim_kerja_id')->default(12)->constrained('tim_kerjas')->onDelete('cascade');
             $table->integer('honor_nias')->nullable();
             $table->integer('honor_nias_barat')->nullable();
             $table->boolean('is_generated')->default(false);

@@ -80,7 +80,11 @@
                                     </td>
                                     <td class="text-center">
                                         <span class="badge bg-label-primary">
-                                            {{ $k->timkerja->alias_tim_kerja }}
+                                            @if ($k->tim_kerja_id == 12)
+                                                {{ $k->fungsi->fungsi }}
+                                            @else
+                                                {{ $k->timkerja->alias_tim_kerja }}
+                                            @endif
                                         </span>
                                     </td>
                                     <td class="text-center">

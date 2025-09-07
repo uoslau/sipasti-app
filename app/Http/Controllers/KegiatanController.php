@@ -27,8 +27,8 @@ class KegiatanController extends Controller
         $search = $request->query('search');
 
         // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
-        $query = Kegiatan::with(['petugasKegiatan', 'timKerja'])
-            ->select('nama_kegiatan', 'is_generated', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'tim_kerja_id')
+        $query = Kegiatan::with(['petugasKegiatan', 'fungsi', 'timKerja'])
+            ->select('nama_kegiatan', 'is_generated', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'fungsi_id', 'tim_kerja_id')
             ->withSum('petugasKegiatan', 'honor')
             ->orderBy('id', 'desc');
 

@@ -30,6 +30,11 @@ class Kegiatan extends Model
         return 'slug';
     }
 
+    public function fungsi()
+    {
+        return $this->belongsTo(Fungsi::class, 'fungsi_id');
+    }
+
     public function timKerja()
     {
         return $this->belongsTo(TimKerja::class, 'tim_kerja_id');
