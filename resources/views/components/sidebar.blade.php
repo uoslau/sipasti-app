@@ -1,6 +1,6 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-        <a href="index.html" class="app-brand-link">
+        <a href="{{ route('dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
                 <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -69,13 +69,13 @@
         </li>
 
         <li class="menu-item {{ request()->is('kegiatan*') ? 'active' : '' }}">
-            <a href="/kegiatan" class="menu-link">
+            <a href="{{ route('kegiatan.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-task"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Kegiatan / BAST</div>
             </a>
         </li>
         <li class="menu-item {{ request()->is('kontrak*') ? 'active' : '' }}">
-            <a href="/kontrak" class="menu-link">
+            <a href="{{ route('kontrak.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Kontrak / SPK</div>
             </a>
@@ -98,7 +98,7 @@
                 <i class="menu-icon tf-icons bx bx-log-out-circle"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Log out</div>
             </a>
-            <form id="logout-form" action="/logout" method="POST" style="display: none;">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>
         </li>

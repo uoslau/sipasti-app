@@ -105,7 +105,7 @@ class DownloadController extends Controller
             }
             $pesan_error .= '</ul>Silakan generate terlebih dahulu.';
 
-            return to_route('kontrak.index')
+            return redirect()->back()
                 ->with('error', $pesan_error);
         }
 
@@ -157,7 +157,7 @@ class DownloadController extends Controller
         }
 
         if (empty($rekap_kegiatan_petugas_bulan)) {
-            return to_route('kontrak.index')
+            return redirect()->back()
                 ->with('error', "Semua petugas yang dipilih <b>terlibat dalam kegiatan O-B</b> dan tidak dibuatkan SPK.");
         }
 

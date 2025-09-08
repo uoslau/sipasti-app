@@ -2,33 +2,36 @@ document.addEventListener("DOMContentLoaded", function () {
     const copyButtons = document.querySelectorAll(".btn-copy");
 
     copyButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            const placeholderText =
-                this.closest("tr").querySelector("code").innerText;
+        button.addEventListener("click", () => {
+            const tableRow = button.closest("tr");
 
-            const tempTextarea = document.createElement("textarea");
-            tempTextarea.value = placeholderText;
-            document.body.appendChild(tempTextarea);
-            tempTextarea.select();
+            const codeElement = tableRow.querySelector(
+                "td:first-child code.text-primary"
+            );
 
-            try {
-                document.execCommand("copy");
+            if (codeElement) {
+                const textToCopy = codeElement.textContent;
 
-                const originalHtml = this.innerHTML;
-                this.innerHTML = `<i class='bx bx-check bx-xs me-1'></i>Tersalin!`;
-                this.classList.remove("btn-outline-primary");
-                this.classList.add("btn-primary");
+                navigator.clipboard
+                    .writeText(textToCopy)
+                    .then(() => {
+                        const originalText = button.innerHTML;
+                        button.innerHTML =
+                            "<i class='bx bx-check bx-xs me-1'></i>Tersalin!";
+                        button.classList.add("btn-primary");
+                        button.classList.remove("btn-outline-primary");
 
-                setTimeout(() => {
-                    this.innerHTML = originalHtml;
-                    this.classList.remove("btn-primary");
-                    this.classList.add("btn-outline-primary");
-                }, 1500);
-            } catch (err) {
-                console.error("Gagal menyalin teks: ", err);
+                        setTimeout(() => {
+                            button.innerHTML = originalText;
+                            button.classList.remove("btn-primary");
+                            button.classList.add("btn-outline-primary");
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Gagal menyalin teks: ", err);
+                        alert("Gagal menyalin teks.");
+                    });
             }
-
-            document.body.removeChild(tempTextarea);
         });
     });
 });

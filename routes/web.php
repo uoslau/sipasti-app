@@ -12,7 +12,7 @@ use App\Http\Controllers\PetugasKegiatanController;
 
 Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'authenticate']);
-Route::post('/logout', [LoginController::class, 'logout']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])

@@ -88,7 +88,7 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-between align-items-center px-5 py-3">
-                <small class="text-muted">*terakhir diubah: {{ $petugas_kegiatan_updated_at }}</small>
+                <small class="text-muted">{{ $petugas_kegiatan_updated_at }}</small>
                 <div class="pagination pagination-sm">
                     {{ $petugas_kegiatan->onEachSide(0)->links() }}
                 </div>

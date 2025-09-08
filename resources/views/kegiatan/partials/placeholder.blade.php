@@ -15,8 +15,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${nomor_kontrak}</code></td>
-                <td><code>Nomor SPK lengkap (Contoh: 001/1201_MITRA/2025)</code></td>
+                <td><code class="text-primary" class="text-primary">${nomor_kontrak}</code></td>
+                <td><code class="text-primary">Nomor SPK lengkap (Contoh: 001/1201_MITRA/2025)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -24,8 +24,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${no_kontrak}</code></td>
-                <td><code>Nomor SPK (Hanya Nomor)</code></td>
+                <td><code class="text-primary">${no_kontrak}</code></td>
+                <td><code class="text-primary">Nomor SPK (Hanya Nomor)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -33,8 +33,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${nomor_bast}</code></td>
-                <td><code>Nomor BAST lengkap (Contoh: 001/1201_BAST/2025)</code></td>
+                <td><code class="text-primary">${nomor_bast}</code></td>
+                <td><code class="text-primary">Nomor BAST lengkap (Contoh: 001/1201_BAST/2025)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -42,8 +42,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${no_bast}</code></td>
-                <td><code>Nomor BAST (Hanya Nomor)</code></td>
+                <td><code class="text-primary">${no_bast}</code></td>
+                <td><code class="text-primary">Nomor BAST (Hanya Nomor)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -60,8 +60,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${nama_mitra}</code></td>
-                <td><code>Nama Lengkap Mitra</code></td>
+                <td><code class="text-primary">${nama_mitra}</code></td>
+                <td><code class="text-primary">Nama Lengkap Mitra</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -69,8 +69,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${alamat}</code></td>
-                <td><code>Alamat Mitra</code></td>
+                <td><code class="text-primary">${alamat}</code></td>
+                <td><code class="text-primary">Alamat Mitra</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -78,8 +78,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${pekerjaan}</code></td>
-                <td><code>Pekerjaan Mitra</code></td>
+                <td><code class="text-primary">${pekerjaan}</code></td>
+                <td><code class="text-primary">Pekerjaan Mitra</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -96,8 +96,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${nama_kegiatan}</code></td>
-                <td><code>Nama kegiatan</code></td>
+                <td><code class="text-primary">${nama_kegiatan}</code></td>
+                <td><code class="text-primary">Nama kegiatan</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -105,8 +105,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${beban}</code></td>
-                <td><code>Volume / Beban Kerja (Contoh: 10)</code></td>
+                <td><code class="text-primary">${beban}</code></td>
+                <td><code class="text-primary">Volume / Beban Kerja (Contoh: 10)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -114,8 +114,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${satuan}</code></td>
-                <td><code>Satuan Volume / Beban Kerja (Contoh: Dokumen)</code></td>
+                <td><code class="text-primary">${satuan}</code></td>
+                <td><code class="text-primary">Satuan Volume / Beban Kerja (Contoh: Dokumen)</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin
@@ -123,8 +123,8 @@
                 </td>
             </tr>
             <tr>
-                <td><code>${tim_kerja}</code></td>
-                <td><code>Tim Kerja</code></td>
+                <td><code class="text-primary">${tim_kerja}</code></td>
+                <td><code class="text-primary">Tim Kerja</code></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-outline-secondary btn-copy">
                         <i class='bx bx-copy bx-xs me-1'></i>Salin

@@ -192,7 +192,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">*terakhir diubah: {{ $kegiatan_updated_at }}</small>
+                <small class="text-muted">{{ $kegiatan_updated_at }}</small>
                 <button type="submit" class="btn btn-primary ms-auto">Edit</button>
             </div>
         </form>

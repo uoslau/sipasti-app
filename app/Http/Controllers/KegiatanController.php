@@ -140,7 +140,7 @@ class KegiatanController extends Controller
 
         // menambahkan keterangan waktu update kegiatan dan petugas_kegiatan
         $kegiatan_updated_at = $kegiatan->created_at != $kegiatan->updated_at
-            ? $kegiatan->updated_at->format('d M Y H:i')
+            ? '*terakhir diubah: ' . $kegiatan->updated_at->format('d M Y H:i')
             : '';
 
         $petugas_created_at = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
@@ -150,7 +150,7 @@ class KegiatanController extends Controller
             ->orderBy('updated_at', 'desc')
             ->value('updated_at');
         $petugas_kegiatan_updated_at = $petugas_created_at != $petugas_updated_at
-            ? $petugas_updated_at->format('d M Y H:i')
+            ? '*terakhir diubah: ' . $petugas_updated_at->format('d M Y H:i')
             : '';
 
         return view('kegiatan.edit', [
