@@ -134,9 +134,8 @@ class KegiatanController extends Controller
             ->orderBy('mitras.nama_mitra', 'asc')
             ->select('petugas_kegiatans.*', 'mitras.nama_mitra', 'wilayah_tugas.nama_wilayah')
             ->paginate(10);
-        // dd($petugas_kegiatan);
 
-        // $wilayah_tugas = WilayahTugas::all();
+        $is_empty_petugas = $petugas_kegiatan->isEmpty();
 
         // menambahkan keterangan waktu update kegiatan dan petugas_kegiatan
         $kegiatan_updated_at = $kegiatan->created_at != $kegiatan->updated_at
@@ -156,8 +155,8 @@ class KegiatanController extends Controller
         return view('kegiatan.edit', [
             'kegiatan'                      => $kegiatan,
             'petugas_kegiatan'              => $petugas_kegiatan,
-            // 'wilayah_tugas'                 => $wilayah_tugas,
             'tim_kerja'                     => $tim_kerja,
+            'is_empty_petugas'              => $is_empty_petugas,
             'kegiatan_updated_at'           => $kegiatan_updated_at,
             'petugas_kegiatan_updated_at'   => $petugas_kegiatan_updated_at,
         ]);

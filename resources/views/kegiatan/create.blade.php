@@ -41,6 +41,9 @@
                     <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
                     <input class="form-control" type="date" value="{{ old('tanggal_selesai') }}" id="tanggal_selesai"
                         name="tanggal_selesai" />
+                    <div id="defaultFormControlHelp" class="form-text text-primary">
+                        [tanggal selesai harus dalam bulan yang sama]
+                    </div>
                 </div>
             </div>
         </div>

@@ -57,7 +57,7 @@
 
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is('/*') ? 'active' : '' }}">
-            <a href="{{ route('dashboard.index') }}" class="menu-link">
+            <a href="#" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
                 <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
@@ -78,6 +78,18 @@
             <a href="{{ route('kontrak.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Kontrak / SPK</div>
+            </a>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Mitra</span>
+        </li>
+
+        <li class="menu-item {{ request()->is('mitra*') ? 'active' : '' }}">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-id-card"></i>
+                <div class="text-truncate" data-i18n="Dashboards">Mitra</div>
+                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
 

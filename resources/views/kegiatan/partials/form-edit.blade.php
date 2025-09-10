@@ -36,8 +36,8 @@
                 Aksi
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item {{ $kegiatan->is_generated ? 'disabled' : '' }}" href="javascript:void(0);"
-                        onclick="confirmGenerate()">Generate</a>
+                <li><a class="dropdown-item {{ $kegiatan->is_generated || $is_empty_petugas ? 'disabled' : '' }}"
+                        href="javascript:void(0);" onclick="confirmGenerate()">Generate</a>
                 </li>
                 <li>
                     <hr class="dropdown-divider" />
