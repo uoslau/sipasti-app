@@ -242,7 +242,7 @@ class DownloadController extends Controller
                 $templateProcessor->setValue("tanggal_mulai#$rowIndex", Carbon::parse($kegiatan_data->tanggal_mulai)->format('d-m-Y'));
                 $templateProcessor->setValue("tanggal_selesai#$rowIndex", Carbon::parse($kegiatan_data->tanggal_selesai)->format('d-m-Y'));
                 $templateProcessor->setValue("beban#$rowIndex", $kegiatan_data->beban_kerja);
-                $templateProcessor->setValue("satuan#$rowIndex", $kegiatan_data->satuan_beban_kerja);
+                $templateProcessor->setValue("satuan#$rowIndex", ucwords(strtolower($kegiatan_data->satuan_beban_kerja)));
                 $templateProcessor->setValue("honor#$rowIndex", number_format($kegiatan_data->honor, 0, ',', '.'));
                 $templateProcessor->setValue("mata_anggaran#$rowIndex", $kegiatan_data->beban_anggaran);
             }
