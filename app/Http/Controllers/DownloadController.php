@@ -225,6 +225,7 @@ class DownloadController extends Controller
                 'pekerjaan'              => $data_petugas_kegiatan[0]->pekerjaan,
                 'alamat'                 => $data_petugas_kegiatan[0]->alamat,
                 'bulan_kegiatan'         => $bulan_kegiatan,
+                'bulan_kegiatan_kapital' => strtoupper($bulan_kegiatan),
                 'total_honor'            => number_format($total_honor_dibayar, 0, ',', '.'),
                 'total_honor_terbilang'  => ucfirst($total_honor_dibayar_terbilang)
             ];
