@@ -15,7 +15,10 @@ Route::post('/login', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])
+    // sementara di comment dulu sebelum fix dashboard & diarahin ke kegiatan index
+    // Route::get('/', [DashboardController::class, 'index'])
+    //     ->name('dashboard.index');
+    Route::get('/', [KegiatanController::class, 'index'])
         ->name('dashboard.index');
     Route::get('/api/kegiatan-chart', [DashboardController::class, 'getChartData']);
 

@@ -51,7 +51,7 @@ trait GeneratesBastDocuments
             $full_nomor_kontrak = $nomor_kontrak . "/1201_MITRA/" . $dateVars['tahun_kontrak'];
 
             $data = [
-                'bulan_kegiatan_kapital' => strtoupper($dateVars['bulan_kegiatan']),
+                'bulan_kapital'          => strtoupper($dateVars['bulan_kegiatan']),
                 'tahun_kegiatan'         => $dateVars['tahun_kegiatan'],
                 'no_bast'                => $nomor_bast,
                 'nomor_bast'             => $full_nomor_bast,
@@ -70,7 +70,7 @@ trait GeneratesBastDocuments
                 'tahun_kontrak'          => $dateVars['tahun_kontrak'],
                 'nama_kegiatan'          => $kegiatan->nama_kegiatan,
                 'beban'                  => $p->beban_kerja,
-                'satuan'                 => $p->satuan_beban_kerja,
+                'satuan'                 => ucwords(strtolower($p->satuan_beban_kerja)),
                 'tim_kerja'              => $p->alias_tim_kerja,
             ];
 
