@@ -51,7 +51,7 @@ trait GeneratesBastDocuments
             $full_nomor_kontrak = $nomor_kontrak . "/1201_MITRA/" . $dateVars['tahun_kontrak'];
 
             $data = [
-                'bulan_kapital'          => strtoupper($dateVars['bulan_kegiatan']),
+                'bulan_kegiatan_kapital'          => strtoupper($dateVars['bulan_kegiatan']),
                 'tahun_kegiatan'         => $dateVars['tahun_kegiatan'],
                 'no_bast'                => $nomor_bast,
                 'nomor_bast'             => $full_nomor_bast,
