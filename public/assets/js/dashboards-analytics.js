@@ -113,19 +113,17 @@
 
     // Total Revenue Report Chart - Bar Chart
     // --------------------------------------------------------------------
-    const totalRevenueChartEl = document.querySelector("#totalRevenueChart"),
-        totalRevenueChartOptions = {
-            series: [
-                {
-                    name: new Date().getFullYear() - 1,
+    // Temukan elemen chart di HTML
+    const totalRevenueChartEl = document.querySelector("#totalRevenueChart");
 
-                    data: [18, 7, 15, 29, 18, 12, 9],
-                },
-                {
-                    name: new Date().getFullYear() - 2,
-                    data: [-13, -18, -9, -14, -5, -17, -15],
-                },
-            ],
+    // Periksa apakah elemen tersebut ada
+    if (
+        typeof totalRevenueChartEl !== "undefined" &&
+        totalRevenueChartEl !== null
+    ) {
+        // Konfigurasi dasar untuk chart (tanpa data series dan categories)
+        const totalRevenueChartOptions = {
+            // HAPUS series dari sini, karena akan diisi dari API
             chart: {
                 height: 317,
                 stacked: true,
@@ -186,7 +184,7 @@
                 opacity: [1, 1],
             },
             xaxis: {
-                categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                // HAPUS categories dari sini, karena akan diisi dari API
                 labels: {
                     style: {
                         fontSize: "13px",
@@ -194,12 +192,8 @@
                         colors: labelColor,
                     },
                 },
-                axisTicks: {
-                    show: false,
-                },
-                axisBorder: {
-                    show: false,
-                },
+                axisTicks: { show: false },
+                axisBorder: { show: false },
             },
             yaxis: {
                 labels: {
@@ -211,113 +205,13 @@
                 },
             },
             responsive: [
+                // ... Opsi responsive Anda tidak perlu diubah ...
+                // (Saya singkat agar lebih ringkas)
                 {
                     breakpoint: 1700,
                     options: {
                         plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: "35%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 1440,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 12,
-                                columnWidth: "43%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 1300,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 11,
-                                columnWidth: "45%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 1200,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 11,
-                                columnWidth: "37%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 1040,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 12,
-                                columnWidth: "45%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 991,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 12,
-                                columnWidth: "33%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 768,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 11,
-                                columnWidth: "28%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 640,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 11,
-                                columnWidth: "30%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 576,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: "38%",
-                            },
-                        },
-                    },
-                },
-                {
-                    breakpoint: 440,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: "50%",
-                            },
+                            bar: { borderRadius: 10, columnWidth: "35%" },
                         },
                     },
                 },
@@ -325,36 +219,58 @@
                     breakpoint: 380,
                     options: {
                         plotOptions: {
-                            bar: {
-                                borderRadius: 9,
-                                columnWidth: "60%",
-                            },
+                            bar: { borderRadius: 9, columnWidth: "60%" },
                         },
                     },
                 },
             ],
             states: {
-                hover: {
-                    filter: {
-                        type: "none",
-                    },
-                },
-                active: {
-                    filter: {
-                        type: "none",
-                    },
-                },
+                hover: { filter: { type: "none" } },
+                active: { filter: { type: "none" } },
             },
         };
-    if (
-        typeof totalRevenueChartEl !== undefined &&
-        totalRevenueChartEl !== null
-    ) {
-        const totalRevenueChart = new ApexCharts(
-            totalRevenueChartEl,
-            totalRevenueChartOptions
-        );
-        totalRevenueChart.render();
+
+        // --- BAGIAN UTAMA: MENGAMBIL DATA DAN MERENDER CHART ---
+
+        // Gunakan fungsi async untuk mengambil data
+        async function renderChart() {
+            try {
+                // 1. Panggil API Anda menggunakan fetch
+                const response = await fetch("/api/kegiatan-chart"); // <-- Ganti dengan URL API Anda
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil data chart");
+                }
+                const apiData = await response.json();
+
+                // 2. Update konfigurasi chart dengan data dari API
+                totalRevenueChartOptions.series = apiData.series;
+                totalRevenueChartOptions.xaxis.categories = apiData.categories;
+
+                // Tambahkan pengecekan jika series kosong dari API
+                if (apiData.series.length === 0) {
+                    // Jika tidak ada data, tampilkan pesan atau jangan render chart
+                    totalRevenueChartEl.innerHTML =
+                        "Tidak ada data untuk ditampilkan.";
+                    return;
+                }
+
+                // 3. Buat instance baru ApexCharts dengan opsi yang sudah di-update
+                const totalRevenueChart = new ApexCharts(
+                    totalRevenueChartEl,
+                    totalRevenueChartOptions
+                );
+
+                // 4. Render chart
+                totalRevenueChart.render();
+            } catch (error) {
+                console.error("Error rendering chart:", error);
+                // Tampilkan pesan error di elemen chart jika terjadi masalah
+                totalRevenueChartEl.innerHTML = "Gagal memuat chart.";
+            }
+        }
+
+        // Panggil fungsi untuk memulai proses
+        renderChart();
     }
 
     // Growth Chart - Radial Bar Chart
