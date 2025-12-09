@@ -49,6 +49,23 @@
 </head>
 
 <body>
+    <!-- Limit desktop -->
+    <div class="d-flex d-xl-none position-fixed top-0 start-0 w-100 h-100 bg-white flex-column justify-content-center align-items-center p-4"
+        style="z-index: 9999;">
+
+        <img src="{{ asset('assets/img/illustrations/man-with-laptop.png') }}" alt="Desktop Only"
+            class="img-fluid mb-4" style="max-width: 300px;">
+
+        <h2 class="fw-bold text-primary text-center mb-3">
+            Website Khusus Desktop
+        </h2>
+
+        <p class="text-secondary text-center fs-5" style="max-width: 500px;">
+            Maaf, website ini hanya dapat diakses melalui perangkat desktop dengan layar yang lebih besar.
+            Silakan buka kembali di komputer atau laptop Anda.
+        </p>
+    </div>
+
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
