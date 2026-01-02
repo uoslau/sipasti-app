@@ -100,10 +100,10 @@
             <div class="col-md-6">
                 <div class="mb-6">
                     <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
-                    <div class="input-group">
+                    <div class="input-group disabled">
                         <span class="input-group-text">Rp</span>
                         <input class="form-control" type="text" value="{{ old('honor_nias_barat') }}"
-                            id="honor_nias_barat" name="honor_nias_barat" placeholder="1.234.567.890"
+                            id="honor_nias_barat" name="honor_nias_barat" placeholder="0"
                             oninput="formatRupiah(this)" />
                     </div>
                     <div id="defaultFormControlHelp" class="form-text text-primary">

@@ -178,7 +178,7 @@
                 <div class="col-md-4">
                     <div class="mb-6">
                         <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
-                        <div class="input-group">
+                        <div class="input-group disabled">
                             <span class="input-group-text">Rp</span>
                             <input class="form-control" type="text"
                                 value="{{ old('honor_nias_barat', number_format($kegiatan->honor_nias_barat, 0, ',', '.')) }}"
