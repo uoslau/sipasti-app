@@ -82,7 +82,7 @@ class KegiatanController extends Controller
 
         // validasi inputan form
         $validated_data = $request->validate([
-            'nama_kegiatan'     => 'required|string|max:255',
+            'nama_kegiatan'     => 'required|string|max:255|not_regex:/[\/\\\]/',
             'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
             'tanggal_selesai'   => [
@@ -102,6 +102,8 @@ class KegiatanController extends Controller
             'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
             'honor_nias_barat'  => 'nullable|integer',
+        ], [
+            'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
 
         Kegiatan::create($validated_data);
@@ -174,7 +176,7 @@ class KegiatanController extends Controller
         ]);
 
         $validated_data = $request->validate([
-            'nama_kegiatan'     => 'required|string|max:255',
+            'nama_kegiatan'     => 'required|string|max:255|not_regex:/[\/\\\]/',
             'is_ob'             => 'nullable|boolean',
             'tanggal_mulai'     => 'required|date',
             'tanggal_selesai'   => [
@@ -194,6 +196,8 @@ class KegiatanController extends Controller
             'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
             'honor_nias_barat'  => 'nullable|integer',
+        ], [
+            'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
 
         // update nomor kontrak apabila terjadi perubahan bulan kegiatan
