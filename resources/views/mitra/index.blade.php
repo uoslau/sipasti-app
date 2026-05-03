@@ -21,7 +21,7 @@
                         <!-- Ubah href="#" menjadi memanggil route -->
                         <a href="{{ route('mitra.export', ['tahun' => $tahun]) }}" id="downloadButton"
                             class="btn btn-primary">
-                            <i class='bx bx-spreadsheet me-1'></i> Export Excel
+                            Export Excel
                         </a>
                     </div>
                 </div>

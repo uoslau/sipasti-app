@@ -89,7 +89,6 @@
             <a href="{{ route('mitra.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-id-card"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Mitra</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
 
