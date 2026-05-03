@@ -1,14 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Response;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\KontrakController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KontrakController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MitraController;
 use App\Http\Controllers\NomorKontrakController;
 use App\Http\Controllers\PetugasKegiatanController;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'authenticate']);
@@ -75,4 +76,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     Route::get('/kontrak', [KontrakController::class, 'index'])
         ->name('kontrak.index');
+
+    Route::get('/mitra', [MitraController::class, 'index'])
+        ->name('mitra.index');
+
+    Route::get('/mitra/rekap-kegiatan/export', [MitraController::class, 'exportExcel'])->name('mitra.export');
 });
