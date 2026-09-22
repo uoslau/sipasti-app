@@ -61,6 +61,10 @@ class SensusEkonomiController extends Controller
 
     public function import(Request $request)
     {
+        // Import ribuan baris berjalan sinkron dalam satu request; longgarkan batas
+        // waktu supaya tidak putus di tengah (diabaikan bila server menguncinya).
+        set_time_limit(300);
+
         // Kalau unggahan sudah ditolak PHP (umumnya karena melebihi upload_max_filesize),
         // Laravel hanya melaporkan "failed to upload". Kita periksa lebih dulu agar
         // pesannya benar-benar menjelaskan penyebab dan batas server yang berlaku.

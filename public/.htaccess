@@ -23,3 +23,23 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Batas unggah untuk PHP yang berjalan sebagai modul Apache (mod_php).
+# Dibungkus <IfModule> supaya baris php_value ini tidak diproses (dan tidak
+# memicu error 500) pada server yang memakai PHP-FPM/FastCGI — konfigurasi
+# untuk kasus itu ada di public/.user.ini.
+<IfModule mod_php.c>
+    php_value upload_max_filesize 20M
+    php_value post_max_size 24M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 512M
+</IfModule>
+
+<IfModule php_module>
+    php_value upload_max_filesize 20M
+    php_value post_max_size 24M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 512M
+</IfModule>
