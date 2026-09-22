@@ -56,6 +56,7 @@ class SensusEkonomiController extends Controller
             'filters'        => $resolved['filters'],
             'filterOptions'  => $resolved['options'],
             'uploadLimit'    => $this->uploadLimitLabel(),
+            'serverInfo'     => $this->serverInfo(),
         ]);
     }
 
@@ -222,6 +223,28 @@ class SensusEkonomiController extends Controller
     private function uploadLimitLabel(): string
     {
         return number_format($this->uploadLimitBytes() / 1048576, 1, ',', '.') . ' MB';
+    }
+
+    /**
+     * Ringkasan kondisi PHP di server. Dipakai untuk memastikan cara mana yang
+     * tepat menaikkan batas unggah (mod_php lewat .htaccess, FPM lewat .user.ini).
+     */
+    private function serverInfo(): string
+    {
+        $iniPath = php_ini_loaded_file();
+        $sapi = PHP_SAPI;
+
+        $mode = match (true) {
+            str_contains($sapi, 'apache') => 'Apache mod_php',
+            str_contains($sapi, 'fpm')    => 'Apache/nginx + PHP-FPM',
+            str_contains($sapi, 'cgi')    => 'Apache + FastCGI',
+            default                       => $sapi,
+        };
+
+        return 'Mode PHP: ' . $mode . ' (' . $sapi . ')'
+            . ' · upload_max_filesize=' . (ini_get('upload_max_filesize') ?: '-')
+            . ' · post_max_size=' . (ini_get('post_max_size') ?: '-')
+            . ' · php.ini: ' . ($iniPath ?: 'tidak terdeteksi');
     }
 
     /**

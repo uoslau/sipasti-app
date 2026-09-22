@@ -32,6 +32,11 @@
             baris, prosesnya bisa berjalan beberapa saat — jangan tutup halaman sebelum selesai.</span>
     </div>
 
+    <div class="sensus-server-note">
+        <i class="bx bx-server" aria-hidden="true"></i>
+        <span>{{ $serverInfo ?? 'Info server tidak tersedia.' }}</span>
+    </div>
+
     <div class="mt-3">
         <button type="submit" class="btn btn-primary" data-sensus-submit>
             <i class="bx bx-upload me-1" aria-hidden="true"></i><span data-sensus-submit-label>Import data</span>
