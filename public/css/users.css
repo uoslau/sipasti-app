@@ -1,0 +1,180 @@
+/* Manajemen user — gaya mengikuti design token template (primary #696cff, soft label colors) */
+
+.users-page {
+    --users-primary: #696cff;
+    --users-primary-soft: #f2f2ff;
+    --users-primary-line: #c3c4ff;
+    --users-heading: #384551;
+    --users-muted: #8592a3;
+    --users-line: #e4e6eb;
+    --users-surface: #f5f6f8;
+}
+.users-page .min-w-0 { min-width: 0; }
+
+/* Ringkasan */
+.users-stat {
+    border: 1px solid var(--users-line);
+    box-shadow: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.users-stat:hover { border-color: var(--users-primary-line); transform: translateY(-2px); }
+.users-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    font-size: 1.375rem;
+    flex: none;
+}
+.users-stat-value {
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--users-heading);
+    font-variant-numeric: tabular-nums;
+}
+.users-stat-label { font-size: 0.8125rem; color: var(--users-muted); }
+
+/* Toolbar */
+.users-toolbar { padding: 1rem 1.25rem; }
+.users-toolbar-form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; width: 100%; }
+.users-search { position: relative; flex: 1 1 260px; min-width: 220px; }
+.users-search .bx {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--users-muted);
+    font-size: 1.125rem;
+    pointer-events: none;
+}
+.users-search input {
+    width: 100%;
+    height: 2.375rem;
+    padding: 0.375rem 0.75rem 0.375rem 2.25rem;
+    border: 1px solid var(--users-line);
+    border-radius: 0.375rem;
+    font-size: 0.9375rem;
+    color: var(--users-heading);
+    background-color: #fff;
+}
+.users-search input::placeholder { color: #a7b0bd; }
+.users-search input:focus {
+    border-color: var(--users-primary);
+    box-shadow: 0 0 0 0.125rem rgba(105, 108, 255, 0.15);
+    outline: 0;
+}
+.users-toolbar-form .form-select { flex: 0 1 13.5rem; height: 2.375rem; font-size: 0.9375rem; }
+
+/* Identitas user */
+.users-identity { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+.users-identity .avatar { cursor: default; flex: none; }
+.users-identity .avatar-initial { font-weight: 600; font-size: 0.75rem; letter-spacing: 0.02em; }
+.users-identity-name { font-weight: 600; color: var(--users-heading); line-height: 1.25; }
+.users-identity-handle { font-size: 0.8125rem; color: var(--users-muted); line-height: 1.25; }
+
+/* Chip tim kerja */
+.users-chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.users-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: var(--users-surface);
+    color: #566a7f;
+    white-space: nowrap;
+}
+.users-chip-more { background-color: transparent; color: var(--users-muted); }
+.users-chip-empty { background-color: #fff4e5; color: #b76e00; }
+
+/* Aksi baris */
+.users-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    color: var(--users-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.users-action-btn:hover, .users-action-btn[aria-expanded="true"] {
+    background-color: var(--users-surface);
+    color: #566a7f;
+}
+
+/* Tabel */
+.users-page .users-table thead th {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--users-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--users-line);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.users-page .users-table tbody td { vertical-align: middle; padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.users-page .users-table tbody tr { transition: background-color 0.15s ease; }
+
+/* State kosong */
+.users-empty { padding: 3.5rem 1.5rem; text-align: center; }
+.users-empty .bx { font-size: 3rem; color: #c9cdd4; }
+.users-empty-title { margin: 1rem 0 0.25rem; font-weight: 600; color: var(--users-heading); }
+.users-empty-text { margin-bottom: 1.25rem; color: var(--users-muted); font-size: 0.9375rem; }
+
+/* Pilihan tim kerja (tile) */
+.users-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.5rem;
+}
+.users-team-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--users-line);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.users-team-option:hover { border-color: var(--users-primary-line); background-color: #fafaff; }
+.users-team-option:focus-within { outline: 2px solid var(--users-primary); outline-offset: 2px; }
+.users-team-option:has(input:checked) {
+    border-color: var(--users-primary);
+    background-color: var(--users-primary-soft);
+    box-shadow: inset 0 0 0 1px var(--users-primary);
+}
+.users-team-option input { margin-top: 0.15rem; flex: none; }
+.users-team-alias { display: block; font-weight: 600; font-size: 0.8125rem; color: var(--users-heading); }
+.users-team-name { display: block; font-size: 0.75rem; color: var(--users-muted); line-height: 1.35; }
+
+/* Bagian form */
+.users-form-section + .users-form-section {
+    margin-top: 1.75rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--users-line);
+}
+.users-form-section-title { font-size: 0.9375rem; font-weight: 600; color: var(--users-heading); margin-bottom: 1rem; }
+.users-form-section-title .bx { color: var(--users-primary); margin-right: 0.375rem; }
+
+/* Profil di halaman edit */
+.users-profile { display: flex; align-items: center; gap: 1rem; }
+.users-profile .avatar { cursor: default; flex: none; }
+.users-profile .avatar-initial { font-weight: 600; letter-spacing: 0.02em; }
+.users-profile-name { font-size: 1.0625rem; font-weight: 600; color: var(--users-heading); line-height: 1.25; }
+.users-profile-handle { font-size: 0.875rem; color: var(--users-muted); }
+
+/* Kartu reset password */
+.users-reset-card { border: 1px solid #ffe0b2; background-color: #fffaf2; }
+.users-reset-card .users-form-section-title .bx { color: #b76e00; }
+
+@media (prefers-reduced-motion: reduce) {
+    .users-page [class*="users-"] { transition: none !important; }
+    .users-stat:hover { transform: none; }
+}

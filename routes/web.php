@@ -8,6 +8,9 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\NomorKontrakController;
 use App\Http\Controllers\PetugasKegiatanController;
+use App\Http\Controllers\SensusEkonomiController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\EnsureSensusEkonomiAccess;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -16,12 +19,11 @@ Route::post('/login', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    // sementara di comment dulu sebelum fix dashboard & diarahin ke kegiatan index
-    // Route::get('/', [DashboardController::class, 'index'])
-    //     ->name('dashboard.index');
-    Route::get('/', [KegiatanController::class, 'index'])
+    Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard.index');
-    // Route::get('/api/kegiatan-chart', [DashboardController::class, 'getChartData']);
+
+    Route::get('/dashboard/data', [DashboardController::class, 'getChartData'])
+        ->name('dashboard.data');
 
     Route::get('/kegiatan', [KegiatanController::class, 'index'])
         ->name('kegiatan.index');
@@ -81,4 +83,22 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         ->name('mitra.index');
 
     Route::get('/mitra/rekap-kegiatan/export', [MitraController::class, 'exportExcel'])->name('mitra.export');
+
+    // ===== SEMENTARA: Sensus Ekonomi (admin atau tim kerja PEMEJA, aman dihapus) =====
+    Route::middleware(EnsureSensusEkonomiAccess::class)->prefix('sensus-ekonomi')->name('sensus-ekonomi.')->group(function () {
+        Route::get('/', [SensusEkonomiController::class, 'index'])->name('index');
+        Route::post('/import', [SensusEkonomiController::class, 'import'])->name('import');
+        Route::get('/hasil', [SensusEkonomiController::class, 'results'])->name('results');
+        Route::delete('/', [SensusEkonomiController::class, 'destroy'])->name('destroy');
+    });
+    // ===== /SEMENTARA =====
+
+    Route::middleware('admin')->prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset_password');
+    });
 });

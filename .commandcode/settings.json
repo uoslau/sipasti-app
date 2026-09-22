@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(php artisan view:cache)",
+      "Shell(php artisan view:clear)",
+      "Shell(php artisan tinker \"C:\\Users\\Nelson\\AppData\\Local\\Temp\\commandcode\\C--laragon-www-sipasti-app\\cc821c02-1a86-408b-979d-19407477464a\\scratchpad\\check_index.php\")",
+      "Shell(php -l app/Http/Controllers/UserController.php)",
+      "Shell(php artisan tinker \"C:\\Users\\Nelson\\AppData\\Local\\Temp\\commandcode\\C--laragon-www-sipasti-app\\cc821c02-1a86-408b-979d-19407477464a\\scratchpad\\check_users_ui.php\")",
+      "Shell(php artisan serve --host=127.0.0.1 --port=8123)",
+      "Shell(php artisan tinker --execute=\"use App\\Models\\Kegiatan; use Carbon\\Carbon; $now=Carbon::now(); echo 'today: '.$now->toDateString().PHP_EOL; echo 'min/max: '.Kegiatan::min('tanggal_mulai').' .. '.Kegiatan::max('tanggal_mulai').PHP_EOL; echo 'total: '.Kegiatan::count().PHP_EOL; echo 'tahun ini ('.$now->year.'): '.Kegiatan::whereYear('tanggal_mulai',$now->year)->count().PHP_EOL; echo 'tahun lalu: '.Kegiatan::whereYear('tanggal_mulai',$now->year-1)->count().PHP_EOL; echo 'bulan ini: '.Kegiatan::whereBetween('tanggal_mulai',[$now->copy()->startOfMonth(),$now->copy()->endOfMonth()])->count().PHP_EOL; echo 'belum generate: '.Kegiatan::where('is_generated',false)->count().PHP_EOL; echo 'generate: '.Kegiatan::where('is_generated',true)->count().PHP_EOL; echo 'per tahun: '.json_encode(Kegiatan::selectRaw('YEAR(tanggal_mulai) y, COUNT(*) c')->groupBy('y')->pluck('c','y')).PHP_EOL;\")",
+      "Shell(php -l app/Http/Controllers/DashboardController.php)",
+      "Shell(php -l app/Http/Controllers/LoginController.php)",
+      "Shell(php -l routes/web.php)",
+      "Shell(php artisan route:list --except-vendor --path=dashboard)",
+      "Shell(php artisan test --filter=DiagTest)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

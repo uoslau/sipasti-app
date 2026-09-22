@@ -12,6 +12,8 @@ class NomorKontrakController extends Controller
 {
     public function generate(Kegiatan $kegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         if ($kegiatan->is_generated) {
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'Nomor SPK dan BAST sudah pernah digenerate.');

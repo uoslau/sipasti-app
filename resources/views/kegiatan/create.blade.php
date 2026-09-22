@@ -65,20 +65,31 @@
             </div>
             <div class="col-md-6">
                 <div class="mb-6">
+                    @php
+                        $allowed_tim_kerja = $tim_kerja->where('id', '!=', 12);
+                        $locked_single = ! auth()->user()->is_admin && $allowed_tim_kerja->count() === 1;
+                    @endphp
                     <label for="tim_kerja_id" class="form-label">Tim Kerja</label>
-                    <select class="form-select" id="tim_kerja_id" name="tim_kerja_id">
-                        <option selected disabled>Pilih Tim Kerja</option>
-                        @foreach ($tim_kerja as $tk)
-                            @if ($tk->id !== 12)
+                    @if ($locked_single)
+                        <select class="form-select" id="tim_kerja_id" disabled>
+                            <option selected>{{ $allowed_tim_kerja->first()->nama_tim_kerja }}</option>
+                        </select>
+                        <input type="hidden" name="tim_kerja_id" value="{{ $allowed_tim_kerja->first()->id }}">
+                        <div id="defaultFormControlHelp" class="form-text text-primary">
+                            [terkunci ke tim kerja Anda]
+                        </div>
+                    @else
+                        <select class="form-select" id="tim_kerja_id" name="tim_kerja_id">
+                            <option selected disabled>Pilih Tim Kerja</option>
+                            @foreach ($allowed_tim_kerja as $tk)
                                 <option value="{{ $tk->id }}"
                                     @if (old('tim_kerja_id') == $tk->id) selected
-                        @elseif(!old('tim_kerja_id') && isset($user_tim_kerja_id) && $user_tim_kerja_id == $tk->id)
-                            selected @endif>
+                                    @elseif(!old('tim_kerja_id') && isset($user_tim_kerja_id) && $user_tim_kerja_id == $tk->id) selected @endif>
                                     {{ $tk->nama_tim_kerja }}
                                 </option>
-                            @endif
-                        @endforeach
-                    </select>
+                            @endforeach
+                        </select>
+                    @endif
                 </div>
             </div>
         </div>

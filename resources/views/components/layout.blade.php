@@ -37,6 +37,10 @@
     <!-- Page CSS -->
 
     <link rel="stylesheet" href="{{ asset('css/index.spk.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/users.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}" />
+    {{-- SEMENTARA: Sensus Ekonomi --}}
+    <link rel="stylesheet" href="{{ asset('css/sensus-ekonomi.css') }}" />
 
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>

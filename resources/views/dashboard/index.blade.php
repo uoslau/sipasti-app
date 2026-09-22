@@ -1,515 +1,338 @@
+@php
+    $delta = $stats['month_delta'];
+
+    if ($stats['month_prev'] === 0 && $stats['month'] > 0) {
+        $deltaIcon = 'bx-up-arrow-alt';
+        $deltaClass = 'text-info';
+        $deltaText = 'Baru bulan ini';
+    } elseif ($delta > 0) {
+        $deltaIcon = 'bx-up-arrow-alt';
+        $deltaClass = 'text-success';
+        $deltaText = '+' . $delta . ' dari bulan lalu';
+    } elseif ($delta < 0) {
+        $deltaIcon = 'bx-down-arrow-alt';
+        $deltaClass = 'text-danger';
+        $deltaText = $delta . ' dari bulan lalu';
+    } else {
+        $deltaIcon = 'bx-minus';
+        $deltaClass = 'text-muted';
+        $deltaText = 'Sama dengan bulan lalu';
+    }
+
+    $statusTotal = $stats['generated_year'] + $stats['pending_year'];
+    $generatedPct = $statusTotal > 0 ? (int) round($stats['generated_year'] / $statusTotal * 100) : 0;
+
+    $teamLabel = function ($k) {
+        $alias = trim((string) optional($k->timKerja)->alias_tim_kerja);
+        if ($alias !== '' && $alias !== 'null') {
+            return $alias;
+        }
+        $fungsi = trim((string) optional($k->fungsi)->fungsi);
+        return $fungsi !== '' && $fungsi !== 'null' ? $fungsi : 'Tanpa tim kerja';
+    };
+@endphp
 <x-layout>
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-            <div class="col-xxl-8 mb-6 order-0">
-                <div class="card">
-                    <div class="d-flex align-items-start row">
-                        <div class="col-sm-7">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary mb-3">Halo, {{ auth()->user()->name }}! 👋
-                                </h5>
-                                <p class="mb-6">
-                                    You have done 72% more sales today.<br />Check your new badge in your profile.
-                                </p>
+    <div class="container-xxl flex-grow-1 container-p-y dash-page" data-dashboard-charts
+        data-endpoint="{{ route('dashboard.data') }}">
 
-                                <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
-                            </div>
-                        </div>
-                        <div class="col-sm-5 text-center text-sm-left">
-                            <div class="card-body pb-0 px-0 px-md-6">
-                                <img src="../assets/img/illustrations/man-with-laptop.png" height="175"
-                                    class="scaleX-n1-rtl" alt="View Badge User" />
-                            </div>
-                        </div>
-                    </div>
+        {{-- Judul & konteks --}}
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+            <div>
+                <h4 class="mb-1">{{ $greeting }}, {{ auth()->user()->name }}</h4>
+                <div class="dash-context">
+                    <span><i class="bx bx-calendar-event" aria-hidden="true"></i>{{ $todayLabel }}</span>
+                    <span class="dash-context-sep" aria-hidden="true"></span>
+                    <span><i class="bx bx-sitemap" aria-hidden="true"></i>{{ $scopeLabel }}</span>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 order-1">
-                <div class="row">
-                    <div class="col-lg-6 col-md-12 col-6 mb-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                        <img src="../assets/img/icons/unicons/chart-success.png" alt="chart success"
-                                            class="rounded" />
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                            <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
-                                            <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="mb-1">Profit</p>
-                                <h4 class="card-title mb-3">$12,628</h4>
-                                <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +72.80%</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-6 mb-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                        <img src="../assets/img/icons/unicons/wallet-info.png" alt="wallet info"
-                                            class="rounded" />
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                            <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
-                                            <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="mb-1">Sales</p>
-                                <h4 class="card-title mb-3">$4,679</h4>
-                                <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Total Revenue -->
-            <div class="col-12 col-xxl-8 order-2 order-md-3 order-xxl-2 mb-6">
-                <div class="card">
-                    <div class="row row-bordered g-0">
-                        <div class="col-lg-8">
-                            <div class="card-header d-flex align-items-center justify-content-between">
-                                <div class="card-title mb-0">
-                                    <h5 class="m-0 me-2">Total Kegiatan</h5>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="totalRevenue" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded bx-lg text-muted"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalRevenue">
-                                        <a class="dropdown-item" href="{{ route('dashboard.index') }}">Refresh</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="totalRevenueChart" class="px-3"></div>
-                        </div>
-                        <div class="col-lg-4 d-flex align-items-center">
-                            <div class="card-body px-xl-9">
-                                <div class="text-center mb-6">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-outline-primary">
-                                            <script>
-                                                document.write(new Date().getFullYear() - 1);
-                                            </script>
-                                        </button>
-                                        <button type="button"
-                                            class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="javascript:void(0);">2021</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">2020</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">2019</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div id="growthChart"></div>
-                                <div class="text-center fw-medium my-6">62% Company Growth</div>
-
-                                <div class="d-flex gap-3 justify-content-between">
-                                    <div class="d-flex">
-                                        <div class="avatar me-2">
-                                            <span class="avatar-initial rounded-2 bg-label-primary"><i
-                                                    class="bx bx-dollar bx-lg text-primary"></i></span>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <small>
-                                                <script>
-                                                    document.write(new Date().getFullYear() - 1);
-                                                </script>
-                                            </small>
-                                            <h6 class="mb-0">$32.5k</h6>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex">
-                                        <div class="avatar me-2">
-                                            <span class="avatar-initial rounded-2 bg-label-info"><i
-                                                    class="bx bx-wallet bx-lg text-info"></i></span>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <small>
-                                                <script>
-                                                    document.write(new Date().getFullYear() - 2);
-                                                </script>
-                                            </small>
-                                            <h6 class="mb-0">$41.2k</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--/ Total Revenue -->
-            <div class="col-12 col-md-8 col-lg-12 col-xxl-4 order-3 order-md-2">
-                <div class="row">
-                    <div class="col-6 mb-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                        <img src="../assets/img/icons/unicons/paypal.png" alt="paypal"
-                                            class="rounded" />
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn p-0" type="button" id="cardOpt4"
-                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
-                                            <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="mb-1">Payments</p>
-                                <h4 class="card-title mb-3">$2,456</h4>
-                                <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i>
-                                    -14.82%</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                        <img src="../assets/img/icons/unicons/cc-primary.png" alt="Credit Card"
-                                            class="rounded" />
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn p-0" type="button" id="cardOpt1"
-                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                            <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="mb-1">Transactions</p>
-                                <h4 class="card-title mb-3">$14,857</h4>
-                                <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                                    +28.14%</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <div
-                                    class="d-flex justify-content-between align-items-center flex-sm-row flex-column gap-10">
-                                    <div
-                                        class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
-                                        <div class="card-title mb-6">
-                                            <h5 class="text-nowrap mb-1">Profile Report</h5>
-                                            <span class="badge bg-label-warning">YEAR 2022</span>
-                                        </div>
-                                        <div class="mt-sm-auto">
-                                            <span class="text-success text-nowrap fw-medium"><i
-                                                    class="bx bx-up-arrow-alt"></i> 68.2%</span>
-                                            <h4 class="mb-0">$84,686k</h4>
-                                        </div>
-                                    </div>
-                                    <div id="profileReportChart"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a href="{{ route('kegiatan.index') }}" class="btn btn-primary">
+                <i class="bx bx-task me-1" aria-hidden="true"></i>Lihat kegiatan
+            </a>
         </div>
-        <div class="row">
-            <!-- Order Statistics -->
-            <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-6">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between">
-                        <div class="card-title mb-0">
-                            <h5 class="mb-1 me-2">Order Statistics</h5>
-                            <p class="card-subtitle">42.82k Total Sales</p>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn text-muted p-0" type="button" id="orederStatistics"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="bx bx-dots-vertical-rounded bx-lg"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
-                                <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-6">
-                            <div class="d-flex flex-column align-items-center gap-1">
-                                <h3 class="mb-1">8,258</h3>
-                                <small>Total Orders</small>
-                            </div>
-                            <div id="orderStatisticsChart"></div>
-                        </div>
-                        <ul class="p-0 m-0">
-                            <li class="d-flex align-items-center mb-5">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-primary"><i
-                                            class="bx bx-mobile-alt"></i></span>
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <h6 class="mb-0">Electronic</h6>
-                                        <small>Mobile, Earbuds, TV</small>
-                                    </div>
-                                    <div class="user-progress">
-                                        <h6 class="mb-0">82.5k</h6>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-5">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-success"><i
-                                            class="bx bx-closet"></i></span>
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <h6 class="mb-0">Fashion</h6>
-                                        <small>T-shirt, Jeans, Shoes</small>
-                                    </div>
-                                    <div class="user-progress">
-                                        <h6 class="mb-0">23.8k</h6>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-5">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-info"><i
-                                            class="bx bx-home-alt"></i></span>
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <h6 class="mb-0">Decor</h6>
-                                        <small>Fine Art, Dining</small>
-                                    </div>
-                                    <div class="user-progress">
-                                        <h6 class="mb-0">849k</h6>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-secondary"><i
-                                            class="bx bx-football"></i></span>
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <h6 class="mb-0">Sports</h6>
-                                        <small>Football, Cricket Kit</small>
-                                    </div>
-                                    <div class="user-progress">
-                                        <h6 class="mb-0">99</h6>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!--/ Order Statistics -->
 
-            <!-- Expense Overview -->
-            <div class="col-md-6 col-lg-4 order-1 mb-6">
-                <div class="card h-100">
-                    <div class="card-header nav-align-top">
-                        <ul class="nav nav-pills" role="tablist">
-                            <li class="nav-item">
-                                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                                    data-bs-target="#navs-tabs-line-card-income"
-                                    aria-controls="navs-tabs-line-card-income" aria-selected="true">
-                                    Income
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button type="button" class="nav-link" role="tab">Expenses</button>
-                            </li>
-                            <li class="nav-item">
-                                <button type="button" class="nav-link" role="tab">Profit</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content p-0">
-                            <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
-                                <div class="d-flex mb-6">
-                                    <div class="avatar flex-shrink-0 me-3">
-                                        <img src="../assets/img/icons/unicons/wallet.png" alt="User" />
-                                    </div>
-                                    <div>
-                                        <p class="mb-0">Total Balance</p>
-                                        <div class="d-flex align-items-center">
-                                            <h6 class="mb-0 me-1">$459.10</h6>
-                                            <small class="text-success fw-medium">
-                                                <i class="bx bx-chevron-up bx-lg"></i>
-                                                42.9%
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="incomeChart"></div>
-                                <div class="d-flex align-items-center justify-content-center mt-6 gap-3">
-                                    <div class="flex-shrink-0">
-                                        <div id="expensesOfWeek"></div>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">Income this week</h6>
-                                        <small>$39k less than last week</small>
-                                    </div>
-                                </div>
+        @if ($stats['total'] === 0)
+            <div class="card">
+                <div class="dash-empty">
+                    <i class="bx bx-bar-chart-alt-2" aria-hidden="true"></i>
+                    <h6 class="dash-empty-title">Belum ada data untuk dirangkum</h6>
+                    <p class="dash-empty-text">
+                        @if ($isAdmin)
+                            Belum ada kegiatan yang dibuat. Angka dan grafik akan terisi setelah kegiatan pertama ditambahkan.
+                        @else
+                            Anda belum terdaftar di tim kerja mana pun, jadi belum ada kegiatan yang bisa dirangkum.
+                        @endif
+                    </p>
+                    <a href="{{ route('kegiatan.index') }}" class="btn btn-outline-primary">Lihat kegiatan</a>
+                </div>
+            </div>
+        @else
+            {{-- Ringkasan --}}
+            <div class="row g-4 mb-4">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card dash-stat h-100">
+                        <div class="card-body">
+                            <div class="dash-stat-head">
+                                <span class="dash-stat-icon bg-label-primary" aria-hidden="true"><i
+                                        class="bx bx-calendar-check"></i></span>
+                                <span class="dash-stat-label">Kegiatan {{ $stats['reference_month'] }}</span>
+                            </div>
+                            <div class="dash-stat-value">{{ $stats['month'] }}</div>
+                            <div class="dash-stat-meta {{ $deltaClass }}">
+                                <i class="bx {{ $deltaIcon }}" aria-hidden="true"></i>{{ $deltaText }}
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!--/ Expense Overview -->
 
-            <!-- Transactions -->
-            <div class="col-md-6 col-lg-4 order-2 mb-6">
-                <div class="card h-100">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="card-title m-0 me-2">Transactions</h5>
-                        <div class="dropdown">
-                            <button class="btn text-muted p-0" type="button" id="transactionID"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="bx bx-dots-vertical-rounded bx-lg"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
-                                <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card dash-stat h-100">
+                        <div class="card-body">
+                            <div class="dash-stat-head">
+                                <span class="dash-stat-icon bg-label-success" aria-hidden="true"><i
+                                        class="bx bx-wallet"></i></span>
+                                <span class="dash-stat-label">Honor {{ $stats['reference_month'] }}</span>
+                            </div>
+                            <div class="dash-stat-value">{{ formatNominal($stats['honor']) }}</div>
+                            <div class="dash-stat-meta text-muted">
+                                <i class="bx bx-user" aria-hidden="true"></i>{{ $stats['mitra'] }} mitra ditugaskan
                             </div>
                         </div>
                     </div>
-                    <div class="card-body pt-4">
-                        <ul class="p-0 m-0">
-                            <li class="d-flex align-items-center mb-6">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/paypal.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Paypal</small>
-                                        <h6 class="fw-normal mb-0">Send money</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">+82.6</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-6">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/wallet.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Wallet</small>
-                                        <h6 class="fw-normal mb-0">Mac'D</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">+270.69</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-6">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/chart.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Transfer</small>
-                                        <h6 class="fw-normal mb-0">Refund</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">+637.91</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-6">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/cc-primary.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Credit Card</small>
-                                        <h6 class="fw-normal mb-0">Ordered Food</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">-838.71</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center mb-6">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/wallet.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Wallet</small>
-                                        <h6 class="fw-normal mb-0">Starbucks</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">+203.33</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <img src="../assets/img/icons/unicons/cc-warning.png" alt="User"
-                                        class="rounded" />
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <small class="d-block">Mastercard</small>
-                                        <h6 class="fw-normal mb-0">Ordered Food</h6>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-2">
-                                        <h6 class="fw-normal mb-0">-92.45</h6>
-                                        <span class="text-muted">USD</span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card dash-stat dash-stat-attention h-100">
+                        <div class="card-body">
+                            <div class="dash-stat-head">
+                                <span class="dash-stat-icon bg-label-warning" aria-hidden="true"><i
+                                        class="bx bx-error-circle"></i></span>
+                                <span class="dash-stat-label">Belum digenerate</span>
+                            </div>
+                            <div class="dash-stat-value">{{ $stats['pending_generate'] }}</div>
+                            <div class="dash-stat-meta text-muted">
+                                <i class="bx bx-file" aria-hidden="true"></i>SPK &amp; BAST belum dibuat
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card dash-stat h-100">
+                        <div class="card-body">
+                            <div class="dash-stat-head">
+                                <span class="dash-stat-icon bg-label-info" aria-hidden="true"><i
+                                        class="bx bx-id-card"></i></span>
+                                <span class="dash-stat-label">Mitra {{ $stats['reference_month'] }}</span>
+                            </div>
+                            <div class="dash-stat-value">{{ $stats['mitra'] }}</div>
+                            <div class="dash-stat-meta text-muted">
+                                <i class="bx bx-layer" aria-hidden="true"></i>{{ $stats['total'] }} kegiatan tercatat
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!--/ Transactions -->
-        </div>
+
+            @unless ($stats['is_reference_current'])
+                <p class="dash-note">
+                    <i class="bx bx-info-circle" aria-hidden="true"></i>
+                    Belum ada kegiatan pada bulan berjalan, jadi angka bulanan memakai bulan terakhir yang memiliki data.
+                </p>
+            @endunless
+
+            {{-- Grafik --}}
+            <noscript>
+                <div class="alert alert-info" role="status">
+                    Grafik memerlukan JavaScript. Angka ringkasan dan daftar di halaman ini tetap dapat dibaca.
+                </div>
+            </noscript>
+
+            <div class="alert alert-warning d-none" id="dash-chart-error" role="status">
+                Grafik tidak dapat dimuat. Angka ringkasan dan daftar di halaman ini tetap akurat.
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-xl-8">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">Kegiatan per bulan</h5>
+                            <small class="text-muted">Jumlah kegiatan mulai, {{ $prevYear }} dan {{ $year }}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="dash-chart-wrap">
+                                <div class="dash-chart-skeleton" aria-hidden="true"></div>
+                                <div id="dash-chart-monthly" class="dash-chart" role="img"
+                                    aria-label="Grafik jumlah kegiatan per bulan untuk {{ $prevYear }} dan {{ $year }}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Status SPK &amp; BAST</h5>
+                            <small class="text-muted">Tahun {{ $year }}, {{ $statusTotal }} kegiatan</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="dash-chart-wrap dash-chart-wrap-donut">
+                                    <div class="dash-chart-skeleton dash-chart-skeleton-round" aria-hidden="true"></div>
+                                    <div id="dash-chart-status" class="dash-chart" role="img"
+                                        aria-label="Komposisi kegiatan yang sudah dan belum digenerate pada {{ $year }}"></div>
+                                </div>
+                                <div>
+                                    <div class="dash-donut-value">{{ $generatedPct }}%</div>
+                                    <div class="dash-donut-label">sudah digenerate</div>
+                                </div>
+                            </div>
+                            <ul class="dash-legend">
+                                <li>
+                                    <span class="dash-legend-dot dash-legend-dot-success" aria-hidden="true"></span>
+                                    <span class="dash-legend-text">Sudah generate</span>
+                                    <span class="dash-legend-value">{{ $stats['generated_year'] }}</span>
+                                </li>
+                                <li>
+                                    <span class="dash-legend-dot dash-legend-dot-warning" aria-hidden="true"></span>
+                                    <span class="dash-legend-text">Belum generate</span>
+                                    <span class="dash-legend-value">{{ $stats['pending_year'] }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Petugas per wilayah</h5>
+                            <small class="text-muted">{{ $stats['reference_month'] }}, {{ $wilayahTotal }} mitra</small>
+                        </div>
+                        <div class="card-body">
+                            @if ($wilayahSplit->isEmpty())
+                                <p class="text-muted mb-0">Belum ada mitra yang ditugaskan bulan ini.</p>
+                            @else
+                                <ul class="dash-regions">
+                                    @foreach ($wilayahSplit as $wilayah)
+                                        <li class="dash-region">
+                                            <div class="dash-region-head">
+                                                <span class="dash-legend-text">{{ $wilayah->label }}</span>
+                                                <strong class="dash-region-value">{{ $wilayah->total }}</strong>
+                                            </div>
+                                            <div class="dash-bar" aria-hidden="true">
+                                                <span style="width: {{ $wilayahTotal > 0 ? round($wilayah->total / $wilayahTotal * 100) : 0 }}%"></span>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tindak lanjut & sebaran tim kerja --}}
+            <div class="row g-4 mb-4">
+                <div class="col-xl-7">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <h5 class="mb-0">Perlu ditindaklanjuti</h5>
+                                <small class="text-muted">Kegiatan yang belum digenerate SPK/BAST</small>
+                            </div>
+                            <span class="badge bg-label-warning">{{ $stats['pending_generate'] }}</span>
+                        </div>
+                        <div class="card-body">
+                            @if ($pendingKegiatan->isEmpty())
+                                <div class="dash-inline-empty">
+                                    <i class="bx bx-check-circle" aria-hidden="true"></i>
+                                    <span>Semua kegiatan sudah digenerate.</span>
+                                </div>
+                            @else
+                                <ul class="dash-list">
+                                    @foreach ($pendingKegiatan as $kegiatan)
+                                        <li>
+                                            <div class="dash-list-main">
+                                                <a href="{{ route('kegiatan.edit', $kegiatan->slug) }}"
+                                                    class="dash-list-title">{{ $kegiatan->nama_kegiatan }}</a>
+                                                <span class="dash-list-meta">
+                                                    {{ $teamLabel($kegiatan) }}
+                                                    <span aria-hidden="true">·</span>
+                                                    {{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->translatedFormat('d M Y') }}
+                                                </span>
+                                            </div>
+                                            <i class="bx bx-chevron-right dash-list-arrow" aria-hidden="true"></i>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-5">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">Sebaran kegiatan per tim kerja</h5>
+                            <small class="text-muted">Tahun {{ $year }}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="dash-chart-wrap">
+                                <div class="dash-chart-skeleton" aria-hidden="true"></div>
+                                <div id="dash-chart-teams" class="dash-chart" role="img"
+                                    aria-label="Grafik jumlah kegiatan per tim kerja pada {{ $year }}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kegiatan terbaru --}}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Kegiatan terbaru</h5>
+                    <small class="text-muted">Enam kegiatan dengan tanggal mulai terakhir</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Kegiatan</th>
+                                <th scope="col">Tim kerja</th>
+                                <th scope="col" class="text-center">Petugas</th>
+                                <th scope="col" class="text-center">SPK &amp; BAST</th>
+                                <th scope="col" class="text-end">Tanggal mulai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($recentKegiatan as $kegiatan)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('kegiatan.edit', $kegiatan->slug) }}"
+                                            class="dash-list-title">{{ $kegiatan->nama_kegiatan }}</a>
+                                        @if ($kegiatan->is_ob)
+                                            <span class="badge bg-label-warning ms-1">O-B</span>
+                                        @endif
+                                    </td>
+                                    <td><span class="dash-chip">{{ $teamLabel($kegiatan) }}</span></td>
+                                    <td class="text-center">{{ $kegiatan->petugas_kegiatan_count }}</td>
+                                    <td class="text-center">
+                                        @if ($kegiatan->is_generated)
+                                            <span class="badge bg-label-success"><i
+                                                    class="bx bx-check-circle me-1"></i>Sudah</span>
+                                        @else
+                                            <span class="badge bg-label-danger"><i class="bx bx-x-circle me-1"></i>Belum</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        {{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->translatedFormat('d M Y') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
     </div>
 </x-layout>
+
+<script src="{{ asset('js/dashboard.js') }}"></script>

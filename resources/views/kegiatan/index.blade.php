@@ -15,9 +15,11 @@
                         </div>
                     </form>
 
-                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
-                        Tambah
-                    </a>
+                    @can('create', App\Models\Kegiatan::class)
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
+                            Tambah
+                        </a>
+                    @endcan
                 </div>
             </div>
             <div class="modal fade" id="addKegiatanModal" tabindex="-1" aria-hidden="true">
@@ -97,31 +99,33 @@
                                         </span>
                                     </td>
                                     <td class="text-end">
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <li>
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('kegiatan.edit', $k->slug) }}">Edit</a>
-                                                </li>
-                                                <li>
-                                                    <hr class="dropdown-divider" />
-                                                </li>
-                                                <li>
-                                                    <form action="{{ route('kegiatan.destroy', $k->slug) }}"
-                                                        method="POST" class="delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="button"
-                                                            class="dropdown-item btn-delete-kegiatan">Hapus
-                                                        </button>
-                                                    </form>
-                                                </li>
+                                        @can('update', $k)
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('kegiatan.edit', $k->slug) }}">Edit</a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider" />
+                                                    </li>
+                                                    <li>
+                                                        <form action="{{ route('kegiatan.destroy', $k->slug) }}"
+                                                            method="POST" class="delete-form">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button"
+                                                                class="dropdown-item btn-delete-kegiatan">Hapus
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

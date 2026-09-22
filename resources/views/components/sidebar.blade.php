@@ -56,11 +56,10 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        <li class="menu-item {{ request()->is('/*') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
             <a href="{{ route('dashboard.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
 
@@ -92,9 +91,33 @@
             </a>
         </li>
 
+        {{-- SEMENTARA: Sensus Ekonomi (admin atau tim kerja PEMEJA) --}}
+        @if (\App\Http\Middleware\EnsureSensusEkonomiAccess::allows(auth()->user()))
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Sensus Ekonomi</span>
+            </li>
+
+            <li class="menu-item {{ request()->is('sensus-ekonomi*') ? 'active' : '' }}">
+                <a href="{{ route('sensus-ekonomi.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Sensus Ekonomi</div>
+                    <div class="badge rounded-pill bg-label-warning text-uppercase fs-tiny ms-auto">sementara</div>
+                </a>
+            </li>
+        @endif
+
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Akun</span>
         </li>
+
+        @if (auth()->user()->is_admin)
+            <li class="menu-item {{ request()->is('users*') ? 'active' : '' }}">
+                <a href="{{ route('users.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-group"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Manajemen User</div>
+                </a>
+            </li>
+        @endif
 
         <li class="menu-item {{ request()->is('profil*') ? 'active' : '' }}">
             <a href="#" class="menu-link">

@@ -19,8 +19,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -43,11 +45,27 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
     public function timKerja()
     {
-        return $this->belongsToMany(Timkerja::class);
+        return $this->belongsToMany(TimKerja::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    /**
+     * Daftar id tim kerja yang diikuti user.
+     *
+     * @return array<int, int>
+     */
+    public function timKerjaIds(): array
+    {
+        return $this->timKerja()->pluck('tim_kerjas.id')->all();
     }
 }

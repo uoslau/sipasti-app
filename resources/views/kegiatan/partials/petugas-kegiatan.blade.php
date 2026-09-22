@@ -1,23 +1,30 @@
+@php
+    $can_manage = auth()->user()->can('update', $kegiatan);
+@endphp
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="mb-0 me-2">Daftar Petugas</h5>
-        <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
-            Tambah
-        </a>
-        <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addPetugasModalLabel">Tambah / Update
-                            Petugas</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        @include('petugas.create')
+        @if ($can_manage)
+            <a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addPetugasModal">
+                Tambah
+            </a>
+            <div class="modal fade" id="addPetugasModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addPetugasModalLabel">Tambah / Update
+                                Petugas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @include('petugas.create')
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @else
+            <span class="badge bg-label-secondary ms-auto">Hanya lihat</span>
+        @endif
     </div>
     @if ($petugas_kegiatan->isEmpty())
         <h5 class="card-header border-top text-center">Belum ada petugas untuk kegiatan ini.</h5>
@@ -58,30 +65,32 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                        data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item"
-                                                href="{{ route('petugas.edit', [$kegiatan->slug, $p->nik]) }}">Edit</a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider" />
-                                        </li>
-                                        <li>
-                                            <form action="{{ route('petugas.destroy', [$kegiatan->slug, $p->nik]) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    class="dropdown-item btn-delete-petugas">Hapus</button>
-                                            </form>
-                                        </li>
+                                @if ($can_manage)
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                            data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('petugas.edit', [$kegiatan->slug, $p->nik]) }}">Edit</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('petugas.destroy', [$kegiatan->slug, $p->nik]) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button"
+                                                        class="dropdown-item btn-delete-petugas">Hapus</button>
+                                                </form>
+                                            </li>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

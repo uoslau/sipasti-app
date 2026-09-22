@@ -44,30 +44,28 @@ class PetugasKegiatanController extends Controller
 
     public function import(Request $request)
     {
-        $slug           = $request->input('slug');
+        $kegiatan = Kegiatan::where('slug', $request->input('slug'))->firstOrFail();
+        $this->authorize('update', $kegiatan);
 
         $validated_data = $request->validate([
             'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
         ]);
 
-        $kegiatan_id    = Kegiatan::where('slug', $slug)->value('id');
-
-        Excel::import(new PetugasImport($kegiatan_id), $validated_data['excel_file']);
+        Excel::import(new PetugasImport($kegiatan->id), $validated_data['excel_file']);
 
         return redirect()->back();
     }
 
     public function import_update(Request $request)
     {
-        $slug           = $request->input('slug');
+        $kegiatan = Kegiatan::where('slug', $request->input('slug'))->firstOrFail();
+        $this->authorize('update', $kegiatan);
 
         $validated_data = $request->validate([
             'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
         ]);
 
-        $kegiatan_id    = Kegiatan::where('slug', $slug)->value('id');
-
-        Excel::import(new PetugasImportUpdate($kegiatan_id), $validated_data['excel_file']);
+        Excel::import(new PetugasImportUpdate($kegiatan->id), $validated_data['excel_file']);
 
         return redirect()->back();
     }
@@ -77,6 +75,8 @@ class PetugasKegiatanController extends Controller
      */
     public function store(Request $request, Kegiatan $kegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         $nik        = $request['nik'];
 
         $mitra      = Mitra::where('nik', $nik)->firstOrFail();
@@ -168,6 +168,8 @@ class PetugasKegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan, PetugasKegiatan $petugasKegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         // mengambil petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
         $petugas_kegiatan = $kegiatan->petugasKegiatan()
             ->where('nik', $petugasKegiatan->nik)
@@ -185,6 +187,8 @@ class PetugasKegiatanController extends Controller
      */
     public function update(Request $request, Kegiatan $kegiatan, PetugasKegiatan $petugasKegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         $validator = Validator::make(
             $request->all(),
             [
@@ -237,6 +241,8 @@ class PetugasKegiatanController extends Controller
      */
     public function destroy(Kegiatan $kegiatan, PetugasKegiatan $petugasKegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         $petugas_kegiatan = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $petugasKegiatan->nik)
             ->firstOrFail();

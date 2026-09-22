@@ -1,0 +1,208 @@
+/* Dashboard — memakai token template (primary #696cff, soft label colors) */
+
+.dash-page {
+    --dash-primary: #696cff;
+    --dash-heading: #384551;
+    --dash-muted: #8592a3;
+    --dash-line: #e4e6eb;
+    --dash-surface: #f5f6f8;
+}
+
+/* Konteks di bawah judul */
+.dash-context {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dash-muted);
+    font-size: 0.9375rem;
+}
+.dash-context span { display: inline-flex; align-items: center; gap: 0.375rem; }
+.dash-context .bx { font-size: 1.125rem; }
+.dash-context-sep {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #c9cdd4;
+    gap: 0;
+}
+
+/* Kartu ringkasan */
+.dash-stat {
+    border: 1px solid var(--dash-line);
+    box-shadow: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.dash-stat:hover { border-color: #c3c4ff; transform: translateY(-2px); }
+.dash-stat-attention { border-left: 3px solid #ffab00; }
+.dash-stat-head { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.75rem; }
+.dash-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    flex: none;
+}
+.dash-stat-label { font-size: 0.875rem; font-weight: 500; color: var(--dash-muted); }
+.dash-stat-value {
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--dash-heading);
+    font-variant-numeric: tabular-nums;
+}
+.dash-stat-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+}
+.dash-stat-meta .bx { font-size: 1rem; }
+
+/* Catatan periode */
+.dash-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: -0.5rem 0 1.5rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+    background-color: #f5f5ff;
+    color: #566a7f;
+    font-size: 0.875rem;
+}
+.dash-note .bx { font-size: 1.125rem; color: var(--dash-primary); flex: none; }
+
+/* Grafik */
+.dash-chart-wrap { position: relative; min-height: 16rem; }
+.dash-chart-wrap-donut { min-height: 9.5rem; width: 9.5rem; flex: none; }
+.dash-chart { min-height: 16rem; }
+.dash-chart-wrap-donut .dash-chart { min-height: 9.5rem; }
+.dash-chart-skeleton {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    background: linear-gradient(90deg, #f1f2f4 25%, #e9eaee 37%, #f1f2f4 63%);
+    background-size: 400% 100%;
+    animation: dash-shimmer 1.4s ease infinite;
+}
+.dash-chart-skeleton-round { border-radius: 50%; }
+.dash-chart-empty {
+    margin: 0;
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--dash-muted);
+    font-size: 0.9375rem;
+}
+.dash-chart-wrap-empty { min-height: 0; }
+.dash-chart-wrap-empty .dash-chart { min-height: 0; }
+@keyframes dash-shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+/* Donut & legenda */
+.dash-donut-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dash-heading);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+.dash-donut-label { font-size: 0.8125rem; color: var(--dash-muted); }
+.dash-legend { list-style: none; margin: 1rem 0 0; padding: 0; }
+.dash-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--dash-line);
+}
+.dash-legend-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex: none; }
+.dash-legend-dot-success { background-color: #71dd37; }
+.dash-legend-dot-warning { background-color: #ffab00; }
+.dash-legend-text { flex-grow: 1; font-size: 0.875rem; color: #566a7f; }
+.dash-legend-value {
+    font-weight: 600;
+    color: var(--dash-heading);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Sebaran wilayah */
+.dash-regions { list-style: none; margin: 0; padding: 0; }
+.dash-region + .dash-region { margin-top: 0.875rem; }
+.dash-region-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.375rem; }
+.dash-region-value { color: var(--dash-heading); font-variant-numeric: tabular-nums; }
+.dash-bar { height: 0.5rem; border-radius: 1rem; background-color: var(--dash-surface); overflow: hidden; }
+.dash-bar span { display: block; height: 100%; border-radius: 1rem; background-color: var(--dash-primary); }
+
+/* Daftar tindak lanjut */
+.dash-list { list-style: none; margin: 0; padding: 0; }
+.dash-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+.dash-list li + li { border-top: 1px solid var(--dash-line); }
+.dash-list-main { min-width: 0; flex-grow: 1; }
+.dash-list-title {
+    display: block;
+    font-weight: 600;
+    color: var(--dash-heading);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dash-list-title:hover { color: var(--dash-primary); text-decoration: underline; }
+.dash-list-meta { display: block; font-size: 0.8125rem; color: var(--dash-muted); }
+.dash-list-arrow { color: #c9cdd4; font-size: 1.25rem; flex: none; }
+
+/* State kosong */
+.dash-empty { padding: 3.5rem 1.5rem; text-align: center; }
+.dash-empty .bx { font-size: 3rem; color: #c9cdd4; }
+.dash-empty-title { margin: 1rem 0 0.25rem; font-weight: 600; color: var(--dash-heading); }
+.dash-empty-text { margin: 0 auto 1.25rem; max-width: 42ch; color: var(--dash-muted); font-size: 0.9375rem; }
+.dash-inline-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 0;
+    color: var(--dash-muted);
+}
+.dash-inline-empty .bx { font-size: 1.5rem; color: #71dd37; }
+
+/* Tabel kegiatan terbaru */
+.dash-table thead th {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--dash-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--dash-line);
+}
+.dash-table tbody td { vertical-align: middle; }
+.dash-table tbody tr { transition: background-color 0.15s ease; }
+.dash-table tbody .dash-list-title { font-weight: 500; }
+.dash-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: var(--dash-surface);
+    color: #566a7f;
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash-stat:hover { transform: none; }
+    .dash-chart-skeleton { animation: none; }
+}

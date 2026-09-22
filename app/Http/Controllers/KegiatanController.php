@@ -26,27 +26,32 @@ class KegiatanController extends Controller
     {
         $search = $request->query('search');
 
+        $user = Auth::user();
+
         // mengambil data kegiatan dengan relasi petugas_kegiatan dan tim_kerja serta menghitung total honor petugas_kegiatan untuk setiap kegiatan
         $query = Kegiatan::with(['petugasKegiatan', 'fungsi', 'timKerja'])
             ->select('nama_kegiatan', 'is_generated', 'slug', 'tanggal_mulai', 'tanggal_selesai', 'fungsi_id', 'tim_kerja_id')
             ->withSum('petugasKegiatan', 'honor')
             ->orderBy('id', 'desc');
 
+        // pencarian dikelompokkan agar kondisi OR tidak mengganggu kondisi query lainnya
         $query->when($search, function ($q, $search) {
-            return $q->where('nama_kegiatan', 'like', "%{$search}%")
-                // Anda bisa menambahkan pencarian di relasi lain juga
-                ->orWhereHas('timKerja', function ($timQuery) use ($search) {
-                    $timQuery->where('alias_tim_kerja', 'like', "%{$search}%");
-                });
+            $q->where(function ($sub) use ($search) {
+                $sub->where('nama_kegiatan', 'like', "%{$search}%")
+                    ->orWhereHas('timKerja', function ($timQuery) use ($search) {
+                        $timQuery->where('alias_tim_kerja', 'like', "%{$search}%");
+                    });
+            });
         });
 
         $kegiatan = $query->paginate(10);
 
         $kegiatan->appends(['search' => $search]);
 
-        $tim_kerja = TimKerja::all();
-
-        $user = Auth::user();
+        // admin dapat memilih semua tim kerja; user hanya tim kerja yang diikuti
+        $tim_kerja = $user->isAdmin()
+            ? TimKerja::all()
+            : TimKerja::whereIn('id', $user->timKerjaIds())->get();
 
         $userTimKerja = $user->timKerja->first();
 
@@ -73,6 +78,8 @@ class KegiatanController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Kegiatan::class);
+
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         // dd($request);
         $request->merge([
@@ -106,6 +113,11 @@ class KegiatanController extends Controller
             'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
 
+        // user non-admin hanya boleh menambah kegiatan pada tim kerjanya
+        if (! Auth::user()->isAdmin() && ! in_array((int) $validated_data['tim_kerja_id'], Auth::user()->timKerjaIds())) {
+            abort(403, 'Anda tidak berhak menambah kegiatan pada tim kerja ini.');
+        }
+
         Kegiatan::create($validated_data);
 
         return to_route('kegiatan.index')
@@ -126,8 +138,13 @@ class KegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan)
     {
-        // mengambil data tim kerja untuk create kegiatan
-        $tim_kerja = TimKerja::select('id', 'nama_tim_kerja', 'alias_tim_kerja')->get();
+        $this->authorize('view', $kegiatan);
+
+        // admin dapat memilih semua tim kerja; user hanya tim kerja yang diikuti
+        $user = Auth::user();
+        $tim_kerja = TimKerja::select('id', 'nama_tim_kerja', 'alias_tim_kerja')
+            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('id', $user->timKerjaIds()))
+            ->get();
 
         // mengambil nama petugas_kegiatan yang berelasi dengan kegiatan berdasarkan nik
         $petugas_kegiatan = PetugasKegiatan::join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
@@ -169,6 +186,8 @@ class KegiatanController extends Controller
      */
     public function update(Request $request, Kegiatan $kegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         $request->merge([
             'honor_nias' => parseNominal($request->honor_nias),
@@ -199,6 +218,11 @@ class KegiatanController extends Controller
         ], [
             'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
+
+        // user non-admin tidak boleh memindahkan kegiatan ke tim kerja lain
+        if (! Auth::user()->isAdmin() && ! in_array((int) $validated_data['tim_kerja_id'], Auth::user()->timKerjaIds())) {
+            abort(403, 'Anda tidak berhak memindahkan kegiatan ke tim kerja ini.');
+        }
 
         // update nomor kontrak apabila terjadi perubahan bulan kegiatan
         $old_tanggal_mulai = $kegiatan->tanggal_mulai;
@@ -262,6 +286,8 @@ class KegiatanController extends Controller
      */
     public function destroy(Kegiatan $kegiatan)
     {
+        $this->authorize('delete', $kegiatan);
+
         $kegiatan->delete();
 
         return to_route('kegiatan.index')

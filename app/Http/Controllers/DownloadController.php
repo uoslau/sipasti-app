@@ -19,6 +19,8 @@ class DownloadController extends Controller
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
+        $this->authorize('view', $kegiatan);
+
         if (!$kegiatan->is_generated) {
             return to_route('kegiatan.edit', $kegiatan->slug)
                 ->with('error', 'BAST belum bisa diunduh karena nomor belum digenerate.');
@@ -264,6 +266,8 @@ class DownloadController extends Controller
 
     public function uploadOB(Request $request, Kegiatan $kegiatan)
     {
+        $this->authorize('update', $kegiatan);
+
         $request->validate([
             'word_file' => 'required|file|mimes:docx|max:2048'
         ]);
@@ -284,6 +288,8 @@ class DownloadController extends Controller
 
     public function downloadOB(Kegiatan $kegiatan)
     {
+        $this->authorize('view', $kegiatan);
+
         $template_name = $kegiatan->slug . '.docx';
         $template_relative = 'template_ob/' . $template_name;
         $template_path = storage_path('app/public/' . $template_relative);
