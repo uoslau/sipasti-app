@@ -8,7 +8,8 @@
     <label class="sensus-dropzone" for="sensus-file" data-sensus-dropzone>
         <i class="bx bx-cloud-upload" aria-hidden="true"></i>
         <span class="sensus-dropzone-title">Tarik file ke sini, atau klik untuk memilih</span>
-        <span class="sensus-dropzone-hint">Format .xlsx, .xls, atau .csv &middot; maksimal 20 MB</span>
+        <span class="sensus-dropzone-hint">Format .xlsx, .xls, atau .csv &middot; maksimal
+            {{ $uploadLimit ?? '20 MB' }}</span>
         <input type="file" id="sensus-file" name="excel_file" accept=".xlsx,.xls,.csv,.txt"
             class="visually-hidden" data-sensus-file required />
     </label>
@@ -27,7 +28,8 @@
 
     <div class="alert alert-warning d-flex align-items-start gap-2 py-2 px-3 mt-3 mb-0 small">
         <i class="bx bx-info-circle mt-1" aria-hidden="true"></i>
-        <span>Import akan mengganti seluruh data sensus ekonomi yang saat ini tersimpan.</span>
+        <span>Import akan mengganti seluruh data sensus ekonomi yang saat ini tersimpan. Untuk file berisi ribuan
+            baris, prosesnya bisa berjalan beberapa saat — jangan tutup halaman sebelum selesai.</span>
     </div>
 
     <div class="mt-3">

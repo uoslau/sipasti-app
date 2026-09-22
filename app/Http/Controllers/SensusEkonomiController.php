@@ -36,6 +36,11 @@ class SensusEkonomiController extends Controller
      */
     private const FILTER_OPTION_LIMIT = 500;
 
+    /**
+     * Batas ukuran file import menurut aplikasi (KB).
+     */
+    private const MAX_UPLOAD_KB = 20480;
+
     public function index(Request $request)
     {
         $resolved = $this->resolveFilters($request);
@@ -50,17 +55,27 @@ class SensusEkonomiController extends Controller
             'column'         => null,
             'filters'        => $resolved['filters'],
             'filterOptions'  => $resolved['options'],
+            'uploadLimit'    => $this->uploadLimitLabel(),
         ]);
     }
 
     public function import(Request $request)
     {
+        // Kalau unggahan sudah ditolak PHP (umumnya karena melebihi upload_max_filesize),
+        // Laravel hanya melaporkan "failed to upload". Kita periksa lebih dulu agar
+        // pesannya benar-benar menjelaskan penyebab dan batas server yang berlaku.
+        $uploadedFile = $request->file('excel_file');
+
+        if ($uploadedFile !== null && ! $uploadedFile->isValid()) {
+            return back()->with('error', $this->uploadErrorMessage($uploadedFile->getError()));
+        }
+
         $validated = $request->validate([
-            'excel_file' => 'required|file|mimes:xlsx,xls,csv,txt|max:20480',
+            'excel_file' => 'required|file|mimes:xlsx,xls,csv,txt|max:' . self::MAX_UPLOAD_KB,
         ], [
             'excel_file.required' => 'Pilih file Excel yang ingin diimport.',
             'excel_file.mimes'    => 'File harus berformat xlsx, xls, atau csv.',
-            'excel_file.max'      => 'Ukuran file maksimal 20 MB.',
+            'excel_file.max'      => 'Ukuran file melebihi batas ' . $this->uploadLimitLabel() . '.',
         ]);
 
         $import = new SensusEkonomiImport();
@@ -179,6 +194,70 @@ class SensusEkonomiController extends Controller
                 $inner->orWhere($searchColumn, 'like', $pattern);
             }
         });
+    }
+
+    /**
+     * Batas unggah yang benar-benar berlaku: yang terkecil di antara batas aplikasi
+     * dan batas PHP di server (upload_max_filesize / post_max_size).
+     */
+    private function uploadLimitBytes(): int
+    {
+        $limits = [self::MAX_UPLOAD_KB * 1024];
+
+        foreach (['upload_max_filesize', 'post_max_size'] as $key) {
+            $bytes = $this->iniToBytes((string) ini_get($key));
+
+            if ($bytes > 0) {
+                $limits[] = $bytes;
+            }
+        }
+
+        return min($limits);
+    }
+
+    private function uploadLimitLabel(): string
+    {
+        return number_format($this->uploadLimitBytes() / 1048576, 1, ',', '.') . ' MB';
+    }
+
+    /**
+     * Ubah nilai php.ini seperti "2M" atau "8M" menjadi byte.
+     */
+    private function iniToBytes(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return 0;
+        }
+
+        $number = (int) $value;
+
+        return match (strtolower(substr($value, -1))) {
+            'g' => $number * 1073741824,
+            'm' => $number * 1048576,
+            'k' => $number * 1024,
+            default => $number,
+        };
+    }
+
+    /**
+     * Jelaskan kegagalan unggahan berdasarkan kode error PHP.
+     */
+    private function uploadErrorMessage(int $code): string
+    {
+        return match ($code) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'File ditolak server karena melebihi batas '
+                . $this->uploadLimitLabel() . '. Kecilkan file, atau minta admin menaikkan upload_max_filesize dan '
+                . 'post_max_size di php.ini server (sekarang: ' . ini_get('upload_max_filesize') . ' dan '
+                . ini_get('post_max_size') . ').',
+            UPLOAD_ERR_PARTIAL => 'Unggahan terputus di tengah jalan. Coba ulangi.',
+            UPLOAD_ERR_NO_FILE => 'Tidak ada file yang terkirim. Pilih file lebih dulu.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Server tidak punya folder sementara (upload_tmp_dir) untuk menampung unggahan.',
+            UPLOAD_ERR_CANT_WRITE => 'Server gagal menulis file ke disk. Periksa sisa ruang dan izin foldernya.',
+            UPLOAD_ERR_EXTENSION => 'Unggahan dihentikan oleh ekstensi PHP di server.',
+            default => 'File gagal diunggah ke server (kode ' . $code . ').',
+        };
     }
 
     private function normalizeColumn(?string $column): ?string
