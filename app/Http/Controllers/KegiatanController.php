@@ -6,19 +6,13 @@ use Carbon\Carbon;
 use App\Models\Kegiatan;
 use App\Models\TimKerja;
 use App\Models\NomorKontrak;
-use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
-use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Traits\GeneratesBastDocuments;
 
 class KegiatanController extends Controller
 {
-    use GeneratesBastDocuments;
-
     /**
      * Display a listing of the resource.
      */
