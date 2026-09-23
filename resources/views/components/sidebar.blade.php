@@ -120,10 +120,9 @@
         @endif
 
         <li class="menu-item {{ request()->is('profil*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+            <a href="{{ route('profil.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user-circle"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Profil</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">wip</div>
             </a>
         </li>
         <li class="menu-item">

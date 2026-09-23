@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\NomorKontrakController;
 use App\Http\Controllers\PetugasKegiatanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SensusEkonomiController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureSensusEkonomiAccess;
@@ -100,5 +101,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset_password');
+    });
+
+    Route::prefix('profil')->name('profil.')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::put('/', [ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });
