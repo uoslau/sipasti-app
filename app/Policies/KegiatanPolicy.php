@@ -18,11 +18,6 @@ class KegiatanPolicy
         return true;
     }
 
-    public function download(User $user, Kegiatan $kegiatan): bool
-    {
-        return $this->owns($user, $kegiatan);
-    }
-
     public function create(User $user): bool
     {
         return ! empty($user->timKerjaIds());

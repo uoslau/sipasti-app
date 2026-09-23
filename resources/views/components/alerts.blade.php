@@ -44,7 +44,7 @@
         Swal.fire({
             icon: "error",
             title: "Gagal!",
-            html: @json(e(session('error'))),
+            html: `{!! session('error') !!}`,
             confirmButtonColor: '#696cff',
         });
     </script>
@@ -55,7 +55,7 @@
         Swal.fire({
             icon: 'error',
             title: 'Gagal!',
-            html: @json(implode('<br>', array_map('e', $errors->all()))),
+            html: `{!! implode('<br>', $errors->all()) !!}`,
             confirmButtonColor: '#696cff',
         });
     </script>

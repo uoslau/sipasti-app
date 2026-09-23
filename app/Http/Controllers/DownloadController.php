@@ -9,6 +9,7 @@ use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Http\Controllers\Traits\GeneratesBastDocuments;
 
@@ -18,7 +19,7 @@ class DownloadController extends Controller
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
-        $this->authorize('download', $kegiatan);
+        $this->authorize('view', $kegiatan);
 
         if (!$kegiatan->is_generated) {
             return to_route('kegiatan.edit', $kegiatan->slug)
@@ -287,7 +288,7 @@ class DownloadController extends Controller
 
     public function downloadOB(Kegiatan $kegiatan)
     {
-        $this->authorize('download', $kegiatan);
+        $this->authorize('view', $kegiatan);
 
         $template_name = $kegiatan->slug . '.docx';
         $template_relative = 'template_ob/' . $template_name;
