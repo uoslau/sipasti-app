@@ -12,7 +12,12 @@
       "Shell(php -l app/Http/Controllers/LoginController.php)",
       "Shell(php -l routes/web.php)",
       "Shell(php artisan route:list --except-vendor --path=dashboard)",
-      "Shell(php artisan test --filter=DiagTest)"
+      "Shell(php artisan test --filter=DiagTest)",
+      "Shell(php -l app/Models/WilayahTugas.php)",
+      "Shell(php -l app/Http/Controllers/PetugasKegiatanController.php)",
+      "Shell(php -l app/Http/Controllers/KegiatanController.php)",
+      "Shell(php -l app/Imports/PetugasImport.php)",
+      "Shell(php -l app/Imports/PetugasImportUpdate.php)"
     ],
     "deny": [],
     "defaultMode": "default"

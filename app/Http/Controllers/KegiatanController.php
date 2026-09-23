@@ -84,7 +84,6 @@ class KegiatanController extends Controller
         // dd($request);
         $request->merge([
             'honor_nias' => parseNominal($request->honor_nias),
-            'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
         // validasi inputan form
@@ -108,7 +107,6 @@ class KegiatanController extends Controller
             'beban_anggaran'    => 'required|string|max:255',
             'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
-            'honor_nias_barat'  => 'nullable|integer',
         ], [
             'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
@@ -191,7 +189,6 @@ class KegiatanController extends Controller
         // mengembalikan value honor yang sudah diformat dengan menghilangkan . sebagai pemisah ribuan, juta, dst.
         $request->merge([
             'honor_nias' => parseNominal($request->honor_nias),
-            'honor_nias_barat' => parseNominal($request->honor_nias_barat),
         ]);
 
         $validated_data = $request->validate([
@@ -214,7 +211,6 @@ class KegiatanController extends Controller
             'beban_anggaran'    => 'required|string|max:255',
             'tim_kerja_id'      => 'required|exists:tim_kerjas,id',
             'honor_nias'        => 'nullable|integer',
-            'honor_nias_barat'  => 'nullable|integer',
         ], [
             'nama_kegiatan.not_regex' => 'Nama kegiatan tidak boleh mengandung karakter garis miring!',
         ]);
@@ -244,6 +240,7 @@ class KegiatanController extends Controller
                 $nomorKontrakController->generate($kegiatan);
             }
 
+            // Hitung ulang honor untuk Wilayah Nias (1201). Nias Barat (1225) dinonaktifkan.
             DB::table('petugas_kegiatans')
                 ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
                 ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
@@ -252,17 +249,6 @@ class KegiatanController extends Controller
                     'honor' => $validated_data['is_ob']
                         ? ($validated_data['honor_nias'])
                         : DB::raw('beban_kerja * ' . ($validated_data['honor_nias'] ?? 0))
-                ]);
-
-            // Untuk Wilayah Nias Barat (1225)
-            DB::table('petugas_kegiatans')
-                ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-                ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
-                ->where('mitras.wilayah_id', '2')
-                ->update([
-                    'honor' => $validated_data['is_ob']
-                        ? ($validated_data['honor_nias_barat'])
-                        : DB::raw('beban_kerja * ' . ($validated_data['honor_nias_barat'] ?? 0))
                 ]);
 
             DB::commit();

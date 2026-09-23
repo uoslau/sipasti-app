@@ -26,8 +26,12 @@ class PetugasKegiatanController extends Controller
     {
         $search = $request->input('q');
 
+        // hanya mitra wilayah Nias yang dapat ditambahkan ke kegiatan
         $mitra  = Mitra::with('wilayahTugas')
             ->where('nama_mitra', 'LIKE', '%' . $search . '%')
+            ->whereHas('wilayahTugas', function ($query) {
+                $query->where('kode_wilayah', WilayahTugas::KODE_NIAS);
+            })
             ->take(5)
             ->get(['nik', 'nama_mitra', 'wilayah_id']);
 
@@ -81,6 +85,12 @@ class PetugasKegiatanController extends Controller
 
         $mitra      = Mitra::where('nik', $nik)->firstOrFail();
 
+        // Nias Barat dinonaktifkan: hanya mitra wilayah Nias yang boleh ditambahkan
+        if ($mitra->wilayahTugas->kode_wilayah !== WilayahTugas::KODE_NIAS) {
+            return to_route('kegiatan.edit', $kegiatan->slug)
+                ->with('error', ucwords(strtolower($mitra->nama_mitra)) . ' berasal dari wilayah Nias Barat yang saat ini dinonaktifkan!');
+        }
+
         $validator  = Validator::make(
             $request->all(),
             [
@@ -132,15 +142,10 @@ class PetugasKegiatanController extends Controller
             }
         }
 
-        // Hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
-        if ($kegiatan->is_ob) {
-            $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
-                ? $kegiatan->honor_nias : $kegiatan->honor_nias_barat;
-        } else {
-            $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
-                ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
-                : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
-        }
+        // Hitung honor dengan tarif Nias (Nias Barat dinonaktifkan) & cek apakah merupakan kegiatan O-B
+        $honor = $kegiatan->is_ob
+            ? $kegiatan->honor_nias
+            : $kegiatan->honor_nias * $validated_data['beban_kerja'];
 
         PetugasKegiatan::create([
             'nik'                  => $mitra->nik,

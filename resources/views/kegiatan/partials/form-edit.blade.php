@@ -154,9 +154,9 @@
                         </div>
                     </div>
                 </div>
-                {{-- tim kerjam, honor nias nias barat --}}
+                {{-- tim kerja, honor nias --}}
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="mb-6">
                             <label for="tim_kerja_id" class="form-label">Tim Kerja</label>
                             <select class="form-select" id="tim_kerja_id" name="tim_kerja_id">
@@ -177,7 +177,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="mb-6">
                             <label for="honor_nias" class="form-label">Honor Nias</label>
                             <div class="input-group">
@@ -185,21 +185,6 @@
                                 <input class="form-control" type="text"
                                     value="{{ old('honor_nias', number_format($kegiatan->honor_nias, 0, ',', '.')) }}"
                                     id="honor_nias" name="honor_nias" placeholder="1.234.567.890"
-                                    oninput="formatRupiah(this)" />
-                            </div>
-                            <div id="defaultFormControlHelp" class="form-text text-primary">
-                                [per 1 beban kerja]
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-6">
-                            <label for="honor_nias_barat" class="form-label">Honor Nias Barat</label>
-                            <div class="input-group disabled">
-                                <span class="input-group-text">Rp</span>
-                                <input class="form-control" type="text"
-                                    value="{{ old('honor_nias_barat', number_format($kegiatan->honor_nias_barat, 0, ',', '.')) }}"
-                                    id="honor_nias_barat" name="honor_nias_barat" placeholder="1.234.567.890"
                                     oninput="formatRupiah(this)" />
                             </div>
                             <div id="defaultFormControlHelp" class="form-text text-primary">
@@ -244,7 +229,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="mb-6">
                         <label class="form-label">Tim Kerja</label>
                         <input type="text" class="form-control"
@@ -252,18 +237,11 @@
                             disabled>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="mb-6">
                         <label class="form-label">Honor Nias</label>
                         <input type="text" class="form-control"
                             value="Rp {{ number_format($kegiatan->honor_nias, 0, ',', '.') }}" disabled>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-6">
-                        <label class="form-label">Honor Nias Barat</label>
-                        <input type="text" class="form-control"
-                            value="Rp {{ number_format($kegiatan->honor_nias_barat, 0, ',', '.') }}" disabled>
                     </div>
                 </div>
             </div>

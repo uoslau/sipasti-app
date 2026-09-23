@@ -9,7 +9,7 @@ function formatRupiah(input) {
 
 document.addEventListener("DOMContentLoaded", function () {
     document
-        .querySelectorAll("#honor_nias, #honor_nias_barat")
+        .querySelectorAll("#honor_nias")
         .forEach(function (input) {
             input.addEventListener("input", function () {
                 formatRupiah(this);

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Mitra;
 use App\Models\Kegiatan;
+use App\Models\WilayahTugas;
 use Illuminate\Support\Arr;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Collection;
@@ -54,13 +55,14 @@ class PetugasImportUpdate implements ToCollection
                     [
                         'nik'              => 'required|exists:mitras,nik',
                         'bertugas_sebagai' => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
-                        'wilayah_tugas'    => 'required|in:1201,1225',
+                        'wilayah_tugas'    => 'required|in:' . WilayahTugas::KODE_NIAS,
                         'beban_kerja'      => 'required|integer|min:1',
                         'satuan_beban'     => 'required|string|max:255|regex:/^[a-z A-Z]+$/',
                     ],
                     [
                         'bertugas_sebagai.regex'    => 'Field Bertugas Sebagai hanya boleh berisi huruf!',
                         'satuan_beban_kerja.regex'  => 'Field Satuan Beban Kerja hanya boleh berisi huruf!',
+                        'wilayah_tugas.in'          => 'Wilayah tugas hanya boleh Nias (1201). Nias Barat dinonaktifkan!',
                     ]
                 );
 
@@ -80,9 +82,8 @@ class PetugasImportUpdate implements ToCollection
 
                 $nama_mitra = $mitra->nama_mitra;
 
-                $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
-                    ? $kegiatan->honor_nias * $beban_kerja
-                    : $kegiatan->honor_nias_barat * $beban_kerja;
+                // Honor memakai tarif Nias (Nias Barat dinonaktifkan)
+                $honor = $kegiatan->honor_nias * $beban_kerja;
 
                 $petugas = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
                     ->where('nik', $nik)
