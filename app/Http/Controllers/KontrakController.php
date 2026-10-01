@@ -50,6 +50,7 @@ class KontrakController extends Controller
             ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->join('wilayah_tugas', 'mitras.wilayah_id', '=', 'wilayah_tugas.id')
+            ->whereNull('kegiatans.deleted_at')
             ->whereMonth('kegiatans.tanggal_mulai', $bulan_sekarang)
             ->whereYear('kegiatans.tanggal_mulai', $tahun_sekarang)
             ->whereNull('petugas_kegiatans.deleted_at')

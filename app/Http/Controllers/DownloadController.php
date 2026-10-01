@@ -28,11 +28,13 @@ class DownloadController extends Controller
 
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
             $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
-                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
+                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id')
+                ->whereNull('nomor_kontraks.deleted_at');
         })
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
             ->join('tim_kerjas', 'kegiatans.tim_kerja_id', '=', 'tim_kerjas.id')
+            ->whereNull('kegiatans.deleted_at')
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->select(
                 'petugas_kegiatans.*',
@@ -93,6 +95,7 @@ class DownloadController extends Controller
 
         // cek apakah semua kegiatan petugas yang dipilih sudah di-generate nomor spk/bast-nya
         $kegiatan_belum_generate = PetugasKegiatan::join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
+            ->whereNull('kegiatans.deleted_at')
             ->whereIn('petugas_kegiatans.nik', $selected_petugas)
             ->whereMonth('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('m'))
             ->whereYear('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('Y'))
@@ -116,9 +119,11 @@ class DownloadController extends Controller
         $list_petugas_bulan = PetugasKegiatan::join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
             ->join('nomor_kontraks', function ($join) {
                 $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
-                    ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
+                    ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id')
+                    ->whereNull('nomor_kontraks.deleted_at');
             })
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+            ->whereNull('kegiatans.deleted_at')
             ->whereMonth('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('m'))
             ->whereYear('kegiatans.tanggal_mulai', $base_tanggal_kegiatan->format('Y'))
             ->whereIn('petugas_kegiatans.nik', $selected_petugas)
@@ -301,11 +306,13 @@ class DownloadController extends Controller
 
         $petugas_kegiatan = PetugasKegiatan::join('nomor_kontraks', function ($join) {
             $join->on('petugas_kegiatans.nik', '=', 'nomor_kontraks.nik')
-                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id');
+                ->on('petugas_kegiatans.kegiatan_id', '=', 'nomor_kontraks.kegiatan_id')
+                ->whereNull('nomor_kontraks.deleted_at');
         })
             ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
             ->join('kegiatans', 'petugas_kegiatans.kegiatan_id', '=', 'kegiatans.id')
             ->join('tim_kerjas', 'kegiatans.tim_kerja_id', '=', 'tim_kerjas.id')
+            ->whereNull('kegiatans.deleted_at')
             ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
             ->select(
                 'petugas_kegiatans.*',
