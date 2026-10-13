@@ -10,6 +10,8 @@ use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
+use App\Services\HonorCalculator;
+use App\Services\NomorKontrakService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +20,12 @@ use App\Http\Controllers\Traits\GeneratesBastDocuments;
 class KegiatanController extends Controller
 {
     use GeneratesBastDocuments;
+
+    public function __construct(
+        private readonly HonorCalculator $honor,
+        private readonly NomorKontrakService $nomorKontrak,
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -222,6 +230,7 @@ class KegiatanController extends Controller
 
         // update nomor kontrak apabila terjadi perubahan bulan kegiatan
         $old_tanggal_mulai = $kegiatan->tanggal_mulai;
+        $nomor_disesuaikan = false;
 
         DB::beginTransaction();
         try {
@@ -235,25 +244,34 @@ class KegiatanController extends Controller
                 $kegiatan->is_generated = false;
                 $kegiatan->save();
 
-                // generate ulang nomor kontrak
-                $nomorKontrakController = new NomorKontrakController();
-                $nomorKontrakController->generate($kegiatan);
+                // generate ulang nomor kontrak (best-effort: pemanggilan diabaikan bila belum ada petugas)
+                $this->nomorKontrak->generate($kegiatan);
+                $nomor_disesuaikan = true;
             }
 
-            // Hitung ulang honor untuk Wilayah Nias (1201). Nias Barat (1225) dinonaktifkan.
-            DB::table('petugas_kegiatans')
-                ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
-                ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
-                ->where('mitras.wilayah_id', '1')
-                ->update([
-                    'honor' => $validated_data['is_ob']
-                        ? ($validated_data['honor_nias'])
-                        : DB::raw('beban_kerja * ' . ($validated_data['honor_nias'] ?? 0))
-                ]);
+            // Hitung ulang honor untuk petugas Wilayah Nias (1201). Nias Barat (1225) dinonaktifkan.
+            $nias_id = WilayahTugas::where('kode_wilayah', WilayahTugas::KODE_NIAS)->value('id');
+
+            if ($nias_id) {
+                $petugas_nias = PetugasKegiatan::withTrashed()
+                    ->join('mitras', 'petugas_kegiatans.nik', '=', 'mitras.nik')
+                    ->where('petugas_kegiatans.kegiatan_id', $kegiatan->id)
+                    ->where('mitras.wilayah_id', $nias_id)
+                    ->select('petugas_kegiatans.id', 'petugas_kegiatans.beban_kerja')
+                    ->get();
+
+                foreach ($petugas_nias as $petugas) {
+                    DB::table('petugas_kegiatans')
+                        ->where('id', $petugas->id)
+                        ->update([
+                            'honor' => $this->honor->calculate($kegiatan, (int) $petugas->beban_kerja, WilayahTugas::KODE_NIAS),
+                        ]);
+                }
+            }
 
             DB::commit();
 
-            if (isset($nomorKontrakController)) {
+            if ($nomor_disesuaikan) {
                 return to_route('kegiatan.edit', $kegiatan->slug)
                     ->with('success', 'Kegiatan berhasil diedit! Nomor kontrak dan BAST juga telah disesuaikan.');
             }

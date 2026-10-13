@@ -9,6 +9,7 @@ use App\Models\WilayahTugas;
 use Illuminate\Http\Request;
 use App\Helpers\NumberToWords;
 use App\Models\PetugasKegiatan;
+use App\Services\HonorCalculator;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Http\Controllers\Traits\GeneratesBastDocuments;
@@ -16,6 +17,11 @@ use App\Http\Controllers\Traits\GeneratesBastDocuments;
 class DownloadController extends Controller
 {
     use GeneratesBastDocuments;
+
+    public function __construct(
+        private readonly HonorCalculator $honor,
+    ) {
+    }
 
     public function downloadBAST(Kegiatan $kegiatan)
     {
@@ -197,16 +203,12 @@ class DownloadController extends Controller
                 ->select('honor_pendataan', 'honor_pengolahan')
                 ->first();
 
-            if ($data_petugas_kegiatan[0]->posisi === 'Mitra Pendataan') {
-                $honor_max = $data_honor->honor_pendataan;
-            } elseif ($data_petugas_kegiatan[0]->posisi === 'Mitra Pengolahan') {
-                $honor_max = $data_honor->honor_pengolahan;
-            } elseif ($data_petugas_kegiatan[0]->posisi === 'Mitra (Pendataan dan Pengolahan)') {
-                $has_pengolahan = $r['has_pengolahan'];
-                $honor_max = $has_pengolahan ? $data_honor->honor_pengolahan : $data_honor->honor_pendataan;
-            } else {
-                $honor_max = 0;
-            }
+            $honor_max = $this->honor->cap(
+                $data_petugas_kegiatan[0]->posisi,
+                (int) $data_honor->honor_pendataan,
+                (int) $data_honor->honor_pengolahan,
+                $r['has_pengolahan'],
+            );
 
             $total_honor = array_sum(array_column($data_petugas_kegiatan, 'honor'));
             $total_honor_dibayar = ($total_honor > $honor_max) ? $honor_max : $total_honor;

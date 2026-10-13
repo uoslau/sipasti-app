@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Mitra;
 use App\Models\Kegiatan;
 use App\Models\WilayahTugas;
+use App\Services\HonorCalculator;
 use Illuminate\Support\Arr;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Collection;
@@ -20,9 +21,12 @@ class PetugasImportUpdate implements ToCollection
 
     protected $kegiatan_id;
 
+    private HonorCalculator $honor;
+
     public function __construct($kegiatan_id)
     {
         $this->kegiatan_id = $kegiatan_id;
+        $this->honor = new HonorCalculator();
     }
 
     public function collection(Collection $collection)
@@ -82,8 +86,8 @@ class PetugasImportUpdate implements ToCollection
 
                 $nama_mitra = $mitra->nama_mitra;
 
-                // Honor memakai tarif Nias (Nias Barat dinonaktifkan)
-                $honor = $kegiatan->honor_nias * $beban_kerja;
+                // Honor mengikuti HonorCalculator: O-B flat, non-O-B dikali beban kerja.
+                $honor = $this->honor->calculate($kegiatan, $beban_kerja, $wilayah_tugas);
 
                 $petugas = PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
                     ->where('nik', $nik)

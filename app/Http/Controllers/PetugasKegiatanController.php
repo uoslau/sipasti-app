@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Mitra;
 use App\Models\Kegiatan;
 use App\Models\WilayahTugas;
+use App\Services\HonorCalculator;
 use Illuminate\Http\Request;
 use App\Imports\PetugasImport;
 use App\Models\PetugasKegiatan;
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Validator;
 
 class PetugasKegiatanController extends Controller
 {
+    public function __construct(
+        private readonly HonorCalculator $honor,
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -142,10 +148,7 @@ class PetugasKegiatanController extends Controller
             }
         }
 
-        // Hitung honor dengan tarif Nias (Nias Barat dinonaktifkan) & cek apakah merupakan kegiatan O-B
-        $honor = $kegiatan->is_ob
-            ? $kegiatan->honor_nias
-            : $kegiatan->honor_nias * $validated_data['beban_kerja'];
+        $honor = $this->honor->calculate($kegiatan, $validated_data['beban_kerja'], $mitra->wilayahTugas->kode_wilayah);
 
         PetugasKegiatan::create([
             'nik'                  => $mitra->nik,
@@ -218,15 +221,7 @@ class PetugasKegiatanController extends Controller
 
         $mitra = Mitra::where('nik', $petugasKegiatan->nik)->firstOrFail();
 
-        // hitung honor berdasarkan wilayah tugas & cek apakah merupakan kegiatan O-B
-        if ($kegiatan->is_ob) {
-            $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
-                ? $kegiatan->honor_nias : $kegiatan->honor_nias_barat;
-        } else {
-            $honor = $mitra->wilayahTugas->kode_wilayah == "1201"
-                ? $kegiatan['honor_nias'] * $validated_data['beban_kerja']
-                : $kegiatan['honor_nias_barat'] * $validated_data['beban_kerja'];
-        }
+        $honor = $this->honor->calculate($kegiatan, $validated_data['beban_kerja'], $mitra->wilayahTugas->kode_wilayah);
 
         PetugasKegiatan::where('kegiatan_id', $kegiatan->id)
             ->where('nik', $petugasKegiatan->nik)

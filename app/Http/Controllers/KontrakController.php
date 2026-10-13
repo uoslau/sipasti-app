@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Kegiatan;
+use App\Services\HonorCalculator;
 use Illuminate\Http\Request;
 use App\Models\PetugasKegiatan;
 use Illuminate\Support\Facades\DB;
 
 class KontrakController extends Controller
 {
+    public function __construct(
+        private readonly HonorCalculator $honor,
+    ) {
+    }
+
     public function index(Request $request)
     {
         $bulan_sekarang = $request->input('bulan', date('n'));
@@ -80,16 +86,13 @@ class KontrakController extends Controller
 
         $rekap_petugas_bulan = $data_petugas->map(function ($item) use ($kegiatan_petugas_bulan) {
             $kegiatans = $kegiatan_petugas_bulan->get($item->nik, collect());
-            $honor_max = 0;
-
-            if ($item->posisi === 'Mitra Pendataan') {
-                $honor_max = $item->honor_pendataan;
-            } elseif ($item->posisi === 'Mitra Pengolahan') {
-                $honor_max = $item->honor_pengolahan;
-            } elseif ($item->posisi === 'Mitra (Pendataan dan Pengolahan)') {
-                $has_pengolahan = $kegiatans->contains('tim_kerja_id', 1);
-                $honor_max = $has_pengolahan ? $item->honor_pengolahan : $item->honor_pendataan;
-            }
+            $has_pengolahan = $kegiatans->contains('tim_kerja_id', 1);
+            $honor_max = $this->honor->cap(
+                $item->posisi,
+                (int) $item->honor_pendataan,
+                (int) $item->honor_pengolahan,
+                $has_pengolahan,
+            );
 
             $rekap_kegiatan = $kegiatans->map(function ($detail_kegiatan) {
                 $now = now();
